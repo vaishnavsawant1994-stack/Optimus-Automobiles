@@ -9,20 +9,26 @@ import {
   MessageCircle,
   Phone,
   Search,
+  Settings,
+  LogOut,
   UserRound,
   X,
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 import { BrandLogo } from '@/components/layout/BrandLogo'
 import { SocialIcon } from '@/components/layout/SocialIcon'
 import { navItems, siteConfig } from '@/lib/constants/site'
 import type { SearchSuggestion } from '@/lib/types/inventory'
+import { useFavourites } from '@/components/providers/FavouriteProvider'
 
 export function Header() {
   const pathname = usePathname()
+  const { data: session, status: sessionStatus } = useSession()
+  const favourites = useFavourites()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -169,12 +175,18 @@ export function Header() {
             <button type="button" className="icon-button" aria-label="Open search" onClick={() => setSearchOpen(true)}>
               <Search size={18} />
             </button>
-            <Link className="icon-button" href="/favorites" aria-label="Favorites">
+            <Link className="icon-button header-favorite" href="/favorites" aria-label={`${favourites.count} saved vehicles`}>
               <Heart size={18} />
+              {favourites.count ? <span>{favourites.count > 99 ? '99+' : favourites.count}</span> : null}
             </Link>
-            <Link className="icon-button" href="/account" aria-label="Account">
-              <UserRound size={18} />
-            </Link>
+            {sessionStatus === 'authenticated' && session?.user ? (
+              <div className="header-account">
+                <button className="icon-button header-account__trigger" type="button" aria-label="Open customer account menu" aria-expanded={openMenu === '__account'} onClick={() => setOpenMenu(openMenu === '__account' ? null : '__account')}>
+                  {session.user.image ? <Image src={session.user.image} alt="" width={30} height={30} /> : <span>{session.user.name?.charAt(0).toUpperCase() ?? <UserRound size={18} />}</span>}
+                </button>
+                {openMenu === '__account' ? <div className="account-menu"><header><small>Signed in as</small><strong>{session.user.name ?? 'Customer'}</strong><span>{session.user.email}</span></header><Link href="/account" onClick={() => setOpenMenu(null)}><UserRound />My account</Link><Link href="/account/settings" onClick={() => setOpenMenu(null)}><Settings />Settings</Link><button type="button" onClick={() => signOut({ callbackUrl: '/' })}><LogOut />Sign out</button></div> : null}
+              </div>
+            ) : <Link className="icon-button" href={`/login?callbackUrl=${encodeURIComponent(pathname)}`} aria-label="Sign in"><UserRound size={18} /></Link>}
             <button
               type="button"
               className="icon-button mobile-menu-button"
@@ -203,6 +215,8 @@ export function Header() {
                   {item.label}
                 </Link>
               ))}
+              <Link href={session ? '/account' : `/login?callbackUrl=${encodeURIComponent(pathname)}`} onClick={() => setMobileOpen(false)}>{session ? 'My Account' : 'Sign In'}</Link>
+              <Link href="/favorites" onClick={() => setMobileOpen(false)}>Saved Vehicles {favourites.count ? `(${favourites.count})` : ''}</Link>
             </nav>
             <a className="gold-button" href={siteConfig.whatsAppUrl} target="_blank" rel="noreferrer">
               Chat on WhatsApp

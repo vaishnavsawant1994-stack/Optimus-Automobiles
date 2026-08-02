@@ -1,6 +1,16 @@
 import 'dotenv/config'
 
-import { FeatureCategory, VehicleImageCategory, VehicleStatus } from '@prisma/client'
+import {
+  FeatureCategory,
+  InquiryStatus,
+  PreferredContactMethod,
+  RequestStatus,
+  TestDriveStatus,
+  UserStatus,
+  VehicleImageCategory,
+  VehicleStatus,
+} from '@prisma/client'
+import { Algorithm, hash } from '@node-rs/argon2'
 
 import { createScriptPrismaClient } from '../scripts/script-prisma'
 
@@ -198,6 +208,7 @@ async function main() {
     }
   }
 
+  const vehicleBySlug = new Map<string, string>()
   for (const [index, source] of vehicles.entries()) {
     const slug = slugify(`${source.brand}-${source.model}-${source.variant}-${source.year}`)
     const shortTitle = `${source.brand} ${source.model}`
@@ -285,6 +296,7 @@ async function main() {
         publishedAt,
       },
     })
+    vehicleBySlug.set(slug, vehicle.id)
 
     await prisma.vehicleImage.deleteMany({ where: { vehicleId: vehicle.id } })
     const imageCount = source.featured ? 8 : 3
@@ -306,6 +318,192 @@ async function main() {
     const selectedFeatures = Array.from({ length: 14 }, (_, offset) => featureIds[(index * 3 + offset) % featureIds.length])
     await prisma.vehicleFeature.createMany({
       data: [...new Set(selectedFeatures)].map((featureId) => ({ vehicleId: vehicle.id, featureId })),
+    })
+  }
+
+  const demoPasswordHash = await hash('DriveLuxury!2026', {
+    algorithm: Algorithm.Argon2id,
+    memoryCost: 19456,
+    timeCost: 2,
+    parallelism: 1,
+  })
+  const verifiedCustomer = await prisma.user.upsert({
+    where: { email: 'customer@deccanwheels.local' },
+    update: {
+      name: 'Aarav Sharma',
+      phone: '+919876540101',
+      city: 'Hyderabad',
+      passwordHash: demoPasswordHash,
+      status: UserStatus.ACTIVE,
+      emailVerified: new Date('2026-07-15T10:00:00.000Z'),
+      preferredContactMethod: PreferredContactMethod.WHATSAPP,
+      deletedAt: null,
+    },
+    create: {
+      name: 'Aarav Sharma',
+      email: 'customer@deccanwheels.local',
+      phone: '+919876540101',
+      city: 'Hyderabad',
+      passwordHash: demoPasswordHash,
+      status: UserStatus.ACTIVE,
+      emailVerified: new Date('2026-07-15T10:00:00.000Z'),
+      preferredContactMethod: PreferredContactMethod.WHATSAPP,
+    },
+  })
+
+  await prisma.user.upsert({
+    where: { email: 'pending@deccanwheels.local' },
+    update: {
+      name: 'Pending Customer',
+      phone: '+919876540102',
+      city: 'Hyderabad',
+      passwordHash: demoPasswordHash,
+      status: UserStatus.PENDING_VERIFICATION,
+      emailVerified: null,
+      deletedAt: null,
+    },
+    create: {
+      name: 'Pending Customer',
+      email: 'pending@deccanwheels.local',
+      phone: '+919876540102',
+      city: 'Hyderabad',
+      passwordHash: demoPasswordHash,
+      status: UserStatus.PENDING_VERIFICATION,
+    },
+  })
+
+  await prisma.customerNotificationSettings.upsert({
+    where: { userId: verifiedCustomer.id },
+    update: {
+      enquiryUpdates: true,
+      testDriveReminders: true,
+      priceChangeAlerts: true,
+      soldVehicleAlerts: true,
+      marketingEmails: false,
+      whatsAppUpdates: true,
+      whatsAppConsentedAt: new Date('2026-07-15T10:00:00.000Z'),
+    },
+    create: {
+      userId: verifiedCustomer.id,
+      enquiryUpdates: true,
+      testDriveReminders: true,
+      priceChangeAlerts: true,
+      soldVehicleAlerts: true,
+      marketingEmails: false,
+      whatsAppUpdates: true,
+      whatsAppConsentedAt: new Date('2026-07-15T10:00:00.000Z'),
+    },
+  })
+
+  const demoVehicleIds = [
+    vehicleBySlug.get('mercedes-benz-e-class-e-220d-amg-line-2021'),
+    vehicleBySlug.get('bmw-5-series-530i-m-sport-2022'),
+    vehicleBySlug.get('audi-q7-45-tdi-quattro-premium-plus-2020'),
+  ].filter((id): id is string => Boolean(id))
+  await prisma.favorite.deleteMany({ where: { userId: verifiedCustomer.id } })
+  await prisma.favorite.createMany({
+    data: demoVehicleIds.map((vehicleId) => ({ userId: verifiedCustomer.id, vehicleId })),
+    skipDuplicates: true,
+  })
+
+  await prisma.inquiry.upsert({
+    where: { referenceNumber: 'DW-ENQ-DEMO-000001' },
+    update: {
+      userId: verifiedCustomer.id,
+      vehicleId: demoVehicleIds[0],
+      fullName: verifiedCustomer.name ?? 'Aarav Sharma',
+      phone: verifiedCustomer.phone ?? '+919876540101',
+      email: verifiedCustomer.email,
+      message: 'Please share the inspection report and available finance options.',
+      consentAccepted: true,
+      preferredContactMethod: PreferredContactMethod.WHATSAPP,
+      status: InquiryStatus.CONTACTED,
+    },
+    create: {
+      referenceNumber: 'DW-ENQ-DEMO-000001',
+      userId: verifiedCustomer.id,
+      vehicleId: demoVehicleIds[0],
+      fullName: verifiedCustomer.name ?? 'Aarav Sharma',
+      phone: verifiedCustomer.phone ?? '+919876540101',
+      email: verifiedCustomer.email,
+      message: 'Please share the inspection report and available finance options.',
+      consentAccepted: true,
+      preferredContactMethod: PreferredContactMethod.WHATSAPP,
+      status: InquiryStatus.CONTACTED,
+    },
+  })
+
+  await prisma.testDrive.upsert({
+    where: { referenceNumber: 'DW-TD-DEMO-000001' },
+    update: {
+      userId: verifiedCustomer.id,
+      vehicleId: demoVehicleIds[1],
+      fullName: verifiedCustomer.name ?? 'Aarav Sharma',
+      phone: verifiedCustomer.phone ?? '+919876540101',
+      email: verifiedCustomer.email,
+      preferredDate: new Date('2026-08-08T00:00:00.000Z'),
+      preferredTime: '11:30 AM',
+      confirmedDate: new Date('2026-08-08T00:00:00.000Z'),
+      confirmedTime: '11:30 AM',
+      consentAccepted: true,
+      preferredContactMethod: PreferredContactMethod.WHATSAPP,
+      status: TestDriveStatus.CONFIRMED,
+    },
+    create: {
+      referenceNumber: 'DW-TD-DEMO-000001',
+      userId: verifiedCustomer.id,
+      vehicleId: demoVehicleIds[1],
+      fullName: verifiedCustomer.name ?? 'Aarav Sharma',
+      phone: verifiedCustomer.phone ?? '+919876540101',
+      email: verifiedCustomer.email,
+      preferredDate: new Date('2026-08-08T00:00:00.000Z'),
+      preferredTime: '11:30 AM',
+      confirmedDate: new Date('2026-08-08T00:00:00.000Z'),
+      confirmedTime: '11:30 AM',
+      consentAccepted: true,
+      preferredContactMethod: PreferredContactMethod.WHATSAPP,
+      status: TestDriveStatus.CONFIRMED,
+    },
+  })
+
+  await prisma.sellRequest.upsert({
+    where: { referenceNumber: 'DW-SELL-DEMO-000001' },
+    update: {
+      userId: verifiedCustomer.id,
+      status: RequestStatus.CONTACTED,
+      name: verifiedCustomer.name,
+      email: verifiedCustomer.email,
+      phone: verifiedCustomer.phone,
+      make: 'Mercedes-Benz',
+      model: 'C-Class',
+      year: 2019,
+      mileage: 41000,
+      fuelType: 'Diesel',
+      transmission: 'Automatic',
+      city: 'Hyderabad',
+    },
+    create: {
+      referenceNumber: 'DW-SELL-DEMO-000001',
+      userId: verifiedCustomer.id,
+      status: RequestStatus.CONTACTED,
+      name: verifiedCustomer.name,
+      email: verifiedCustomer.email,
+      phone: verifiedCustomer.phone,
+      make: 'Mercedes-Benz',
+      model: 'C-Class',
+      year: 2019,
+      mileage: 41000,
+      fuelType: 'Diesel',
+      transmission: 'Automatic',
+      city: 'Hyderabad',
+    },
+  })
+
+  for (const key of ['ENQ', 'TD', 'SELL']) {
+    await prisma.referenceCounter.upsert({
+      where: { key },
+      update: { value: { set: 100 } },
+      create: { key, value: 100 },
     })
   }
 

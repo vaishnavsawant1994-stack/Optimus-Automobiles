@@ -35,6 +35,7 @@ import { DeccanMark } from '@/components/layout/BrandLogo'
 import { SocialIcon } from '@/components/layout/SocialIcon'
 import { HeroCarRotator } from '@/components/shared/HeroCarRotator'
 import { CustomerReviews } from '@/components/shared/CustomerReviews'
+import { useFavourites } from '@/components/providers/FavouriteProvider'
 import {
   benefits,
   gallery,
@@ -360,14 +361,9 @@ function BrowseByBrand({ brands }: { brands: BrandSummary[] }) {
 
 function NewArrivals({ vehicles }: { vehicles: VehicleCardData[] }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', loop: true, skipSnaps: false })
-  const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const favorites = useFavourites()
   const [activeVehicle, setActiveVehicle] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem('deccan-favorites')
-    if (stored) setFavorites(new Set(JSON.parse(stored) as string[]))
-  }, [])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -383,16 +379,6 @@ function NewArrivals({ vehicles }: { vehicles: VehicleCardData[] }) {
     const timer = window.setInterval(() => emblaApi.scrollNext(), 5200)
     return () => window.clearInterval(timer)
   }, [emblaApi, isPaused])
-
-  function toggleFavorite(id: string) {
-    setFavorites((current) => {
-      const next = new Set(current)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      window.localStorage.setItem('deccan-favorites', JSON.stringify([...next]))
-      return next
-    })
-  }
 
   return (
     <section className="new-arrivals container-wide" aria-labelledby="new-arrivals-title">
@@ -429,7 +415,7 @@ function NewArrivals({ vehicles }: { vehicles: VehicleCardData[] }) {
                   type="button"
                   aria-label={`${favorites.has(vehicle.id) ? 'Remove' : 'Add'} ${vehicle.make} ${vehicle.model} favorite`}
                   aria-pressed={favorites.has(vehicle.id)}
-                  onClick={() => toggleFavorite(vehicle.id)}
+                  onClick={() => favorites.toggle(vehicle.id)}
                 >
                   <Heart size={18} fill={favorites.has(vehicle.id) ? 'currentColor' : 'none'} />
                 </button>
