@@ -10,7 +10,7 @@ Reference: `references/deccan-wheels-homepage-reference.png`
 - The hero headline, showroom sign, sedan crop, statistics overlap, search panel, brand strip, five-card inventory row, benefits, service promotions, testimonials, Instagram gallery, four-column contact row, and footer were visually checked in system Chrome.
 - The final hero is a separate local high-resolution image with no baked-in UI text: `public/images/hero/deccan-wheels-hero-v3.png`.
 - The `1440px` CSS/high-DPI desktop layout has dedicated sizing so Windows display scaling preserves the reference proportions.
-- The production preview is running at `http://localhost:3000`; development indicators are not present.
+- The application preview is standardized at `http://localhost:3001`.
 
 ## Browser Checks
 
@@ -27,5 +27,5 @@ Reference: `references/deccan-wheels-homepage-reference.png`
 
 - `npm run lint`: passed
 - `npm run typecheck`: passed
-- `npm test`: passed (no test files are currently present)
+- `npm test`: passed
 - `npm run build`: passed

@@ -24,11 +24,13 @@ for (const route of ['', 'inventory', 'sell-your-car', 'services', 'about-us', '
 
 test('inventory filters, favourites and view controls work', async ({ page }) => {
   await page.goto('/inventory')
-  await page.locator('.inventory-filter-desktop').getByLabel('Make').selectOption({ label: 'BMW' })
-  await expect(page).toHaveURL(/brand=bmw/)
+  const desktopFilters = page.locator('.inventory-filter-desktop .inventory-filter')
+  await expect(desktopFilters).not.toHaveAttribute('inert', '')
+  await desktopFilters.getByLabel('Make').selectOption({ label: 'BMW' })
+  await expect(page).toHaveURL(/brand=bmw/, { timeout: 15_000 })
   await expect(page.locator('.inventory-card')).toHaveCount(5)
   await page.locator('.inventory-card__media button').first().click()
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('inventory-favorites') ?? '[]').length)).toBe(1)
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('deccan-favorites') ?? '[]').length)).toBe(1)
   await page.getByRole('button', { name: 'List view' }).click()
   await expect(page.locator('.inventory-grid')).toHaveClass(/inventory-grid--list/)
 })

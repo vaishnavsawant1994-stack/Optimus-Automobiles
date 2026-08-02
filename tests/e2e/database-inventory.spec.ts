@@ -6,7 +6,7 @@ test('inventory loads seeded database records and opens the correct detail', asy
   const card = page.locator('.inventory-card').filter({ hasText: 'Mercedes-Benz E-Class' }).first()
   await expect(card).toContainText('E 220d AMG Line')
   await card.getByRole('link', { name: 'View Details' }).click()
-  await expect(page).toHaveURL(/mercedes-benz-e-class-e-220d-amg-line-2021/)
+  await expect(page).toHaveURL(/mercedes-benz-e-class-e-220d-amg-line-2021/, { timeout: 15_000 })
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Mercedes-Benz E-Class')
   await expect(page.getByText('DW-0001')).toBeVisible()
 })

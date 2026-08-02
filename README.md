@@ -1,6 +1,6 @@
 # Deccan Wheels
 
-Database-backed premium pre-owned luxury-car website built with Next.js App Router, TypeScript, PostgreSQL, Prisma, React Hook Form, Zod and Embla Carousel.
+Database-backed premium pre-owned luxury-car website built with Next.js App Router, TypeScript, PostgreSQL, Prisma, Auth.js, React Hook Form, Zod and Embla Carousel.
 
 The Windows folder and npm package retain the internal `Optimum Automobiles` name. All public UI, metadata, structured data, seed settings and documentation use **Deccan Wheels**.
 
@@ -20,7 +20,7 @@ The current development server is available at:
 http://localhost:3001
 ```
 
-See `docs/DATABASE_SETUP.md` for database health, logs, reset and Prisma Studio commands.
+See `docs/DATABASE_SETUP.md` for database health, logs, reset and Prisma Studio commands. See `docs/CUSTOMER_ACCOUNT_MILESTONE.md` for authentication, email and demo-account setup.
 
 ## Verification
 
@@ -43,9 +43,13 @@ npm run build
 - Server-filtered, sorted and paginated inventory
 - Real vehicle details, ordered gallery, specifications and grouped features
 - Persisted enquiries and test-drive requests
+- Verified customer registration, sign-in and password recovery
+- Persistent favourites with automatic guest-to-account synchronization
+- Protected customer dashboard, owned enquiries, test drives and sell requests
+- Profile, notification and account-security controls
 - Database-backed brand, body-type and search routes
 - Canonical redirects, dynamic metadata and structured data
 - Deterministic 30-vehicle development seed
 - Unit, database integration and Playwright tests
 
-Authentication, customer accounts, admin CRUD, object storage and full compare/favourites workflows belong to later milestones.
+Admin CRUD, object storage and vehicle comparison belong to later milestones.
