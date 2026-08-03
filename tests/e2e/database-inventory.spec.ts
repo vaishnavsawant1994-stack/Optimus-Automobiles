@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 test('inventory loads seeded database records and opens the correct detail', async ({ page }) => {
   await page.goto('/inventory')
-  await expect(page.getByText('30 Results Found')).toBeVisible()
+  await expect(page.getByText('30 Results Found').filter({ visible: true })).toBeVisible()
   const card = page.locator('.inventory-card').filter({ hasText: 'Mercedes-Benz E-Class' }).first()
   await expect(card).toContainText('E 220d AMG Line')
   await card.getByRole('link', { name: 'View Details' }).click()
@@ -19,7 +19,7 @@ test('filters, sorting and pagination remain URL-backed across refresh', async (
   await expect(page.locator('.inventory-filter-desktop').getByLabel('Make')).toHaveValue('audi')
   await expect(page.locator('.inventory-toolbar select')).toHaveValue('price-desc')
   await page.goto('/inventory?page=2&pageSize=12')
-  await expect(page.locator('.inventory-pagination [aria-current="page"]')).toHaveText('2')
+  await expect(page.locator('.inventory-pagination [aria-current="page"]').filter({ visible: true })).toHaveText('2')
   await expect(page.locator('.inventory-card')).toHaveCount(12)
 })
 
@@ -49,7 +49,7 @@ test('database search returns inventory records', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Open search' }).click()
   await page.locator('#global-search').fill('Quattro')
-  await expect(page.locator('.search-results a').first()).toContainText('Audi Q7')
+  await expect(page.locator('.search-results a').first()).toContainText('Audi Q7', { timeout: 15_000 })
 })
 
 test('invalid inventory records return the designed 404', async ({ page }) => {

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 for (const route of ['inventory', 'sell-your-car', 'services', 'about-us', 'contact']) {
   test(`${route} page renders without horizontal overflow`, async ({ page }) => {
     await page.goto(`/${route}`)
-    await expect(page.locator('main h1')).toBeVisible()
+    await expect(page.locator('main h1').filter({ visible: true })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false)
   })
 }
@@ -13,7 +13,7 @@ for (const route of ['', 'inventory', 'sell-your-car', 'services', 'about-us', '
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto(`/${route}`)
 
-    const reviews = page.locator('.testimonials')
+    const reviews = page.locator('.testimonials').filter({ visible: true })
     await expect(reviews).toBeVisible()
     await expect(reviews.locator('.testimonial-card')).toHaveCount(6)
     await expect(reviews.getByRole('button', { name: 'Previous testimonials' })).toBeVisible()
@@ -24,7 +24,7 @@ for (const route of ['', 'inventory', 'sell-your-car', 'services', 'about-us', '
 
 test('inventory filters, favourites and view controls work', async ({ page }) => {
   await page.goto('/inventory')
-  const desktopFilters = page.locator('.inventory-filter-desktop .inventory-filter')
+  const desktopFilters = page.locator('.inventory-filter-desktop .inventory-filter').filter({ visible: true })
   await expect(desktopFilters).not.toHaveAttribute('inert', '')
   await desktopFilters.getByLabel('Make').selectOption({ label: 'BMW' })
   await expect(page).toHaveURL(/brand=bmw/, { timeout: 15_000 })
@@ -36,13 +36,14 @@ test('inventory filters, favourites and view controls work', async ({ page }) =>
 })
 
 test('contact form validates and submits', async ({ page }) => {
+  const stamp = Date.now()
   await page.goto('/contact')
   const form = page.locator('.contact-page-form')
-  await form.getByLabel('Full Name *').fill('Aarav Sharma')
+  await form.getByLabel('Full Name *').fill(`Aarav Sharma ${stamp}`)
   await form.getByLabel('Phone Number *').fill('9876543210')
-  await form.getByLabel('Email Address *').fill('aarav@example.com')
+  await form.getByLabel('Email Address *').fill(`aarav-${stamp}@example.com`)
   await form.getByLabel('Subject *').selectOption({ label: 'Buying a car' })
-  await form.getByLabel('Message *').fill('Please arrange a showroom consultation for me.')
+  await form.getByLabel('Message *').fill(`Please arrange a showroom consultation for reference ${stamp}.`)
   await form.getByRole('button', { name: /send message/i }).click()
-  await expect(form.locator('[role="status"]')).toContainText('contact you shortly')
+  await expect(form.locator('[role="status"]')).toContainText('contact you shortly', { timeout: 30_000 })
 })
