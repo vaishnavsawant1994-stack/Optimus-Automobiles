@@ -6,6 +6,7 @@
 - Production URL: `https://optimus-automobiles.vercel.app`
 - GitHub source: `vaishnavsawant1994-stack/Optimus-Automobiles`
 - Database: Neon PostgreSQL in Singapore, connected through Vercel Marketplace
+- Function region: Singapore (`sin1`) to keep database-backed requests close to Neon
 
 The production database has all three Prisma migrations and the deterministic demonstration catalog. Client-demo admin credentials are generated during bootstrap and stored only in the ignored local `.vercel/client-demo-admin.txt` file.
 
