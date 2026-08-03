@@ -33,3 +33,7 @@ tsconfig.tsbuildinfo
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
+.agents/
+skills-lock.json

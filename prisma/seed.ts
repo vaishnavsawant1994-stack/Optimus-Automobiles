@@ -34,15 +34,19 @@ function assertDevelopmentDatabase() {
   const parsed = new URL(databaseUrl)
   const databaseName = parsed.pathname.replace(/^\//, '')
   const localHosts = new Set(['localhost', '127.0.0.1', '::1'])
+  const isExpectedLocalDatabase = localHosts.has(parsed.hostname) && databaseName === 'deccan_wheels'
+  const remoteSeedAllowed = process.env.ALLOW_REMOTE_SEED === 'true'
+  const remoteSeedPassword = process.env.SEED_ADMIN_PASSWORD ?? ''
+
+  if (isExpectedLocalDatabase && process.env.NODE_ENV !== 'production') return
+  if (remoteSeedAllowed && remoteSeedPassword.length >= 16) return
 
   if (process.env.NODE_ENV === 'production') {
     throw new Error('The deterministic development seed cannot run in production.')
   }
-  if (!localHosts.has(parsed.hostname) || databaseName !== 'deccan_wheels') {
-    throw new Error(
-      `Seed refused: expected the local deccan_wheels database, received ${parsed.hostname}/${databaseName}.`,
-    )
-  }
+  throw new Error(
+    `Seed refused for ${parsed.hostname}/${databaseName}. Remote bootstrap requires ALLOW_REMOTE_SEED=true and a 16+ character SEED_ADMIN_PASSWORD.`,
+  )
 }
 
 const brands = [
@@ -327,7 +331,7 @@ async function main() {
     })
   }
 
-  const demoPasswordHash = await hash('DriveLuxury!2026', {
+  const demoPasswordHash = await hash(process.env.SEED_ADMIN_PASSWORD ?? 'DriveLuxury!2026', {
     algorithm: Algorithm.Argon2id,
     memoryCost: 19456,
     timeCost: 2,
