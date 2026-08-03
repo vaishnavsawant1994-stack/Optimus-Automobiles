@@ -38,7 +38,7 @@ import { CustomerReviews } from '@/components/shared/CustomerReviews'
 import { useFavourites } from '@/components/providers/FavouriteProvider'
 import {
   benefits,
-  gallery,
+  gallery as defaultGallery,
   mapImage,
   servicePromos,
   showroomImage,
@@ -138,6 +138,16 @@ function SectionTitle({ title, actionHref, actionLabel }: { title: string; actio
 }
 
 function HeroSection() {
+  const [copy, setCopy] = useState({ heroEyebrow: 'Deccan Wheels', headline: 'Drive Luxury, Own Excellence.', supportingCopy: "Hyderabad's most trusted destination for premium pre-owned luxury cars." })
+  useEffect(() => {
+    let active = true
+    fetch('/api/content/homepage').then((response) => response.ok ? response.json() : null).then((payload) => {
+      if (active && payload?.data?.value) setCopy((current) => ({ ...current, ...payload.data.value }))
+    }).catch(() => undefined)
+    return () => { active = false }
+  }, [])
+  const [firstLine, secondLine = ''] = copy.headline.split(/,(.*)/s)
+  const highlightLast = (line: string) => { const words = line.trim().split(/\s+/); const last = words.pop(); return <>{words.join(' ')}{words.length ? ' ' : ''}<span>{last}</span></> }
   return (
     <section className="hero-home">
       <HeroCarRotator />
@@ -147,16 +157,12 @@ function HeroSection() {
           <div className="hero-kicker">
             <DeccanMark className="hero-kicker__mark" />
             <span>
-              <strong>Deccan Wheels</strong>
+              <strong>{copy.heroEyebrow}</strong>
               <small>Pre-owned luxury cars</small>
             </span>
           </div>
-          <h1>
-            Drive <span>Luxury,</span>
-            <br />
-            Own <span>Excellence.</span>
-          </h1>
-          <p className="hero-description">Hyderabad's most trusted destination for premium pre-owned luxury cars.</p>
+          <h1>{highlightLast(firstLine)},<br />{highlightLast(secondLine)}</h1>
+          <p className="hero-description">{copy.supportingCopy}</p>
           <div className="hero-actions">
             <Link className="gold-button" href="/inventory">
               Explore Inventory
@@ -510,6 +516,15 @@ function ServicePromos() {
 function InstagramGallery() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', loop: true, skipSnaps: false })
   const [activePost, setActivePost] = useState(0)
+  const [galleryItems, setGalleryItems] = useState(defaultGallery)
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/gallery').then((response) => response.ok ? response.json() : null).then((payload) => {
+      if (active && payload?.data?.length) setGalleryItems(payload.data)
+    }).catch(() => undefined)
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -539,7 +554,7 @@ function InstagramGallery() {
         </button>
         <div className="embla" ref={emblaRef}>
           <div className="instagram-track">
-            {gallery.map((item) => (
+            {galleryItems.map((item) => (
               <a href={siteConfig.instagram} target="_blank" rel="noreferrer" key={item.alt} aria-label={`View ${item.alt} on Instagram`}>
                 <Image src={item.image} alt="" fill sizes="(min-width: 1180px) 25vw, (min-width: 760px) 50vw, 84vw" />
                 <span><SocialIcon network="instagram" />{item.alt}</span>
@@ -552,7 +567,7 @@ function InstagramGallery() {
         </button>
       </div>
       <div className="instagram-pagination" aria-label="Choose Instagram post">
-        {gallery.map((item, index) => (
+        {galleryItems.map((item, index) => (
           <button
             type="button"
             key={item.alt}

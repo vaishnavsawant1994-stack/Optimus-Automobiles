@@ -5,7 +5,7 @@ export default withAuth({
   callbacks: {
     authorized({ token, req }) {
       if (!token) return false
-      if (req.nextUrl.pathname.startsWith('/admin')) return token.role === 'ADMIN' || token.role === 'SUPER_ADMIN'
+      if (req.nextUrl.pathname.startsWith('/admin')) return token.role !== 'CUSTOMER'
       return true
     },
   },

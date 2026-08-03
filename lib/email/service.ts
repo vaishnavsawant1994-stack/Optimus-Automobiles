@@ -22,7 +22,8 @@ export async function sendTransactionalEmail(message: EmailMessage): Promise<Ema
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.AUTH_FROM_EMAIL ?? 'Deccan Wheels <accounts@deccanwheels.com>'
   if (!apiKey) {
-    if (process.env.NODE_ENV === 'production') throw new Error('RESEND_API_KEY is required for transactional email in production.')
+    const previewAllowed = process.env.NODE_ENV !== 'production' || process.env.ALLOW_EMAIL_PREVIEW === 'true'
+    if (!previewAllowed) throw new Error('RESEND_API_KEY is required for transactional email in production.')
     console.info('email_preview', { to: message.to, subject: message.subject, previewUrl: message.previewUrl ?? null })
     return { delivered: false, preview: true }
   }
@@ -64,5 +65,15 @@ export function sendEngagementConfirmation(to: string, name: string, reference: 
     subject: `Your Deccan Wheels ${kind} request ${reference}`,
     previewUrl: url,
     html: shell('Request received', `<p>Hello ${name},</p><p>We received your ${kind} request. Keep this reference for your records: <strong>${reference}</strong>.</p>`, { label: 'Track request', url }),
+  })
+}
+
+export function sendStaffInvitationEmail(to: string, token: string, role: string) {
+  const url = `${siteUrl()}/staff-invitation?token=${encodeURIComponent(token)}`
+  return sendTransactionalEmail({
+    to,
+    subject: 'Your Deccan Wheels staff invitation',
+    previewUrl: url,
+    html: shell('Join the staff workspace', `<p>You have been invited to the Deccan Wheels staff workspace as <strong>${role.replaceAll('_', ' ')}</strong>.</p><p>This single-use invitation expires in 48 hours.</p>`, { label: 'Accept invitation', url }),
   })
 }

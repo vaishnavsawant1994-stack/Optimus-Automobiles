@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { BadgeCheck, Banknote, Check, MapPin, MessageCircle, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { RelatedVehicles } from '@/components/inventory/RelatedVehicles'
 import { VehicleActions } from '@/components/inventory/VehicleActions'
 import { VehicleGallery } from '@/components/inventory/VehicleGallery'
@@ -25,6 +25,7 @@ export default async function VehiclePage({ params }: PageProps) {
   const { slug } = await params
   const result = await getVehicleDetail(slug, { incrementView: true })
   if (!result) notFound()
+  if (result.redirectedFrom) permanentRedirect(`/inventory/${result.vehicle.slug}`)
   const { vehicle, related } = result
   const fullTitle = `${vehicle.make} ${vehicle.model}`
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001'

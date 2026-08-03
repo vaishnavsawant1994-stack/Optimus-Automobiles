@@ -6,13 +6,13 @@ import { formatDate, formatInr, formatMileage } from '@/lib/utils/inventory-form
 export const vehicleCardInclude = {
   brand: true,
   bodyType: true,
-  images: { where: { isPrimary: true }, orderBy: { sortOrder: 'asc' as const }, take: 1 },
+  images: { where: { isPrimary: true, category: { not: 'DOCUMENT' as const } }, orderBy: { sortOrder: 'asc' as const }, take: 1 },
 } satisfies Prisma.VehicleInclude
 
 export const vehicleDetailInclude = {
   brand: true,
   bodyType: true,
-  images: { orderBy: { sortOrder: 'asc' as const } },
+  images: { where: { category: { not: 'DOCUMENT' as const } }, orderBy: { sortOrder: 'asc' as const } },
   features: { include: { feature: true }, orderBy: { feature: { name: 'asc' as const } } },
 } satisfies Prisma.VehicleInclude
 

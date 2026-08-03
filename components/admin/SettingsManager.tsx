@@ -1,0 +1,7 @@
+'use client'
+import { Save } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+type Setting = { id: string; key: string; value: string; category: string; version: number }
+export function SettingsManager({ settings }: { settings: Setting[] }) { const router = useRouter(); const [message, setMessage] = useState(''); async function save(item: Setting, value: string) { const response = await fetch(`/api/admin/settings/${item.key}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ value, version: item.version }) }); const body = await response.json(); setMessage(body.message ?? body.error?.message); if (response.ok) router.refresh() } return <div className="admin-form">{message ? <p className="admin-form-message">{message}</p> : null}{settings.map((item) => <SettingRow key={item.id} item={item} save={save} />)}</div> }
+function SettingRow({ item, save }: { item: Setting; save: (item: Setting, value: string) => Promise<void> }) { const [value, setValue] = useState(item.value); return <section className="admin-panel admin-panel--full"><div className="admin-panel__body"><label>{item.key.replaceAll('_', ' ')}<div style={{ display: 'flex', gap: 8 }}><input value={value} onChange={(event) => setValue(event.target.value)} style={{ flex: 1 }} /><button className="admin-button" type="button" onClick={() => save(item, value)} aria-label={`Save ${item.key}`}><Save /></button></div></label></div></section> }

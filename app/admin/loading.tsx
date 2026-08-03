@@ -1,0 +1,1 @@
+export default function AdminLoading() { return <div aria-busy="true" aria-label="Loading admin workspace"><div className="admin-skeleton" style={{ height: 80, marginBottom: 16 }} /><div className="admin-metrics">{Array.from({ length: 4 }, (_, index) => <div className="admin-skeleton" key={index} />)}</div><div className="admin-skeleton" style={{ height: 360 }} /></div> }

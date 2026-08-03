@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
+    "start": "next start",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest --run --passWithNoTests",
+    "test": "vitest --run --passWithNoTests --maxWorkers=1 --no-file-parallelism",
     "test:e2e": "playwright test",
     "preview": "next start",
     "db:generate": "prisma generate",
@@ -19,6 +20,8 @@
     "db:reset:dev": "tsx scripts/reset-development-database.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.901.0",
+    "@aws-sdk/s3-request-presigner": "^3.901.0",
     "@hookform/resolvers": "^5.6.0",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@node-rs/argon2": "^2.0.2",
@@ -34,6 +37,8 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-hook-form": "^7.84.0",
+    "server-only": "^0.0.1",
+    "sharp": "^0.35.3",
     "simple-icons": "^16.27.1",
     "tailwind-merge": "^3.6.0",
     "zod": "^4.4.3"
@@ -60,6 +65,7 @@
     "vitest": "^4.1.10"
   },
   "overrides": {
+    "postcss": "$postcss",
     "next": {
       "sharp": "0.35.3"
     }

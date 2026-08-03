@@ -1,0 +1,10 @@
+import { NextResponse } from 'next/server'
+import { adminError, validationError } from '@/lib/admin/api'
+import { writeAuditLog } from '@/lib/admin/audit'
+import { authorizeAdminRequest } from '@/lib/auth/require-permission'
+import { prisma } from '@/lib/db/prisma'
+import { testimonialSchema } from '@/lib/validation/admin'
+
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) { try { await authorizeAdminRequest('testimonial.manage'); const { id } = await params; const data = await prisma.testimonial.findUnique({ where: { id } }); return data ? NextResponse.json({ data }) : NextResponse.json({ error: { code: 'NOT_FOUND' } }, { status: 404 }) } catch (error) { return adminError(error) } }
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) { try { const actor = await authorizeAdminRequest('testimonial.manage'); const parsed = testimonialSchema.safeParse(await request.json().catch(() => null)); if (!parsed.success) return validationError(parsed.error.flatten().fieldErrors); const { id } = await params; const data = await prisma.testimonial.update({ where: { id }, data: parsed.data }); await writeAuditLog({ actorId: actor.id, action: data.published ? 'TESTIMONIAL_PUBLISHED' : 'TESTIMONIAL_UPDATED', resourceType: 'Testimonial', resourceId: id, summary: `Updated testimonial for ${data.name}.`, request }); return NextResponse.json({ data, message: 'Testimonial updated.' }) } catch (error) { return adminError(error) } }
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) { try { const actor = await authorizeAdminRequest('testimonial.manage'); const { id } = await params; await prisma.testimonial.update({ where: { id }, data: { archived: true, published: false } }); await writeAuditLog({ actorId: actor.id, action: 'TESTIMONIAL_ARCHIVED', resourceType: 'Testimonial', resourceId: id, summary: 'Testimonial archived.', request }); return NextResponse.json({ message: 'Testimonial archived.' }) } catch (error) { return adminError(error) } }

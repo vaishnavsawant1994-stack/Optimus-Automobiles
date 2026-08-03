@@ -9,6 +9,7 @@ datasource db {
 enum UserRole {
   CUSTOMER
   SALES
+  OPERATIONS
   CONTENT_MANAGER
   ADMIN
   SUPER_ADMIN
@@ -29,6 +30,7 @@ enum PreferredContactMethod {
 
 enum InquiryStatus {
   NEW
+  ASSIGNED
   CONTACTED
   IN_PROGRESS
   WAITING_FOR_CUSTOMER
@@ -41,14 +43,75 @@ enum InquiryStatus {
 enum RequestStatus {
   DRAFT
   SUBMITTED
+  UNDER_REVIEW
   CONTACTED
   INSPECTION_SCHEDULED
+  INSPECTION_COMPLETED
   INSPECTED
+  VALUATION_READY
   OFFER_MADE
+  NEGOTIATING
+  OFFER_ACCEPTED
+  OFFER_REJECTED
   ACCEPTED
   REJECTED
+  DOCUMENTATION
+  PAYMENT_PROCESSING
   COMPLETED
   CANCELLED
+  EXPIRED
+}
+
+enum LeadPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ContactInquiryStatus {
+  NEW
+  ASSIGNED
+  IN_PROGRESS
+  WAITING_FOR_CUSTOMER
+  RESOLVED
+  CLOSED
+  DUPLICATE
+  SPAM
+}
+
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum GalleryCategory {
+  SHOWROOM
+  DELIVERY
+  CUSTOMER
+  VEHICLE
+  EVENT
+  INSTAGRAM
+  OTHER
+}
+
+enum NewsletterStatus {
+  PENDING
+  SUBSCRIBED
+  UNSUBSCRIBED
+  SUPPRESSED
+}
+
+enum OperationalMessageType {
+  INTERNAL_NOTE
+  CUSTOMER_MESSAGE
+  CALL_LOG
+  EMAIL_LOG
+  WHATSAPP_LOG
+  SYSTEM
 }
 
 enum VehicleStatus {
@@ -110,7 +173,23 @@ model User {
   assignedInquiries       Inquiry[]                     @relation("AssignedInquiries")
   testDrives              TestDrive[]                   @relation("CustomerTestDrives")
   assignedTestDrives      TestDrive[]                   @relation("AssignedTestDrives")
-  sellRequests            SellRequest[]
+  sellRequests            SellRequest[]                 @relation("CustomerSellRequests")
+  assignedSellRequests    SellRequest[]                 @relation("AssignedSellRequests")
+  assignedContactMessages ContactMessage[]              @relation("AssignedContactMessages")
+  createdVehicles         Vehicle[]                     @relation("VehicleCreatedBy")
+  updatedVehicles         Vehicle[]                     @relation("VehicleUpdatedBy")
+  vehicleStatusChanges    VehicleStatusHistory[]
+  operationalMessages     OperationalMessage[]
+  operationalActivities   OperationalActivity[]
+  createdFollowUps        OperationalFollowUp[]         @relation("FollowUpCreatedBy")
+  assignedFollowUps       OperationalFollowUp[]         @relation("FollowUpAssignedTo")
+  staffInvitationsSent    StaffInvitation[]             @relation("InvitationInviter")
+  staffInvitation         StaffInvitation?              @relation("InvitationAcceptedUser")
+  adminNotifications      AdminNotification[]
+  adminPreferences        AdminPreference?
+  contentRevisions        ContentRevision[]             @relation("ContentRevisionAuthor")
+  publishedRevisions      ContentRevision[]             @relation("ContentRevisionPublisher")
+  auditLogs               AuditLog[]
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens     PasswordResetToken[]
   notificationSettings    CustomerNotificationSettings?
@@ -242,13 +321,13 @@ model BodyType {
 }
 
 model Vehicle {
-  id                       String           @id @default(cuid())
-  slug                     String           @unique
-  stockNumber              String           @unique
+  id                       String                 @id @default(cuid())
+  slug                     String                 @unique
+  stockNumber              String                 @unique
   brandId                  String
-  brand                    Brand            @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  brand                    Brand                  @relation(fields: [brandId], references: [id], onDelete: Restrict)
   bodyTypeId               String
-  bodyType                 BodyType         @relation(fields: [bodyTypeId], references: [id], onDelete: Restrict)
+  bodyType                 BodyType               @relation(fields: [bodyTypeId], references: [id], onDelete: Restrict)
   model                    String
   variant                  String
   shortTitle               String
@@ -258,6 +337,7 @@ model Vehicle {
   /// Indian Rupees stored as an integer; formatting is handled by the application.
   price                    Int
   originalPrice            Int?
+  currency                 String                 @default("INR")
   mileage                  Int
   fuelType                 String
   transmission             String
@@ -277,21 +357,29 @@ model Vehicle {
   keysAvailable            Int?
   shortDescription         String
   description              String
-  status                   VehicleStatus    @default(DRAFT)
-  featured                 Boolean          @default(false)
-  newArrival               Boolean          @default(false)
-  certified                Boolean          @default(false)
-  published                Boolean          @default(false)
-  viewCount                Int              @default(0)
-  favoriteCount            Int              @default(0)
+  status                   VehicleStatus          @default(DRAFT)
+  featured                 Boolean                @default(false)
+  newArrival               Boolean                @default(false)
+  certified                Boolean                @default(false)
+  published                Boolean                @default(false)
+  scheduledPublishAt       DateTime?
+  viewCount                Int                    @default(0)
+  favoriteCount            Int                    @default(0)
+  version                  Int                    @default(1)
+  createdById              String?
+  updatedById              String?
   publishedAt              DateTime?
   images                   VehicleImage[]
   features                 VehicleFeature[]
   favorites                Favorite[]
   inquiries                Inquiry[]
   testDrives               TestDrive[]
-  createdAt                DateTime         @default(now())
-  updatedAt                DateTime         @updatedAt
+  slugRedirects            VehicleSlugRedirect[]
+  statusHistory            VehicleStatusHistory[]
+  createdBy                User?                  @relation("VehicleCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy                User?                  @relation("VehicleUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
 
   @@index([brandId])
   @@index([bodyTypeId])
@@ -308,6 +396,8 @@ model Vehicle {
   @@index([published])
   @@index([createdAt])
   @@index([publishedAt])
+  @@index([scheduledPublishAt])
+  @@index([updatedById])
   @@index([published, status])
   @@index([brandId, published, status])
   @@index([bodyTypeId, published, status])
@@ -321,6 +411,14 @@ model VehicleImage {
   vehicle      Vehicle              @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   url          String
   thumbnailUrl String?
+  cardUrl      String?
+  galleryUrl   String?
+  openGraphUrl String?
+  storageKey   String?
+  originalName String?
+  mimeType     String?
+  sizeBytes    Int?
+  checksum     String?
   altText      String
   category     VehicleImageCategory @default(EXTERIOR)
   sortOrder    Int                  @default(0)
@@ -331,9 +429,37 @@ model VehicleImage {
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
 
+  @@unique([vehicleId, checksum])
   @@index([vehicleId])
   @@index([vehicleId, sortOrder])
   @@index([vehicleId, isPrimary])
+}
+
+model VehicleSlugRedirect {
+  id        String   @id @default(cuid())
+  vehicleId String
+  fromSlug  String   @unique
+  toSlug    String
+  createdAt DateTime @default(now())
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([toSlug])
+}
+
+model VehicleStatusHistory {
+  id         String         @id @default(cuid())
+  vehicleId  String
+  fromStatus VehicleStatus?
+  toStatus   VehicleStatus
+  reason     String?
+  actorId    String?
+  createdAt  DateTime       @default(now())
+  vehicle    Vehicle        @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  actor      User?          @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([vehicleId, createdAt])
+  @@index([actorId])
 }
 
 model Feature {
@@ -388,7 +514,10 @@ model Inquiry {
   consentAccepted        Boolean                     @default(false) @map("consent")
   preferredContactMethod PreferredContactMethod      @default(EMAIL)
   status                 InquiryStatus               @default(NEW)
+  priority               LeadPriority                @default(NORMAL)
   assignedToId           String?
+  followUpAt             DateTime?
+  version                Int                         @default(1)
   submittedAt            DateTime                    @default(now())
   user                   User?                       @relation("CustomerInquiries", fields: [userId], references: [id], onDelete: SetNull)
   assignedTo             User?                       @relation("AssignedInquiries", fields: [assignedToId], references: [id], onDelete: SetNull)
@@ -401,6 +530,8 @@ model Inquiry {
   @@index([vehicleId])
   @@index([status])
   @@index([assignedToId])
+  @@index([priority])
+  @@index([followUpAt])
   @@index([submittedAt])
 }
 
@@ -421,7 +552,10 @@ model TestDrive {
   consentAccepted        Boolean                     @default(false) @map("consent")
   preferredContactMethod PreferredContactMethod      @default(EMAIL)
   status                 TestDriveStatus             @default(REQUESTED)
+  priority               LeadPriority                @default(NORMAL)
   assignedToId           String?
+  followUpAt             DateTime?
+  version                Int                         @default(1)
   submittedAt            DateTime                    @default(now())
   user                   User?                       @relation("CustomerTestDrives", fields: [userId], references: [id], onDelete: SetNull)
   assignedTo             User?                       @relation("AssignedTestDrives", fields: [assignedToId], references: [id], onDelete: SetNull)
@@ -434,15 +568,19 @@ model TestDrive {
   @@index([vehicleId])
   @@index([status])
   @@index([assignedToId])
+  @@index([priority])
+  @@index([followUpAt])
   @@index([preferredDate])
   @@index([submittedAt])
 }
 
 model SellRequest {
-  id              String        @id @default(cuid())
-  referenceNumber String        @unique
+  id              String          @id @default(cuid())
+  referenceNumber String          @unique
   userId          String?
-  status          RequestStatus @default(DRAFT)
+  assignedToId    String?
+  status          RequestStatus   @default(DRAFT)
+  priority        LeadPriority    @default(NORMAL)
   name            String?
   email           String?
   phone           String?
@@ -453,14 +591,68 @@ model SellRequest {
   fuelType        String?
   transmission    String?
   city            String?
+  expectedPrice   Int?
+  followUpAt      DateTime?
+  version         Int             @default(1)
   message         String?
-  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  user            User?           @relation("CustomerSellRequests", fields: [userId], references: [id], onDelete: SetNull)
+  assignedTo      User?           @relation("AssignedSellRequests", fields: [assignedToId], references: [id], onDelete: SetNull)
+  inspection      SellInspection?
+  valuations      SellValuation[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   @@index([status])
   @@index([userId])
+  @@index([assignedToId])
+  @@index([priority])
+  @@index([followUpAt])
   @@index([createdAt])
+}
+
+model SellInspection {
+  id                     String      @id @default(cuid())
+  sellRequestId          String      @unique
+  scheduledAt            DateTime?
+  location               String?
+  inspectorId            String?
+  exteriorScore          Int?
+  interiorScore          Int?
+  mechanicalScore        Int?
+  tyreCondition          String?
+  documentsVerified      Boolean     @default(false)
+  serviceHistoryVerified Boolean     @default(false)
+  accidentHistoryNotes   String?
+  overallConditionScore  Int?
+  staffNotes             String?
+  customerSummary        String?
+  completedAt            DateTime?
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+  sellRequest            SellRequest @relation(fields: [sellRequestId], references: [id], onDelete: Cascade)
+
+  @@index([inspectorId])
+  @@index([scheduledAt])
+}
+
+model SellValuation {
+  id               String      @id @default(cuid())
+  sellRequestId    String
+  createdById      String
+  marketMinimum    Int
+  marketMaximum    Int
+  recommendedOffer Int
+  finalOffer       Int?
+  validUntil       DateTime
+  notes            String?
+  acceptedAt       DateTime?
+  rejectedAt       DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  sellRequest      SellRequest @relation(fields: [sellRequestId], references: [id], onDelete: Cascade)
+
+  @@index([sellRequestId, createdAt])
+  @@index([createdById])
 }
 
 model CustomerEngagementMessage {
@@ -481,6 +673,54 @@ model CustomerEngagementMessage {
   @@index([testDriveId, createdAt])
 }
 
+model OperationalMessage {
+  id              String                 @id @default(cuid())
+  resourceType    String
+  resourceId      String
+  authorId        String
+  type            OperationalMessageType
+  body            String
+  customerVisible Boolean                @default(false)
+  createdAt       DateTime               @default(now())
+  author          User                   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([resourceType, resourceId, createdAt])
+  @@index([authorId])
+}
+
+model OperationalActivity {
+  id           String   @id @default(cuid())
+  resourceType String
+  resourceId   String
+  actorId      String?
+  action       String
+  summary      String
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  actor        User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([resourceType, resourceId, createdAt])
+  @@index([actorId])
+}
+
+model OperationalFollowUp {
+  id           String    @id @default(cuid())
+  resourceType String
+  resourceId   String
+  title        String
+  dueAt        DateTime
+  completedAt  DateTime?
+  assignedToId String?
+  createdById  String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  assignedTo   User?     @relation("FollowUpAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdBy    User      @relation("FollowUpCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([resourceType, resourceId])
+  @@index([assignedToId, dueAt])
+}
+
 model ReferenceCounter {
   key       String   @id
   value     Int      @default(0)
@@ -488,96 +728,219 @@ model ReferenceCounter {
 }
 
 model ContactMessage {
-  id        String   @id @default(cuid())
-  name      String
-  phone     String
-  email     String
-  subject   String?
-  message   String
-  createdAt DateTime @default(now())
+  id              String               @id @default(cuid())
+  referenceNumber String               @unique
+  name            String
+  phone           String
+  email           String
+  subject         String?
+  message         String
+  status          ContactInquiryStatus @default(NEW)
+  priority        LeadPriority         @default(NORMAL)
+  department      String?
+  assignedToId    String?
+  followUpAt      DateTime?
+  version         Int                  @default(1)
+  consentAccepted Boolean              @default(false)
+  assignedTo      User?                @relation("AssignedContactMessages", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
 
   @@index([createdAt])
+  @@index([status])
+  @@index([priority])
+  @@index([assignedToId])
+  @@index([followUpAt])
 }
 
 model NewsletterSubscriber {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  active      Boolean  @default(true)
-  consentedAt DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String           @id @default(cuid())
+  email          String           @unique
+  active         Boolean          @default(true)
+  status         NewsletterStatus @default(SUBSCRIBED)
+  source         String           @default("website")
+  consentedAt    DateTime         @default(now())
+  confirmedAt    DateTime?
+  unsubscribedAt DateTime?
+  suppressedAt   DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
 }
 
 model Testimonial {
-  id        String   @id @default(cuid())
-  name      String
-  rating    Int
-  quote     String
-  avatarUrl String?
-  purchase  String?
-  location  String?
-  featured  Boolean  @default(false)
-  published Boolean  @default(false)
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  rating        Int
+  quote         String
+  avatarUrl     String?
+  purchase      String?
+  location      String?
+  vehicleId     String?
+  verifiedBuyer Boolean  @default(false)
+  featured      Boolean  @default(false)
+  published     Boolean  @default(false)
+  archived      Boolean  @default(false)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([published, sortOrder])
 }
 
 model GalleryItem {
-  id        String   @id @default(cuid())
+  id        String          @id @default(cuid())
   title     String
   imageUrl  String
   alt       String
+  caption   String?
+  category  GalleryCategory @default(OTHER)
   href      String?
-  published Boolean  @default(false)
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  featured  Boolean         @default(false)
+  published Boolean         @default(false)
+  sortOrder Int             @default(0)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 
   @@index([published, sortOrder])
+  @@index([category])
 }
 
 model Showroom {
-  id         String   @id @default(cuid())
-  name       String
-  address    String
-  city       String
-  state      String
-  postalCode String
-  phone      String
-  email      String
-  hours      String
-  mapUrl     String?
-  active     Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  address      String
+  city         String
+  state        String
+  postalCode   String
+  country      String   @default("India")
+  latitude     Decimal? @db.Decimal(10, 7)
+  longitude    Decimal? @db.Decimal(10, 7)
+  phone        String
+  email        String
+  phones       Json?
+  emails       Json?
+  whatsapp     String?
+  hours        String
+  openingHours Json?
+  mapUrl       String?
+  active       Boolean  @default(true)
+  isPrimary    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([active])
+  @@index([isPrimary])
 }
 
 model ContentBlock {
-  id        String   @id @default(cuid())
-  key       String   @unique
-  value     Json
-  updatedAt DateTime @updatedAt
+  id          String            @id @default(cuid())
+  key         String            @unique
+  value       Json
+  status      ContentStatus     @default(DRAFT)
+  version     Int               @default(1)
+  publishedAt DateTime?
+  scheduledAt DateTime?
+  revisions   ContentRevision[]
+  updatedAt   DateTime          @updatedAt
+}
+
+model ContentRevision {
+  id             String        @id @default(cuid())
+  contentBlockId String
+  version        Int
+  value          Json
+  status         ContentStatus
+  authorId       String
+  publisherId    String?
+  createdAt      DateTime      @default(now())
+  publishedAt    DateTime?
+  contentBlock   ContentBlock  @relation(fields: [contentBlockId], references: [id], onDelete: Cascade)
+  author         User          @relation("ContentRevisionAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  publisher      User?         @relation("ContentRevisionPublisher", fields: [publisherId], references: [id], onDelete: SetNull)
+
+  @@unique([contentBlockId, version])
+  @@index([authorId])
+  @@index([status])
 }
 
 model SiteSetting {
   id        String   @id @default(cuid())
   key       String   @unique
   value     String
+  category  String   @default("general")
+  version   Int      @default(1)
   updatedAt DateTime @updatedAt
 }
 
+model StaffInvitation {
+  id             String    @id @default(cuid())
+  email          String
+  role           UserRole
+  tokenHash      String    @unique
+  invitedById    String
+  acceptedUserId String?   @unique
+  expiresAt      DateTime
+  usedAt         DateTime?
+  revokedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  invitedBy      User      @relation("InvitationInviter", fields: [invitedById], references: [id], onDelete: Restrict)
+  acceptedUser   User?     @relation("InvitationAcceptedUser", fields: [acceptedUserId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([expiresAt])
+  @@index([invitedById])
+}
+
+model AdminNotification {
+  id           String    @id @default(cuid())
+  userId       String
+  type         String
+  title        String
+  message      String
+  resourceType String?
+  resourceId   String?
+  readAt       DateTime?
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([resourceType, resourceId])
+}
+
+model AdminPreference {
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  sidebarCollapsed       Boolean  @default(false)
+  emailNotifications     Boolean  @default(true)
+  leadNotifications      Boolean  @default(true)
+  inventoryNotifications Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model AuditLog {
-  id        String   @id @default(cuid())
-  actorId   String?
-  action    String
-  entity    String
-  entityId  String?
-  metadata  Json?
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  actorId      String?
+  action       String
+  entity       String
+  entityId     String?
+  resourceType String?
+  resourceId   String?
+  summary      String?
+  metadata     Json?
+  ipHash       String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  actor        User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([actorId])
   @@index([entity, entityId])
+  @@index([resourceType, resourceId])
+  @@index([action])
   @@index([createdAt])
 }

@@ -6,6 +6,8 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { testimonials } from '@/lib/constants/site'
 
+type Review = (typeof testimonials)[number] & { id?: string; rating?: number; verifiedBuyer?: boolean }
+
 function slugFor(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
@@ -14,6 +16,15 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', loop: true, skipSnaps: false })
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [isCarouselPaused, setIsCarouselPaused] = useState(false)
+  const [reviewItems, setReviewItems] = useState<Review[]>(testimonials)
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/testimonials').then((response) => response.ok ? response.json() : null).then((payload) => {
+      if (active && payload?.data?.length) setReviewItems(payload.data)
+    }).catch(() => undefined)
+    return () => { active = false }
+  }, [])
 
   useEffect(() => {
     if (!emblaApi) return
@@ -28,13 +39,13 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
 
     const timer = window.setInterval(() => {
       setActiveTestimonial((current) => {
-        const next = (current + 1) % testimonials.length
+        const next = (current + 1) % reviewItems.length
         emblaApi?.scrollTo(next)
         return next
       })
     }, 4200)
     return () => window.clearInterval(timer)
-  }, [emblaApi, isCarouselPaused])
+  }, [emblaApi, isCarouselPaused, reviewItems.length])
 
   return (
     <section className="testimonials container-wide">
@@ -58,7 +69,7 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
         <button className="round-nav round-nav--left" type="button" aria-label="Previous testimonials" onClick={() => emblaApi?.scrollPrev()}><ArrowLeft size={18} /></button>
         <div className="embla" ref={emblaRef}>
           <div className="testimonial-track">
-            {testimonials.map((testimonial, index) => {
+            {reviewItems.map((testimonial, index) => {
               const titleId = `testimonial-${slugFor(testimonial.name)}`
               return (
                 <article
@@ -74,7 +85,7 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
                     <div className="testimonial-card__header">
                       <div className="testimonial-card__reviewer">
                         <div className="testimonial-card__avatar">
-                          <Image src={testimonial.avatar} alt="" aria-hidden="true" width={76} height={76} />
+                          <Image src={testimonial.avatar} alt="" aria-hidden="true" width={76} height={76} unoptimized={testimonial.avatar.startsWith('http')} />
                           <BadgeCheck aria-hidden="true" />
                         </div>
                         <div>
@@ -85,7 +96,7 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
                       <div className="testimonial-card__score">
                         <strong>5.0</strong>
                         <span className="testimonial-rating" aria-label="Rated 5 out of 5 stars">
-                          {Array.from({ length: 5 }).map((_, starIndex) => <Star key={starIndex} aria-hidden="true" fill="currentColor" />)}
+                          {Array.from({ length: testimonial.rating ?? 5 }).map((_, starIndex) => <Star key={starIndex} aria-hidden="true" fill="currentColor" />)}
                         </span>
                       </div>
                     </div>
@@ -103,7 +114,7 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
         <button className="round-nav round-nav--right" type="button" aria-label="Next testimonials" onClick={() => emblaApi?.scrollNext()}><ArrowRight size={18} /></button>
       </div>
       <div className="testimonial-dots" aria-label="Choose testimonial">
-        {testimonials.map((testimonial, index) => (
+        {reviewItems.map((testimonial, index) => (
           <button
             type="button"
             key={testimonial.name}

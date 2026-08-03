@@ -1,11 +1,17 @@
 import 'dotenv/config'
 
 import {
+  ContentStatus,
   FeatureCategory,
+  GalleryCategory,
   InquiryStatus,
+  LeadPriority,
+  NewsletterStatus,
+  OperationalMessageType,
   PreferredContactMethod,
   RequestStatus,
   TestDriveStatus,
+  UserRole,
   UserStatus,
   VehicleImageCategory,
   VehicleStatus,
@@ -372,6 +378,47 @@ async function main() {
     },
   })
 
+  const staffSeed = [
+    { email: 'superadmin@deccanwheels.local', name: 'Sandeep Reddy', phone: '+919876541001', role: UserRole.SUPER_ADMIN },
+    { email: 'admin@deccanwheels.local', name: 'Meera Kapoor', phone: '+919876541002', role: UserRole.ADMIN },
+    { email: 'sales@deccanwheels.local', name: 'Rahul Mehta', phone: '+919876541003', role: UserRole.SALES },
+    { email: 'operations@deccanwheels.local', name: 'Karthik Rao', phone: '+919876541004', role: UserRole.OPERATIONS },
+    { email: 'content@deccanwheels.local', name: 'Aisha Khan', phone: '+919876541005', role: UserRole.CONTENT_MANAGER },
+  ]
+  const staff = new Map<UserRole, Awaited<ReturnType<typeof prisma.user.upsert>>>()
+  for (const member of staffSeed) {
+    const user = await prisma.user.upsert({
+      where: { email: member.email },
+      update: {
+        name: member.name,
+        phone: member.phone,
+        city: 'Hyderabad',
+        passwordHash: demoPasswordHash,
+        role: member.role,
+        status: UserStatus.ACTIVE,
+        emailVerified: new Date('2026-07-15T10:00:00.000Z'),
+        deletedAt: null,
+      },
+      create: {
+        email: member.email,
+        name: member.name,
+        phone: member.phone,
+        city: 'Hyderabad',
+        passwordHash: demoPasswordHash,
+        role: member.role,
+        status: UserStatus.ACTIVE,
+        emailVerified: new Date('2026-07-15T10:00:00.000Z'),
+      },
+    })
+    staff.set(member.role, user)
+    await prisma.adminPreference.upsert({ where: { userId: user.id }, update: {}, create: { userId: user.id } })
+  }
+  const superAdmin = staff.get(UserRole.SUPER_ADMIN)!
+  const admin = staff.get(UserRole.ADMIN)!
+  const sales = staff.get(UserRole.SALES)!
+  const operations = staff.get(UserRole.OPERATIONS)!
+  const contentManager = staff.get(UserRole.CONTENT_MANAGER)!
+
   await prisma.customerNotificationSettings.upsert({
     where: { userId: verifiedCustomer.id },
     update: {
@@ -406,7 +453,7 @@ async function main() {
     skipDuplicates: true,
   })
 
-  await prisma.inquiry.upsert({
+  const seededInquiry = await prisma.inquiry.upsert({
     where: { referenceNumber: 'DW-ENQ-DEMO-000001' },
     update: {
       userId: verifiedCustomer.id,
@@ -418,6 +465,9 @@ async function main() {
       consentAccepted: true,
       preferredContactMethod: PreferredContactMethod.WHATSAPP,
       status: InquiryStatus.CONTACTED,
+      priority: LeadPriority.HIGH,
+      assignedToId: sales.id,
+      followUpAt: new Date('2026-08-04T05:30:00.000Z'),
     },
     create: {
       referenceNumber: 'DW-ENQ-DEMO-000001',
@@ -430,10 +480,13 @@ async function main() {
       consentAccepted: true,
       preferredContactMethod: PreferredContactMethod.WHATSAPP,
       status: InquiryStatus.CONTACTED,
+      priority: LeadPriority.HIGH,
+      assignedToId: sales.id,
+      followUpAt: new Date('2026-08-04T05:30:00.000Z'),
     },
   })
 
-  await prisma.testDrive.upsert({
+  const seededTestDrive = await prisma.testDrive.upsert({
     where: { referenceNumber: 'DW-TD-DEMO-000001' },
     update: {
       userId: verifiedCustomer.id,
@@ -448,6 +501,8 @@ async function main() {
       consentAccepted: true,
       preferredContactMethod: PreferredContactMethod.WHATSAPP,
       status: TestDriveStatus.CONFIRMED,
+      assignedToId: sales.id,
+      priority: LeadPriority.NORMAL,
     },
     create: {
       referenceNumber: 'DW-TD-DEMO-000001',
@@ -463,14 +518,19 @@ async function main() {
       consentAccepted: true,
       preferredContactMethod: PreferredContactMethod.WHATSAPP,
       status: TestDriveStatus.CONFIRMED,
+      assignedToId: sales.id,
+      priority: LeadPriority.NORMAL,
     },
   })
 
-  await prisma.sellRequest.upsert({
+  const seededSellRequest = await prisma.sellRequest.upsert({
     where: { referenceNumber: 'DW-SELL-DEMO-000001' },
     update: {
       userId: verifiedCustomer.id,
       status: RequestStatus.CONTACTED,
+      assignedToId: operations.id,
+      priority: LeadPriority.HIGH,
+      expectedPrice: 3500000,
       name: verifiedCustomer.name,
       email: verifiedCustomer.email,
       phone: verifiedCustomer.phone,
@@ -486,6 +546,9 @@ async function main() {
       referenceNumber: 'DW-SELL-DEMO-000001',
       userId: verifiedCustomer.id,
       status: RequestStatus.CONTACTED,
+      assignedToId: operations.id,
+      priority: LeadPriority.HIGH,
+      expectedPrice: 3500000,
       name: verifiedCustomer.name,
       email: verifiedCustomer.email,
       phone: verifiedCustomer.phone,
@@ -499,10 +562,155 @@ async function main() {
     },
   })
 
-  for (const key of ['ENQ', 'TD', 'SELL']) {
+  await prisma.sellInspection.upsert({
+    where: { sellRequestId: seededSellRequest.id },
+    update: { scheduledAt: new Date('2026-08-06T06:30:00.000Z'), location: 'Banjara Hills showroom', inspectorId: operations.id },
+    create: { sellRequestId: seededSellRequest.id, scheduledAt: new Date('2026-08-06T06:30:00.000Z'), location: 'Banjara Hills showroom', inspectorId: operations.id },
+  })
+  await prisma.sellValuation.deleteMany({ where: { sellRequestId: seededSellRequest.id } })
+  await prisma.sellValuation.create({
+    data: { sellRequestId: seededSellRequest.id, createdById: operations.id, marketMinimum: 3200000, marketMaximum: 3650000, recommendedOffer: 3400000, validUntil: new Date('2026-08-15T18:30:00.000Z'), notes: 'Development valuation example.' },
+  })
+
+  await prisma.operationalMessage.deleteMany({ where: { resourceId: { in: [seededInquiry.id, seededTestDrive.id, seededSellRequest.id] } } })
+  await prisma.operationalMessage.createMany({ data: [
+    { resourceType: 'Inquiry', resourceId: seededInquiry.id, authorId: sales.id, type: OperationalMessageType.INTERNAL_NOTE, body: 'Finance documents requested from customer.', customerVisible: false },
+    { resourceType: 'Inquiry', resourceId: seededInquiry.id, authorId: sales.id, type: OperationalMessageType.CUSTOMER_MESSAGE, body: 'Your inspection report is ready. Our finance specialist will call today.', customerVisible: true },
+    { resourceType: 'TestDrive', resourceId: seededTestDrive.id, authorId: sales.id, type: OperationalMessageType.SYSTEM, body: 'Showroom slot confirmed.', customerVisible: true },
+    { resourceType: 'SellRequest', resourceId: seededSellRequest.id, authorId: operations.id, type: OperationalMessageType.INTERNAL_NOTE, body: 'Inspection bay reserved for Thursday.', customerVisible: false },
+  ] })
+
+  await prisma.operationalActivity.deleteMany({ where: { resourceId: { in: [seededInquiry.id, seededTestDrive.id, seededSellRequest.id] } } })
+  await prisma.operationalActivity.createMany({ data: [
+    { resourceType: 'Inquiry', resourceId: seededInquiry.id, actorId: sales.id, action: 'ASSIGNED', summary: `Assigned to ${sales.name}` },
+    { resourceType: 'TestDrive', resourceId: seededTestDrive.id, actorId: sales.id, action: 'CONFIRMED', summary: 'Test-drive slot confirmed for the customer.' },
+    { resourceType: 'SellRequest', resourceId: seededSellRequest.id, actorId: operations.id, action: 'INSPECTION_SCHEDULED', summary: 'Vehicle inspection scheduled at the primary showroom.' },
+  ] })
+
+  await prisma.contactMessage.upsert({
+    where: { referenceNumber: 'DW-CON-DEMO-000001' },
+    update: { name: 'Nikhil Verma', phone: '+919876540301', email: 'nikhil@example.com', subject: 'Insurance assistance', message: 'Please call me about renewal options.', assignedToId: sales.id, priority: LeadPriority.NORMAL },
+    create: { referenceNumber: 'DW-CON-DEMO-000001', name: 'Nikhil Verma', phone: '+919876540301', email: 'nikhil@example.com', subject: 'Insurance assistance', message: 'Please call me about renewal options.', assignedToId: sales.id, priority: LeadPriority.NORMAL, consentAccepted: true },
+  })
+
+  for (const email of ['buyer-updates@example.com', 'luxury-cars@example.com', 'hyderabad-cars@example.com']) {
+    await prisma.newsletterSubscriber.upsert({ where: { email }, update: { active: true, status: NewsletterStatus.SUBSCRIBED, source: 'seed' }, create: { email, active: true, status: NewsletterStatus.SUBSCRIBED, source: 'seed', confirmedAt: new Date('2026-07-20T10:00:00.000Z') } })
+  }
+
+  const seededTestimonials = [
+    {
+      id: 'testimonial-demo-published',
+      name: 'Rohan Mehta',
+      quote: 'The experience was seamless from start to finish. Deccan Wheels truly delivers trust and transparency.',
+      purchase: 'Mercedes-Benz E-Class',
+      location: 'Banjara Hills, Hyderabad',
+      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=85',
+    },
+    {
+      id: 'testimonial-demo-sneha',
+      name: 'Sneha Reddy',
+      quote: 'Got my dream car at the best price. Highly professional team and great service!',
+      purchase: 'BMW X5',
+      location: 'Jubilee Hills, Hyderabad',
+      avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=85',
+    },
+    {
+      id: 'testimonial-demo-arjun',
+      name: 'Arjun Kapoor',
+      quote: 'Smooth process, genuine cars and excellent after-sales support. Highly recommended!',
+      purchase: 'Audi Q7',
+      location: 'Gachibowli, Hyderabad',
+      avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=85',
+    },
+    {
+      id: 'testimonial-demo-vikram',
+      name: 'Vikram Malhotra',
+      quote: 'The team understood exactly what I wanted. Every detail was explained clearly, and delivery was right on schedule.',
+      purchase: 'Land Rover Discovery',
+      location: 'Kondapur, Hyderabad',
+      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&q=85',
+    },
+    {
+      id: 'testimonial-demo-aisha',
+      name: 'Aisha Khan',
+      quote: 'From the first test drive to the final paperwork, everything felt premium, honest, and remarkably well organised.',
+      purchase: 'Lexus ES 300h',
+      location: 'Film Nagar, Hyderabad',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=85',
+    },
+    {
+      id: 'testimonial-demo-karthik',
+      name: 'Karthik Rao',
+      quote: 'A genuinely dependable dealership. The car was exactly as presented and the after-sales follow-up has been excellent.',
+      purchase: 'Volvo XC90',
+      location: 'Madhapur, Hyderabad',
+      avatarUrl: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=240&q=85',
+    },
+  ]
+  for (const [index, testimonial] of seededTestimonials.entries()) {
+    await prisma.testimonial.upsert({
+      where: { id: testimonial.id },
+      update: { ...testimonial, rating: 5, verifiedBuyer: true, featured: index < 3, published: true, archived: false, sortOrder: index + 1 },
+      create: { ...testimonial, rating: 5, verifiedBuyer: true, featured: index < 3, published: true, archived: false, sortOrder: index + 1 },
+    })
+  }
+  await prisma.testimonial.upsert({
+    where: { id: 'testimonial-demo-draft' },
+    update: { name: 'Priya Sharma', rating: 5, quote: 'Draft customer story awaiting content review.', location: 'Hyderabad', verifiedBuyer: true, published: false, archived: false },
+    create: { id: 'testimonial-demo-draft', name: 'Priya Sharma', rating: 5, quote: 'Draft customer story awaiting content review.', location: 'Hyderabad', verifiedBuyer: true, published: false, sortOrder: 7 },
+  })
+
+  const seededGallery = [
+    { id: 'gallery-demo-published', title: 'Showroom exterior', imageUrl: '/images/hero/deccan-wheels-hero-v3.png', alt: 'Deccan Wheels showroom exterior', category: GalleryCategory.SHOWROOM },
+    { id: 'gallery-demo-interior', title: 'Mercedes interior', imageUrl: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&w=700&q=85', alt: 'Premium Mercedes-Benz interior', category: GalleryCategory.VEHICLE },
+    { id: 'gallery-demo-delivery', title: 'Customer delivery', imageUrl: 'https://images.unsplash.com/photo-1570294646112-27ce4f174e38?auto=format&fit=crop&w=700&q=85', alt: 'Luxury vehicle customer delivery', category: GalleryCategory.DELIVERY },
+    { id: 'gallery-demo-suv', title: 'Luxury SUV', imageUrl: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=700&q=85', alt: 'Luxury SUV on the road', category: GalleryCategory.VEHICLE },
+    { id: 'gallery-demo-building', title: 'Dealership building', imageUrl: '/images/showroom/deccan-wheels-showroom-final.png', alt: 'Deccan Wheels dealership building', category: GalleryCategory.SHOWROOM },
+    { id: 'gallery-demo-sedan', title: 'Premium sedan', imageUrl: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=700&q=85', alt: 'Premium luxury sedan', category: GalleryCategory.VEHICLE },
+  ]
+  for (const [index, galleryItem] of seededGallery.entries()) {
+    await prisma.galleryItem.upsert({
+      where: { id: galleryItem.id },
+      update: { ...galleryItem, featured: index < 2, published: true, sortOrder: index + 1 },
+      create: { ...galleryItem, featured: index < 2, published: true, sortOrder: index + 1 },
+    })
+  }
+  await prisma.galleryItem.upsert({
+    where: { id: 'gallery-demo-draft' },
+    update: { title: 'Delivery story draft', imageUrl: '/images/showroom/deccan-wheels-showroom.png', alt: 'Draft showroom delivery story', category: GalleryCategory.DELIVERY, published: false },
+    create: { id: 'gallery-demo-draft', title: 'Delivery story draft', imageUrl: '/images/showroom/deccan-wheels-showroom.png', alt: 'Draft showroom delivery story', category: GalleryCategory.DELIVERY, published: false, sortOrder: 7 },
+  })
+
+  const homepageContent = await prisma.contentBlock.upsert({
+    where: { key: 'homepage' },
+    update: { value: { heroEyebrow: 'Deccan Wheels', headline: 'Drive Luxury, Own Excellence.', supportingCopy: 'Premium pre-owned luxury cars in Hyderabad.' }, status: ContentStatus.PUBLISHED, publishedAt: new Date('2026-07-01T10:00:00.000Z') },
+    create: { key: 'homepage', value: { heroEyebrow: 'Deccan Wheels', headline: 'Drive Luxury, Own Excellence.', supportingCopy: 'Premium pre-owned luxury cars in Hyderabad.' }, status: ContentStatus.PUBLISHED, publishedAt: new Date('2026-07-01T10:00:00.000Z') },
+  })
+  await prisma.contentRevision.upsert({
+    where: { contentBlockId_version: { contentBlockId: homepageContent.id, version: 1 } },
+    update: { value: homepageContent.value, status: ContentStatus.PUBLISHED, authorId: contentManager.id, publisherId: admin.id, publishedAt: new Date('2026-07-01T10:00:00.000Z') },
+    create: { contentBlockId: homepageContent.id, version: 1, value: homepageContent.value, status: ContentStatus.PUBLISHED, authorId: contentManager.id, publisherId: admin.id, publishedAt: new Date('2026-07-01T10:00:00.000Z') },
+  })
+
+  await prisma.adminNotification.deleteMany({ where: { userId: { in: [superAdmin.id, admin.id, sales.id, operations.id, contentManager.id] } } })
+  await prisma.adminNotification.createMany({ data: [
+    { userId: admin.id, type: 'INVENTORY_ALERT', title: 'Inventory review', message: 'Review draft and incomplete vehicles before publication.', resourceType: 'Vehicle' },
+    { userId: sales.id, type: 'FOLLOW_UP', title: 'Enquiry follow-up due', message: seededInquiry.referenceNumber, resourceType: 'Inquiry', resourceId: seededInquiry.id },
+    { userId: operations.id, type: 'SELL_REQUEST', title: 'Inspection scheduled', message: seededSellRequest.referenceNumber, resourceType: 'SellRequest', resourceId: seededSellRequest.id },
+    { userId: contentManager.id, type: 'CONTENT_REVIEW', title: 'Draft testimonial ready', message: 'Priya Sharma testimonial is awaiting review.', resourceType: 'Testimonial', resourceId: 'testimonial-demo-draft' },
+  ] })
+
+  await prisma.auditLog.deleteMany({ where: { action: { startsWith: 'SEED_ADMIN_' } } })
+  await prisma.auditLog.createMany({ data: [
+    { actorId: admin.id, action: 'SEED_ADMIN_DASHBOARD', entity: 'Admin', resourceType: 'Admin', summary: 'Admin operations seed initialised.', metadata: { environment: 'development' } },
+    { actorId: sales.id, action: 'SEED_ADMIN_INQUIRY_ASSIGNED', entity: 'Inquiry', entityId: seededInquiry.id, resourceType: 'Inquiry', resourceId: seededInquiry.id, summary: `Assigned ${seededInquiry.referenceNumber} to sales.` },
+    { actorId: operations.id, action: 'SEED_ADMIN_INSPECTION_SCHEDULED', entity: 'SellRequest', entityId: seededSellRequest.id, resourceType: 'SellRequest', resourceId: seededSellRequest.id, summary: `Scheduled inspection for ${seededSellRequest.referenceNumber}.` },
+  ] })
+
+  for (const key of ['ENQ', 'TD', 'SELL', 'CON']) {
     await prisma.referenceCounter.upsert({
       where: { key },
-      update: { value: { set: 100 } },
+      update: {},
       create: { key, value: 100 },
     })
   }
@@ -515,11 +723,19 @@ async function main() {
       city: 'Hyderabad',
       state: 'Telangana',
       postalCode: '500034',
+      country: 'India',
+      latitude: 17.4156,
+      longitude: 78.4347,
       phone: '+91 98765 43210',
       email: 'info@deccanwheels.com',
+      phones: ['+91 98765 43210', '+91 91234 56789'],
+      emails: ['info@deccanwheels.com', 'sales@deccanwheels.com'],
+      whatsapp: '+919876543210',
       hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
+      openingHours: { mondayToSunday: '10:00 AM - 8:00 PM' },
       mapUrl: 'https://www.google.com/maps/search/?api=1&query=Road%20No.%2012%20Banjara%20Hills%20Hyderabad',
       active: true,
+      isPrimary: true,
     },
     create: {
       id: 'main-showroom',
@@ -528,23 +744,48 @@ async function main() {
       city: 'Hyderabad',
       state: 'Telangana',
       postalCode: '500034',
+      country: 'India',
+      latitude: 17.4156,
+      longitude: 78.4347,
       phone: '+91 98765 43210',
       email: 'info@deccanwheels.com',
+      phones: ['+91 98765 43210', '+91 91234 56789'],
+      emails: ['info@deccanwheels.com', 'sales@deccanwheels.com'],
+      whatsapp: '+919876543210',
       hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
+      openingHours: { mondayToSunday: '10:00 AM - 8:00 PM' },
       mapUrl: 'https://www.google.com/maps/search/?api=1&query=Road%20No.%2012%20Banjara%20Hills%20Hyderabad',
       active: true,
+      isPrimary: true,
     },
   })
 
   const settings = {
     site_name: 'Deccan Wheels',
+    legal_company_name: 'Deccan Wheels Automobiles Private Limited',
     site_tagline: 'Premium pre-owned luxury cars',
+    site_url: 'http://localhost:3001',
     inventory_location: 'Banjara Hills, Hyderabad',
+    primary_phone: '+91 98765 43210',
     support_phone: '+91 98765 43210',
+    sales_email: 'sales@deccanwheels.com',
+    support_email: 'info@deccanwheels.com',
+    whatsapp: '+919876543210',
+    opening_hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
     currency: 'INR',
+    timezone: 'Asia/Kolkata',
+    locale: 'en-IN',
+    facebook_url: 'https://www.facebook.com/',
+    instagram_url: 'https://www.instagram.com/',
+    youtube_url: 'https://www.youtube.com/',
+    linkedin_url: 'https://www.linkedin.com/',
+    seo_default_title: 'Deccan Wheels | Premium Pre-Owned Luxury Cars',
+    seo_default_description: 'Premium pre-owned luxury cars in Hyderabad.',
+    email_preview_status: 'development-preview',
   }
   for (const [key, value] of Object.entries(settings)) {
-    await prisma.siteSetting.upsert({ where: { key }, update: { value }, create: { key, value } })
+    const category = ['facebook_url', 'instagram_url', 'youtube_url', 'linkedin_url'].includes(key) ? 'social' : key.startsWith('seo_') ? 'seo' : key.startsWith('email_') ? 'email' : ['primary_phone', 'support_phone', 'sales_email', 'support_email', 'whatsapp', 'opening_hours', 'inventory_location'].includes(key) ? 'contact' : 'general'
+    await prisma.siteSetting.upsert({ where: { key }, update: { value, category }, create: { key, value, category } })
   }
 
   const [brandCount, bodyTypeCount, vehicleCount, featureCount, imageCount] = await Promise.all([

@@ -42,6 +42,14 @@ export function getPublicVehicleBySlug(slug: string) {
   })
 }
 
+export async function resolvePublicVehicleSlug(slug: string) {
+  const vehicle = await getPublicVehicleBySlug(slug)
+  if (vehicle) return { vehicle, redirectedFrom: null as string | null }
+  const redirect = await prisma.vehicleSlugRedirect.findUnique({ where: { fromSlug: slug }, include: { vehicle: { include: vehicleDetailInclude } } })
+  if (!redirect || !redirect.vehicle.published || ![VehicleStatus.AVAILABLE, VehicleStatus.RESERVED, VehicleStatus.SOLD].some((status) => status === redirect.vehicle.status)) return null
+  return { vehicle: redirect.vehicle, redirectedFrom: slug }
+}
+
 export function getFeaturedVehicles(limit = 8) {
   return prisma.vehicle.findMany({
     where: withListingVisibility({ featured: true }),

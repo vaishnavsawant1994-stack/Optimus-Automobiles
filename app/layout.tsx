@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
+import { SiteFrame } from '@/components/layout/SiteFrame'
 import { AppProviders } from '@/components/providers/AppProviders'
 import './globals.css'
 import './customer.css'
@@ -23,9 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="en" data-scroll-behavior="smooth">
       <body>
         <AppProviders>
-          <Header />
-          {children}
-          <Footer />
+          <SiteFrame header={<Header />} footer={<Footer />}>{children}</SiteFrame>
         </AppProviders>
       </body>
     </html>

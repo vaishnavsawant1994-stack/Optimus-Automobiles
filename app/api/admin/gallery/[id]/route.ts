@@ -1,0 +1,10 @@
+import { NextResponse } from 'next/server'
+import { adminError, validationError } from '@/lib/admin/api'
+import { writeAuditLog } from '@/lib/admin/audit'
+import { authorizeAdminRequest } from '@/lib/auth/require-permission'
+import { prisma } from '@/lib/db/prisma'
+import { gallerySchema } from '@/lib/validation/admin'
+
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) { try { await authorizeAdminRequest('gallery.manage'); const { id } = await params; const data = await prisma.galleryItem.findUnique({ where: { id } }); return data ? NextResponse.json({ data }) : NextResponse.json({ error: { code: 'NOT_FOUND' } }, { status: 404 }) } catch (error) { return adminError(error) } }
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) { try { const actor = await authorizeAdminRequest('gallery.manage'); const parsed = gallerySchema.safeParse(await request.json().catch(() => null)); if (!parsed.success) return validationError(parsed.error.flatten().fieldErrors); const { id } = await params; const data = await prisma.galleryItem.update({ where: { id }, data: parsed.data }); await writeAuditLog({ actorId: actor.id, action: data.published ? 'GALLERY_ITEM_PUBLISHED' : 'GALLERY_ITEM_UPDATED', resourceType: 'GalleryItem', resourceId: id, summary: `Updated gallery item ${data.title}.`, request }); return NextResponse.json({ data, message: 'Gallery item updated.' }) } catch (error) { return adminError(error) } }
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) { try { const actor = await authorizeAdminRequest('gallery.manage'); const { id } = await params; await prisma.galleryItem.update({ where: { id }, data: { published: false } }); await writeAuditLog({ actorId: actor.id, action: 'GALLERY_ITEM_UNPUBLISHED', resourceType: 'GalleryItem', resourceId: id, summary: 'Gallery item unpublished.', request }); return NextResponse.json({ message: 'Gallery item unpublished.' }) } catch (error) { return adminError(error) } }

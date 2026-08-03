@@ -3,7 +3,7 @@
 import { ArrowUp, ChevronDown, ChevronRight, Clock3, Compass, Info, MapPin, Phone, Scale, Send, ShieldCheck, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrandLogo } from '@/components/layout/BrandLogo'
 import { SocialIcon } from '@/components/layout/SocialIcon'
 import { footerColumns, siteConfig } from '@/lib/constants/site'
@@ -27,6 +27,17 @@ export function Footer() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
   const [openSection, setOpenSection] = useState<string | null>('Quick Links')
+  const [publicConfig, setPublicConfig] = useState({ phone: siteConfig.phone, mapsUrl: siteConfig.mapsUrl, location: 'Banjara Hills, Hyderabad', hours: '10:00 AM - 8:00 PM', facebook: siteConfig.facebook, instagram: siteConfig.instagram, youtube: siteConfig.youtube, linkedin: siteConfig.linkedin })
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/site-config').then((response) => response.ok ? response.json() : null).then((payload) => {
+      if (!active || !payload?.data) return
+      const values = payload.data.settings ?? {}; const showroom = payload.data.showroom
+      setPublicConfig((current) => ({ ...current, phone: values.primary_phone || showroom?.phone || current.phone, mapsUrl: showroom?.mapUrl || current.mapsUrl, location: showroom ? `${showroom.city}, ${showroom.state}` : current.location, hours: values.opening_hours || showroom?.hours || current.hours, facebook: values.facebook_url || current.facebook, instagram: values.instagram_url || current.instagram, youtube: values.youtube_url || current.youtube, linkedin: values.linkedin_url || current.linkedin }))
+    }).catch(() => undefined)
+    return () => { active = false }
+  }, [])
 
   const columnIcons = {
     'Quick Links': Compass,
@@ -62,28 +73,28 @@ export function Footer() {
             cars. Quality, transparency and trust since 2014.
           </p>
           <div className="footer-contact-list">
-            <a href={siteConfig.mapsUrl} target="_blank" rel="noreferrer">
+            <a href={publicConfig.mapsUrl} target="_blank" rel="noreferrer">
               <MapPin aria-hidden="true" />
-              <span><small>Showroom</small><strong>Banjara Hills, Hyderabad</strong></span>
+              <span><small>Showroom</small><strong>{publicConfig.location}</strong></span>
             </a>
-            <a href={`tel:${siteConfig.phone.replace(/\s/g, '')}`}>
+            <a href={`tel:${publicConfig.phone.replace(/\s/g, '')}`}>
               <Phone aria-hidden="true" />
-              <span><small>Call us</small><strong>{siteConfig.phone}</strong></span>
+              <span><small>Call us</small><strong>{publicConfig.phone}</strong></span>
             </a>
-            <div><Clock3 aria-hidden="true" /><span><small>Open daily</small><strong>10:00 AM - 8:00 PM</strong></span></div>
+            <div><Clock3 aria-hidden="true" /><span><small>Open daily</small><strong>{publicConfig.hours}</strong></span></div>
           </div>
           <small className="footer-social-label">Follow Deccan Wheels</small>
           <div className="social-row">
-            <a href={siteConfig.facebook} aria-label="Facebook" target="_blank" rel="noreferrer">
+            <a href={publicConfig.facebook} aria-label="Facebook" target="_blank" rel="noreferrer">
               <SocialIcon network="facebook" />
             </a>
-            <a href={siteConfig.instagram} aria-label="Instagram" target="_blank" rel="noreferrer">
+            <a href={publicConfig.instagram} aria-label="Instagram" target="_blank" rel="noreferrer">
               <SocialIcon network="instagram" />
             </a>
-            <a href={siteConfig.youtube} aria-label="YouTube" target="_blank" rel="noreferrer">
+            <a href={publicConfig.youtube} aria-label="YouTube" target="_blank" rel="noreferrer">
               <SocialIcon network="youtube" />
             </a>
-            <a href={siteConfig.linkedin} aria-label="LinkedIn" target="_blank" rel="noreferrer">
+            <a href={publicConfig.linkedin} aria-label="LinkedIn" target="_blank" rel="noreferrer">
               <SocialIcon network="linkedin" />
             </a>
           </div>

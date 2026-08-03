@@ -92,7 +92,7 @@ function SellValuationForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(Object.fromEntries(form.entries())),
     })
-    const body = (await response.json()) as { message?: string }
+    const body = await response.json().catch(() => ({ message: 'The message could not be sent. Please try again.' })) as { message?: string }
     setStatus(response.ok ? 'success' : 'error')
     setMessage(body.message ?? 'Please try again.')
     if (response.ok) {

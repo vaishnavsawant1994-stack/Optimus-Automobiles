@@ -1,0 +1,3 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/db/prisma'
+export async function GET() { const [settings, showroom] = await Promise.all([prisma.siteSetting.findMany({ where: { key: { in: ['site_name', 'primary_phone', 'support_phone', 'sales_email', 'support_email', 'whatsapp', 'inventory_location', 'opening_hours', 'facebook_url', 'instagram_url', 'youtube_url', 'linkedin_url'] } } }), prisma.showroom.findFirst({ where: { active: true }, orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] })]); return NextResponse.json({ data: { settings: Object.fromEntries(settings.map((item) => [item.key, item.value])), showroom } }) }

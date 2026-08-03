@@ -1,0 +1,5 @@
+import { AdminPageHeader } from './AdminPrimitives'
+import { ContentEditor } from './ContentEditor'
+import { requirePermission } from '@/lib/auth/require-permission'
+import { prisma } from '@/lib/db/prisma'
+export async function ContentPage({ pageKey, title }: { pageKey: string; title: string }) { await requirePermission('content.manage'); const block = await prisma.contentBlock.findUnique({ where: { key: pageKey }, include: { revisions: { take: 20, orderBy: { createdAt: 'desc' }, include: { author: { select: { name: true, email: true } } } } } }); return <><AdminPageHeader title={`${title} Content`} text="Structured, revisioned content with explicit draft and publish states." breadcrumb={`Website Content / ${title}`} /><ContentEditor pageKey={pageKey} value={block?.value ?? { heading: title, description: '' }} version={block?.version ?? 1} status={block?.status ?? 'DRAFT'} revisions={(block?.revisions ?? []).map((item) => ({ ...item, createdAt: item.createdAt.toISOString() }))} /></> }
