@@ -175,7 +175,7 @@ async function main() {
         name,
         logoUrl: `/images/brands/${slug}.svg`,
         logoAlt: `${name} logo`,
-        description: `${name} pre-owned luxury cars selected and inspected by Deccan Wheels.`,
+        description: `${name} pre-owned luxury cars selected and inspected by Optimum Automobiles.`,
         country,
         featured,
         active: true,
@@ -186,7 +186,7 @@ async function main() {
         slug,
         logoUrl: `/images/brands/${slug}.svg`,
         logoAlt: `${name} logo`,
-        description: `${name} pre-owned luxury cars selected and inspected by Deccan Wheels.`,
+        description: `${name} pre-owned luxury cars selected and inspected by Optimum Automobiles.`,
         country,
         featured,
         active: true,
@@ -233,7 +233,7 @@ async function main() {
         shortTitle,
         year: source.year,
         registrationYear: source.year,
-        registrationState: 'Telangana',
+        registrationState: 'Maharashtra',
         price: source.price,
         originalPrice: Math.round(source.price * 1.08),
         mileage: source.mileage,
@@ -249,12 +249,12 @@ async function main() {
         drivetrain: source.bodyType === 'suv' ? 'All-Wheel Drive' : 'Rear-Wheel Drive',
         seatingCapacity: source.bodyType === 'suv' && index % 2 === 0 ? 7 : 5,
         doors: source.bodyType === 'sports-car' ? 2 : 4,
-        registrationNumberMasked: `TS 09 ** ${String(1100 + index).slice(-4)}`,
+        registrationNumberMasked: `MH 14 ** ${String(1100 + index).slice(-4)}`,
         insuranceValidity: new Date(Date.UTC(2027, index % 12, 15)),
         serviceHistory: 'Authorised service centre records available',
         keysAvailable: 2,
         shortDescription: `A carefully inspected ${source.year} ${shortTitle} in ${source.exterior ?? 'premium finish'}.`,
-        description: `${shortTitle} ${source.variant} combines premium comfort, confident performance and transparent ownership history. This Deccan Wheels vehicle has been inspected, road tested and prepared for delivery in Hyderabad.`,
+        description: `${shortTitle} ${source.variant} combines premium comfort, confident performance and transparent ownership history. This Optimum Automobiles vehicle has been inspected, road tested and prepared for delivery in Pune.`,
         status: source.status ?? VehicleStatus.AVAILABLE,
         featured: Boolean(source.featured),
         newArrival: Boolean(source.newArrival),
@@ -266,7 +266,7 @@ async function main() {
       },
       create: {
         slug,
-        stockNumber: `DW-${String(index + 1).padStart(4, '0')}`,
+        stockNumber: `OA-${String(index + 1).padStart(4, '0')}`,
         brandId: brandByName.get(source.brand)!,
         bodyTypeId: bodyTypeBySlug.get(source.bodyType)!,
         model: source.model,
@@ -274,7 +274,7 @@ async function main() {
         shortTitle,
         year: source.year,
         registrationYear: source.year,
-        registrationState: 'Telangana',
+        registrationState: 'Maharashtra',
         price: source.price,
         originalPrice: Math.round(source.price * 1.08),
         mileage: source.mileage,
@@ -290,12 +290,12 @@ async function main() {
         drivetrain: source.bodyType === 'suv' ? 'All-Wheel Drive' : 'Rear-Wheel Drive',
         seatingCapacity: source.bodyType === 'suv' && index % 2 === 0 ? 7 : 5,
         doors: source.bodyType === 'sports-car' ? 2 : 4,
-        registrationNumberMasked: `TS 09 ** ${String(1100 + index).slice(-4)}`,
+        registrationNumberMasked: `MH 14 ** ${String(1100 + index).slice(-4)}`,
         insuranceValidity: new Date(Date.UTC(2027, index % 12, 15)),
         serviceHistory: 'Authorised service centre records available',
         keysAvailable: 2,
         shortDescription: `A carefully inspected ${source.year} ${shortTitle} in ${source.exterior ?? 'premium finish'}.`,
-        description: `${shortTitle} ${source.variant} combines premium comfort, confident performance and transparent ownership history. This Deccan Wheels vehicle has been inspected, road tested and prepared for delivery in Hyderabad.`,
+        description: `${shortTitle} ${source.variant} combines premium comfort, confident performance and transparent ownership history. This Optimum Automobiles vehicle has been inspected, road tested and prepared for delivery in Pune.`,
         status: source.status ?? VehicleStatus.AVAILABLE,
         featured: Boolean(source.featured),
         newArrival: Boolean(source.newArrival),
@@ -342,7 +342,7 @@ async function main() {
     update: {
       name: 'Aarav Sharma',
       phone: '+919876540101',
-      city: 'Hyderabad',
+      city: 'Pune',
       passwordHash: demoPasswordHash,
       status: UserStatus.ACTIVE,
       emailVerified: new Date('2026-07-15T10:00:00.000Z'),
@@ -353,7 +353,7 @@ async function main() {
       name: 'Aarav Sharma',
       email: 'customer@deccanwheels.local',
       phone: '+919876540101',
-      city: 'Hyderabad',
+      city: 'Pune',
       passwordHash: demoPasswordHash,
       status: UserStatus.ACTIVE,
       emailVerified: new Date('2026-07-15T10:00:00.000Z'),
@@ -366,7 +366,7 @@ async function main() {
     update: {
       name: 'Pending Customer',
       phone: '+919876540102',
-      city: 'Hyderabad',
+      city: 'Pune',
       passwordHash: demoPasswordHash,
       status: UserStatus.PENDING_VERIFICATION,
       emailVerified: null,
@@ -376,7 +376,7 @@ async function main() {
       name: 'Pending Customer',
       email: 'pending@deccanwheels.local',
       phone: '+919876540102',
-      city: 'Hyderabad',
+      city: 'Pune',
       passwordHash: demoPasswordHash,
       status: UserStatus.PENDING_VERIFICATION,
     },
@@ -396,7 +396,7 @@ async function main() {
       update: {
         name: member.name,
         phone: member.phone,
-        city: 'Hyderabad',
+        city: 'Pune',
         passwordHash: demoPasswordHash,
         role: member.role,
         status: UserStatus.ACTIVE,
@@ -407,7 +407,7 @@ async function main() {
         email: member.email,
         name: member.name,
         phone: member.phone,
-        city: 'Hyderabad',
+        city: 'Pune',
         passwordHash: demoPasswordHash,
         role: member.role,
         status: UserStatus.ACTIVE,
@@ -458,7 +458,7 @@ async function main() {
   })
 
   const seededInquiry = await prisma.inquiry.upsert({
-    where: { referenceNumber: 'DW-ENQ-DEMO-000001' },
+    where: { referenceNumber: 'OA-ENQ-DEMO-000001' },
     update: {
       userId: verifiedCustomer.id,
       vehicleId: demoVehicleIds[0],
@@ -474,7 +474,7 @@ async function main() {
       followUpAt: new Date('2026-08-04T05:30:00.000Z'),
     },
     create: {
-      referenceNumber: 'DW-ENQ-DEMO-000001',
+      referenceNumber: 'OA-ENQ-DEMO-000001',
       userId: verifiedCustomer.id,
       vehicleId: demoVehicleIds[0],
       fullName: verifiedCustomer.name ?? 'Aarav Sharma',
@@ -491,7 +491,7 @@ async function main() {
   })
 
   const seededTestDrive = await prisma.testDrive.upsert({
-    where: { referenceNumber: 'DW-TD-DEMO-000001' },
+    where: { referenceNumber: 'OA-TD-DEMO-000001' },
     update: {
       userId: verifiedCustomer.id,
       vehicleId: demoVehicleIds[1],
@@ -509,7 +509,7 @@ async function main() {
       priority: LeadPriority.NORMAL,
     },
     create: {
-      referenceNumber: 'DW-TD-DEMO-000001',
+      referenceNumber: 'OA-TD-DEMO-000001',
       userId: verifiedCustomer.id,
       vehicleId: demoVehicleIds[1],
       fullName: verifiedCustomer.name ?? 'Aarav Sharma',
@@ -528,7 +528,7 @@ async function main() {
   })
 
   const seededSellRequest = await prisma.sellRequest.upsert({
-    where: { referenceNumber: 'DW-SELL-DEMO-000001' },
+    where: { referenceNumber: 'OA-SELL-DEMO-000001' },
     update: {
       userId: verifiedCustomer.id,
       status: RequestStatus.CONTACTED,
@@ -544,10 +544,10 @@ async function main() {
       mileage: 41000,
       fuelType: 'Diesel',
       transmission: 'Automatic',
-      city: 'Hyderabad',
+      city: 'Pune',
     },
     create: {
-      referenceNumber: 'DW-SELL-DEMO-000001',
+      referenceNumber: 'OA-SELL-DEMO-000001',
       userId: verifiedCustomer.id,
       status: RequestStatus.CONTACTED,
       assignedToId: operations.id,
@@ -562,14 +562,14 @@ async function main() {
       mileage: 41000,
       fuelType: 'Diesel',
       transmission: 'Automatic',
-      city: 'Hyderabad',
+      city: 'Pune',
     },
   })
 
   await prisma.sellInspection.upsert({
     where: { sellRequestId: seededSellRequest.id },
-    update: { scheduledAt: new Date('2026-08-06T06:30:00.000Z'), location: 'Banjara Hills showroom', inspectorId: operations.id },
-    create: { sellRequestId: seededSellRequest.id, scheduledAt: new Date('2026-08-06T06:30:00.000Z'), location: 'Banjara Hills showroom', inspectorId: operations.id },
+    update: { scheduledAt: new Date('2026-08-06T06:30:00.000Z'), location: 'Geras Imperium Rise showroom', inspectorId: operations.id },
+    create: { sellRequestId: seededSellRequest.id, scheduledAt: new Date('2026-08-06T06:30:00.000Z'), location: 'Geras Imperium Rise showroom', inspectorId: operations.id },
   })
   await prisma.sellValuation.deleteMany({ where: { sellRequestId: seededSellRequest.id } })
   await prisma.sellValuation.create({
@@ -592,12 +592,12 @@ async function main() {
   ] })
 
   await prisma.contactMessage.upsert({
-    where: { referenceNumber: 'DW-CON-DEMO-000001' },
+    where: { referenceNumber: 'OA-CON-DEMO-000001' },
     update: { name: 'Nikhil Verma', phone: '+919876540301', email: 'nikhil@example.com', subject: 'Insurance assistance', message: 'Please call me about renewal options.', assignedToId: sales.id, priority: LeadPriority.NORMAL },
-    create: { referenceNumber: 'DW-CON-DEMO-000001', name: 'Nikhil Verma', phone: '+919876540301', email: 'nikhil@example.com', subject: 'Insurance assistance', message: 'Please call me about renewal options.', assignedToId: sales.id, priority: LeadPriority.NORMAL, consentAccepted: true },
+    create: { referenceNumber: 'OA-CON-DEMO-000001', name: 'Nikhil Verma', phone: '+919876540301', email: 'nikhil@example.com', subject: 'Insurance assistance', message: 'Please call me about renewal options.', assignedToId: sales.id, priority: LeadPriority.NORMAL, consentAccepted: true },
   })
 
-  for (const email of ['buyer-updates@example.com', 'luxury-cars@example.com', 'hyderabad-cars@example.com']) {
+  for (const email of ['buyer-updates@example.com', 'luxury-cars@example.com', 'pune-cars@example.com']) {
     await prisma.newsletterSubscriber.upsert({ where: { email }, update: { active: true, status: NewsletterStatus.SUBSCRIBED, source: 'seed' }, create: { email, active: true, status: NewsletterStatus.SUBSCRIBED, source: 'seed', confirmedAt: new Date('2026-07-20T10:00:00.000Z') } })
   }
 
@@ -605,9 +605,9 @@ async function main() {
     {
       id: 'testimonial-demo-published',
       name: 'Rohan Mehta',
-      quote: 'The experience was seamless from start to finish. Deccan Wheels truly delivers trust and transparency.',
+      quote: 'The experience was seamless from start to finish. Optimum Automobiles truly delivers trust and transparency.',
       purchase: 'Mercedes-Benz E-Class',
-      location: 'Banjara Hills, Hyderabad',
+      location: 'Hinjawadi, Pune',
       avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=85',
     },
     {
@@ -615,7 +615,7 @@ async function main() {
       name: 'Sneha Reddy',
       quote: 'Got my dream car at the best price. Highly professional team and great service!',
       purchase: 'BMW X5',
-      location: 'Jubilee Hills, Hyderabad',
+      location: 'Baner, Pune',
       avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=85',
     },
     {
@@ -623,7 +623,7 @@ async function main() {
       name: 'Arjun Kapoor',
       quote: 'Smooth process, genuine cars and excellent after-sales support. Highly recommended!',
       purchase: 'Audi Q7',
-      location: 'Gachibowli, Hyderabad',
+      location: 'Wakad, Pune',
       avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=85',
     },
     {
@@ -631,7 +631,7 @@ async function main() {
       name: 'Vikram Malhotra',
       quote: 'The team understood exactly what I wanted. Every detail was explained clearly, and delivery was right on schedule.',
       purchase: 'Land Rover Discovery',
-      location: 'Kondapur, Hyderabad',
+      location: 'Kharadi, Pune',
       avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&q=85',
     },
     {
@@ -639,7 +639,7 @@ async function main() {
       name: 'Aisha Khan',
       quote: 'From the first test drive to the final paperwork, everything felt premium, honest, and remarkably well organised.',
       purchase: 'Lexus ES 300h',
-      location: 'Film Nagar, Hyderabad',
+      location: 'Aundh, Pune',
       avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=85',
     },
     {
@@ -647,7 +647,7 @@ async function main() {
       name: 'Karthik Rao',
       quote: 'A genuinely dependable dealership. The car was exactly as presented and the after-sales follow-up has been excellent.',
       purchase: 'Volvo XC90',
-      location: 'Madhapur, Hyderabad',
+      location: 'Balewadi, Pune',
       avatarUrl: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=240&q=85',
     },
   ]
@@ -660,16 +660,16 @@ async function main() {
   }
   await prisma.testimonial.upsert({
     where: { id: 'testimonial-demo-draft' },
-    update: { name: 'Priya Sharma', rating: 5, quote: 'Draft customer story awaiting content review.', location: 'Hyderabad', verifiedBuyer: true, published: false, archived: false },
-    create: { id: 'testimonial-demo-draft', name: 'Priya Sharma', rating: 5, quote: 'Draft customer story awaiting content review.', location: 'Hyderabad', verifiedBuyer: true, published: false, sortOrder: 7 },
+    update: { name: 'Priya Sharma', rating: 5, quote: 'Draft customer story awaiting content review.', location: 'Pune', verifiedBuyer: true, published: false, archived: false },
+    create: { id: 'testimonial-demo-draft', name: 'Priya Sharma', rating: 5, quote: 'Draft customer story awaiting content review.', location: 'Pune', verifiedBuyer: true, published: false, sortOrder: 7 },
   })
 
   const seededGallery = [
-    { id: 'gallery-demo-published', title: 'Showroom exterior', imageUrl: '/images/hero/deccan-wheels-hero-v3.png', alt: 'Deccan Wheels showroom exterior', category: GalleryCategory.SHOWROOM },
+    { id: 'gallery-demo-published', title: 'Showroom exterior', imageUrl: '/images/hero/deccan-wheels-hero-v3.png', alt: 'Optimum Automobiles showroom exterior', category: GalleryCategory.SHOWROOM },
     { id: 'gallery-demo-interior', title: 'Mercedes interior', imageUrl: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?auto=format&fit=crop&w=700&q=85', alt: 'Premium Mercedes-Benz interior', category: GalleryCategory.VEHICLE },
     { id: 'gallery-demo-delivery', title: 'Customer delivery', imageUrl: 'https://images.unsplash.com/photo-1570294646112-27ce4f174e38?auto=format&fit=crop&w=700&q=85', alt: 'Luxury vehicle customer delivery', category: GalleryCategory.DELIVERY },
     { id: 'gallery-demo-suv', title: 'Luxury SUV', imageUrl: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=700&q=85', alt: 'Luxury SUV on the road', category: GalleryCategory.VEHICLE },
-    { id: 'gallery-demo-building', title: 'Dealership building', imageUrl: '/images/showroom/deccan-wheels-showroom-final.png', alt: 'Deccan Wheels dealership building', category: GalleryCategory.SHOWROOM },
+    { id: 'gallery-demo-building', title: 'Dealership building', imageUrl: '/images/showroom/deccan-wheels-showroom-final.png', alt: 'Optimum Automobiles dealership building', category: GalleryCategory.SHOWROOM },
     { id: 'gallery-demo-sedan', title: 'Premium sedan', imageUrl: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=700&q=85', alt: 'Premium luxury sedan', category: GalleryCategory.VEHICLE },
   ]
   for (const [index, galleryItem] of seededGallery.entries()) {
@@ -687,8 +687,8 @@ async function main() {
 
   const homepageContent = await prisma.contentBlock.upsert({
     where: { key: 'homepage' },
-    update: { value: { heroEyebrow: 'Deccan Wheels', headline: 'Drive Luxury, Own Excellence.', supportingCopy: 'Premium pre-owned luxury cars in Hyderabad.' }, status: ContentStatus.PUBLISHED, publishedAt: new Date('2026-07-01T10:00:00.000Z') },
-    create: { key: 'homepage', value: { heroEyebrow: 'Deccan Wheels', headline: 'Drive Luxury, Own Excellence.', supportingCopy: 'Premium pre-owned luxury cars in Hyderabad.' }, status: ContentStatus.PUBLISHED, publishedAt: new Date('2026-07-01T10:00:00.000Z') },
+    update: { value: { heroEyebrow: 'Optimum Automobiles', headline: 'Drive Luxury, Own Excellence.', supportingCopy: 'Premium pre-owned luxury cars in Pune.' }, status: ContentStatus.PUBLISHED, publishedAt: new Date('2026-07-01T10:00:00.000Z') },
+    create: { key: 'homepage', value: { heroEyebrow: 'Optimum Automobiles', headline: 'Drive Luxury, Own Excellence.', supportingCopy: 'Premium pre-owned luxury cars in Pune.' }, status: ContentStatus.PUBLISHED, publishedAt: new Date('2026-07-01T10:00:00.000Z') },
   })
   await prisma.contentRevision.upsert({
     where: { contentBlockId_version: { contentBlockId: homepageContent.id, version: 1 } },
@@ -722,58 +722,58 @@ async function main() {
   await prisma.showroom.upsert({
     where: { id: 'main-showroom' },
     update: {
-      name: 'Deccan Wheels',
-      address: 'Road No. 12, Banjara Hills',
-      city: 'Hyderabad',
-      state: 'Telangana',
-      postalCode: '500034',
+      name: 'Optimum Automobiles',
+      address: 'Geras Imperium Rise',
+      city: 'Pune',
+      state: 'Maharashtra',
+      postalCode: '411057',
       country: 'India',
-      latitude: 17.4156,
-      longitude: 78.4347,
+      latitude: 18.59618,
+      longitude: 73.7182,
       phone: '+91 98765 43210',
-      email: 'info@deccanwheels.com',
+      email: 'info@optimumautomobiles.com',
       phones: ['+91 98765 43210', '+91 91234 56789'],
-      emails: ['info@deccanwheels.com', 'sales@deccanwheels.com'],
+      emails: ['info@optimumautomobiles.com', 'sales@optimumautomobiles.com'],
       whatsapp: '+919876543210',
       hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
       openingHours: { mondayToSunday: '10:00 AM - 8:00 PM' },
-      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Road%20No.%2012%20Banjara%20Hills%20Hyderabad',
+      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Geras%20Imperium%20Rise%2C%20Pune%2C%20Maharashtra%20411057',
       active: true,
       isPrimary: true,
     },
     create: {
       id: 'main-showroom',
-      name: 'Deccan Wheels',
-      address: 'Road No. 12, Banjara Hills',
-      city: 'Hyderabad',
-      state: 'Telangana',
-      postalCode: '500034',
+      name: 'Optimum Automobiles',
+      address: 'Geras Imperium Rise',
+      city: 'Pune',
+      state: 'Maharashtra',
+      postalCode: '411057',
       country: 'India',
-      latitude: 17.4156,
-      longitude: 78.4347,
+      latitude: 18.59618,
+      longitude: 73.7182,
       phone: '+91 98765 43210',
-      email: 'info@deccanwheels.com',
+      email: 'info@optimumautomobiles.com',
       phones: ['+91 98765 43210', '+91 91234 56789'],
-      emails: ['info@deccanwheels.com', 'sales@deccanwheels.com'],
+      emails: ['info@optimumautomobiles.com', 'sales@optimumautomobiles.com'],
       whatsapp: '+919876543210',
       hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
       openingHours: { mondayToSunday: '10:00 AM - 8:00 PM' },
-      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Road%20No.%2012%20Banjara%20Hills%20Hyderabad',
+      mapUrl: 'https://www.google.com/maps/search/?api=1&query=Geras%20Imperium%20Rise%2C%20Pune%2C%20Maharashtra%20411057',
       active: true,
       isPrimary: true,
     },
   })
 
   const settings = {
-    site_name: 'Deccan Wheels',
-    legal_company_name: 'Deccan Wheels Automobiles Private Limited',
+    site_name: 'Optimum Automobiles',
+    legal_company_name: 'Optimum Automobiles',
     site_tagline: 'Premium pre-owned luxury cars',
     site_url: 'http://localhost:3001',
-    inventory_location: 'Banjara Hills, Hyderabad',
+    inventory_location: 'Geras Imperium Rise, Pune, Maharashtra 411057',
     primary_phone: '+91 98765 43210',
     support_phone: '+91 98765 43210',
-    sales_email: 'sales@deccanwheels.com',
-    support_email: 'info@deccanwheels.com',
+    sales_email: 'sales@optimumautomobiles.com',
+    support_email: 'info@optimumautomobiles.com',
     whatsapp: '+919876543210',
     opening_hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
     currency: 'INR',
@@ -783,8 +783,8 @@ async function main() {
     instagram_url: 'https://www.instagram.com/',
     youtube_url: 'https://www.youtube.com/',
     linkedin_url: 'https://www.linkedin.com/',
-    seo_default_title: 'Deccan Wheels | Premium Pre-Owned Luxury Cars',
-    seo_default_description: 'Premium pre-owned luxury cars in Hyderabad.',
+    seo_default_title: 'Optimum Automobiles | Premium Pre-Owned Luxury Cars',
+    seo_default_description: 'Premium pre-owned luxury cars in Pune.',
     email_preview_status: 'development-preview',
   }
   for (const [key, value] of Object.entries(settings)) {

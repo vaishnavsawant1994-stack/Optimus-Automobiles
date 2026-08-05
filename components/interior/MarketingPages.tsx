@@ -188,7 +188,7 @@ export function SellYourCarPage() {
     <main className="interior-page" id="main-content">
       <PageHero eyebrow="Home / Sell Your Car" title="Sell Your Car" accent="The Easy Way." text="Fast valuation, a transparent offer and secure payment." image={interiorImages.hero} actions={[{ label: 'Get Free Valuation', href: '#valuation' }, { label: 'Contact Our Team', href: '/contact', secondary: true }]} />
       <section className="interior-section container-wide"><InteriorHeading eyebrow="Simple & Transparent" title="Our 3-Step Selling Process" /><ProcessSteps items={sellingSteps} /></section>
-      <section className="interior-section container-wide"><InteriorHeading title="Why Sell to Deccan Wheels?" /><IconFeatureGrid items={whySell} className="feature-grid--five" /></section>
+      <section className="interior-section container-wide"><InteriorHeading title="Why Sell to Optimum Automobiles?" /><IconFeatureGrid items={whySell} className="feature-grid--five" /></section>
       <div id="valuation"><SellValuationForm /></div>
       <CredibilityStrip />
       <section className="interior-section container-wide"><InteriorHeading title="Frequently Asked Questions" /><FaqList items={faqs.sell} /></section>
@@ -201,7 +201,7 @@ export function SellYourCarPage() {
 function ServiceBand({ reverse, eyebrow, title, text, image, points }: { reverse?: boolean; eyebrow: string; title: string; text: string; image: string; points: string[] }) {
   return (
     <article className={`service-band${reverse ? ' service-band--reverse' : ''}`}>
-      <div className="service-band__image"><Image src={image} alt="Deccan Wheels premium automotive service" fill sizes="50vw" /></div>
+      <div className="service-band__image"><Image src={image} alt="Optimum Automobiles premium automotive service" fill sizes="50vw" /></div>
       <div><p>{eyebrow}</p><h2>{title}</h2><span>{text}</span><ul>{points.map((point) => <li key={point}><Check />{point}</li>)}</ul><Link className="outline-button" href="/contact">Talk to an Expert<ArrowRight /></Link></div>
     </article>
   )
@@ -217,7 +217,7 @@ export function ServicesPage() {
         <ServiceBand reverse eyebrow="Complete Peace of Mind" title="Insurance Assistance" text="We help select the right coverage and assist through renewals and claims." image={interiorImages.service} points={['Comprehensive coverage options', 'Top insurance partners', 'Cashless claim support', 'Hassle-free renewals']} />
         <ServiceBand eyebrow="Best Value for Your Car" title="Buyback Solutions" text="Get a transparent market-led valuation and a secure payment experience." image={interiorImages.key} points={['Free car evaluation', 'Instant payment', 'Transparent process', 'No hidden charges']} />
       </section>
-      <section className="interior-section container-wide"><InteriorHeading title="Why Choose Deccan Wheels Services?" /><IconFeatureGrid items={whySell} className="feature-grid--five" /></section>
+      <section className="interior-section container-wide"><InteriorHeading title="Why Choose Optimum Automobiles Services?" /><IconFeatureGrid items={whySell} className="feature-grid--five" /></section>
       <section className="interior-section container-wide"><InteriorHeading eyebrow="Simple from Start to Finish" title="Our Process" /><ProcessSteps items={journeySteps.slice(0, 5)} /></section>
       <CustomerReviews title="What Our Customers Say" />
       <section className="interior-section container-wide"><InteriorHeading title="Frequently Asked Questions" /><FaqList items={faqs.services} /></section>
@@ -229,11 +229,11 @@ export function ServicesPage() {
 export function AboutPage() {
   return (
     <main className="interior-page" id="main-content">
-      <PageHero eyebrow="Home / About Us" title="About" accent="Deccan Wheels" text="Built on trust. Driven by premium automotive expertise." image={interiorImages.hero} />
-      <section className="story-section container-wide"><div className="story-image"><Image src={interiorImages.showroom} alt="Inside the Deccan Wheels showroom" fill sizes="50vw" /></div><div><InteriorHeading eyebrow="Our Story" title="Building Trust. Delivering Excellence." /><p>Deccan Wheels was founded with a simple belief: luxury should be accessible and trust should be non-negotiable. What began as a focused showroom has grown into one of Hyderabad’s trusted premium pre-owned car destinations.</p><p>Every car is handpicked, rigorously inspected and delivered with complete transparency. For us, it is not only about cars; it is about creating relationships that last.</p></div></section>
+      <PageHero eyebrow="Home / About Us" title="About" accent="Optimum Automobiles" text="Built on trust. Driven by premium automotive expertise." image={interiorImages.hero} />
+      <section className="story-section container-wide"><div className="story-image"><Image src={interiorImages.showroom} alt="Inside the Optimum Automobiles showroom" fill sizes="50vw" /></div><div><InteriorHeading eyebrow="Our Story" title="Building Trust. Delivering Excellence." /><p>Optimum Automobiles was founded with a simple belief: luxury should be accessible and trust should be non-negotiable. What began as a focused showroom has grown into one of Pune’s trusted premium pre-owned car destinations.</p><p>Every car is handpicked, rigorously inspected and delivered with complete transparency. For us, it is not only about cars; it is about creating relationships that last.</p></div></section>
       <section className="trust-stat-grid container-wide">{trustStats.map((item) => { const Icon = item.icon; return <article key={item.label}><Icon /><strong>{item.value}</strong><span>{item.label}</span></article> })}</section>
-      <section className="interior-section container-wide"><InteriorHeading title="Why Choose Deccan Wheels?" /><IconFeatureGrid items={aboutValues} /></section>
-      <section className="founder-section container-wide"><div className="founder-image"><Image src={interiorImages.founder} alt="Founder of Deccan Wheels" fill sizes="40vw" /></div><div><InteriorHeading eyebrow="Founder’s Message" title="Passion. People. Performance." /><p>Our mission is to redefine the pre-owned luxury car experience through honesty, quality and exceptional service. Thank you for trusting us as your automotive partner.</p><strong>— Sandeep Reddy</strong><small>Founder & CEO, Deccan Wheels</small></div></section>
+      <section className="interior-section container-wide"><InteriorHeading title="Why Choose Optimum Automobiles?" /><IconFeatureGrid items={aboutValues} /></section>
+      <section className="founder-section container-wide"><div className="founder-image"><Image src={interiorImages.founder} alt="Founder of Optimum Automobiles" fill sizes="40vw" /></div><div><InteriorHeading eyebrow="Founder’s Message" title="Passion. People. Performance." /><p>Our mission is to redefine the pre-owned luxury car experience through honesty, quality and exceptional service. Thank you for trusting us as your automotive partner.</p><strong>— Sandeep Reddy</strong><small>Founder & CEO, Optimum Automobiles</small></div></section>
       <section className="interior-section container-wide"><InteriorHeading title="A Seamless Journey from Start to Finish" /><ProcessSteps items={journeySteps} /></section>
       <CustomerReviews title="What Our Customers Say" />
       <section className="interior-section container-wide"><InteriorHeading title="Our Showroom" /><div className="about-gallery">{gallery.slice(0, 5).map((item) => <div key={item.alt}><Image src={item.image} alt={item.alt} fill sizes="20vw" /></div>)}</div></section>
@@ -277,9 +277,9 @@ export function ContactPage() {
       <section className="contact-workspace container-wide">
         <aside className="contact-details-panel"><InteriorHeading title="Get in Touch" />{contactDetails.map((item) => { const Icon = item.icon; return <article key={item.title}><span><Icon /></span><div><h3>{item.title}</h3>{item.lines.map((line) => <p key={line}>{line}</p>)}</div></article> })}<a className="outline-button" href={siteConfig.mapsUrl} target="_blank" rel="noreferrer">Get Directions<ArrowRight /></a></aside>
         <ContactForm />
-        <aside className="location-panel"><InteriorHeading title="Our Location" /><div className="location-map"><Image src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=900&q=82" alt="Map showing Deccan Wheels showroom area" fill sizes="30vw" /><span><MapPin /><strong>Deccan Wheels</strong><small>Banjara Hills, Hyderabad</small></span></div><div><h3>Easy to Find, Worth the Drive.</h3><p>Located in the heart of Banjara Hills, with a premium collection ready to explore.</p></div></aside>
+        <aside className="location-panel"><InteriorHeading title="Our Location" /><div className="location-map"><Image src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=900&q=82" alt="Map showing Optimum Automobiles showroom area" fill sizes="30vw" /><span><MapPin /><strong>Optimum Automobiles</strong><small>Geras Imperium Rise, Pune</small></span></div><div><h3>Easy to Find, Worth the Drive.</h3><p>Located at Geras Imperium Rise in Pune, with a premium collection ready to explore.</p></div></aside>
       </section>
-      <section className="visit-help container-wide"><div className="visit-showroom"><div><Image src={interiorImages.showroom} alt="Deccan Wheels luxury showroom" fill sizes="50vw" /></div><article><InteriorHeading title="Visit Our Showroom" /><p>Step into our world of luxury and explore a curated collection in a world-class showroom.</p><Link className="outline-button" href="/inventory">View Inventory<ArrowRight /></Link></article></div><div><InteriorHeading title="How We Help You" /><IconFeatureGrid items={helpCards} /></div></section>
+      <section className="visit-help container-wide"><div className="visit-showroom"><div><Image src={interiorImages.showroom} alt="Optimum Automobiles luxury showroom" fill sizes="50vw" /></div><article><InteriorHeading title="Visit Our Showroom" /><p>Step into our world of luxury and explore a curated collection in a world-class showroom.</p><Link className="outline-button" href="/inventory">View Inventory<ArrowRight /></Link></article></div><div><InteriorHeading title="How We Help You" /><IconFeatureGrid items={helpCards} /></div></section>
       <CustomerReviews />
       <section className="interior-section container-wide"><InteriorHeading title="Frequently Asked Questions" /><FaqList items={faqs.contact} /></section>
       <InteriorCta title="Ready to Find Your Dream Car?" text="Explore our handpicked collection of luxury pre-owned cars." image={interiorImages.sedan} primary={{ label: 'Browse Inventory', href: '/inventory' }} secondary={{ label: 'Chat on WhatsApp', href: siteConfig.whatsAppUrl }} />

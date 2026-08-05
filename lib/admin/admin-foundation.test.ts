@@ -19,7 +19,7 @@ describe('admin permission matrix', () => {
 })
 
 describe('vehicle workflow and validation', () => {
-  const complete = { slug: '2022-bmw-x5-sport', stockNumber: 'DW-TEST-1', brandId: 'brand', bodyTypeId: 'body', model: 'X5', variant: 'Sport', year: 2022, price: 5_000_000, mileage: 12_000, fuelType: 'Diesel', transmission: 'Automatic', shortDescription: 'A complete inspected premium vehicle.', status: VehicleStatus.AVAILABLE, featured: false, images: [{ isPrimary: true, category: 'EXTERIOR' }, { isPrimary: false, category: 'EXTERIOR' }, { isPrimary: false, category: 'INTERIOR' }] }
+  const complete = { slug: '2022-bmw-x5-sport', stockNumber: 'OA-TEST-1', brandId: 'brand', bodyTypeId: 'body', model: 'X5', variant: 'Sport', year: 2022, price: 5_000_000, mileage: 12_000, fuelType: 'Diesel', transmission: 'Automatic', shortDescription: 'A complete inspected premium vehicle.', status: VehicleStatus.AVAILABLE, featured: false, images: [{ isPrimary: true, category: 'EXTERIOR' }, { isPrimary: false, category: 'EXTERIOR' }, { isPrimary: false, category: 'INTERIOR' }] }
   it('accepts valid transitions and rejects shortcuts', () => { expect(canTransitionVehicle(VehicleStatus.DRAFT, VehicleStatus.AVAILABLE)).toBe(true); expect(canTransitionVehicle(VehicleStatus.DRAFT, VehicleStatus.SOLD)).toBe(false) })
   it('requires reasons for irreversible or exception transitions', () => { expect(statusTransitionNeedsReason(VehicleStatus.AVAILABLE, VehicleStatus.SOLD)).toBe(true); expect(statusTransitionNeedsReason(VehicleStatus.RESERVED, VehicleStatus.AVAILABLE)).toBe(true) })
   it('blocks publication without enough public images', () => expect(getPublicationReadiness({ ...complete, images: complete.images.slice(0, 2) }).ready).toBe(false))

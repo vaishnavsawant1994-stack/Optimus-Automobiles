@@ -11,20 +11,20 @@ import {
 } from 'lucide-react'
 
 export const siteConfig = {
-  name: 'Deccan Wheels',
+  name: 'Optimum Automobiles',
   tagline: 'Pre-owned luxury cars',
   phone: '+91 98765 43210',
   phoneHref: 'tel:+919876543210',
   secondaryPhone: '+91 91234 56789',
   secondaryPhoneHref: 'tel:+919123456789',
-  email: 'info@deccanwheels.com',
-  emailHref: 'mailto:info@deccanwheels.com',
-  address: 'Road No. 12, Banjara Hills, Hyderabad, TS 500034',
+  email: 'info@optimumautomobiles.com',
+  emailHref: 'mailto:info@optimumautomobiles.com',
+  address: 'Geras Imperium Rise, Pune, Maharashtra 411057',
   hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
   mapsUrl:
-    'https://www.google.com/maps/search/?api=1&query=Road%20No.%2012%20Banjara%20Hills%20Hyderabad',
+    'https://www.google.com/maps/search/?api=1&query=Geras%20Imperium%20Rise%2C%20Pune%2C%20Maharashtra%20411057',
   whatsAppUrl:
-    'https://wa.me/919876543210?text=Hi%20Deccan%20Wheels%2C%20I%20would%20like%20to%20know%20more%20about%20your%20premium%20cars.',
+    'https://wa.me/919876543210?text=Hi%20Optimum%20Automobiles%2C%20I%20would%20like%20to%20know%20more%20about%20your%20premium%20cars.',
   instagram: 'https://www.instagram.com/',
   facebook: 'https://www.facebook.com/',
   youtube: 'https://www.youtube.com/',
@@ -293,9 +293,9 @@ export const testimonials = [
   {
     name: 'Rohan Mehta',
     quote:
-      'The experience was seamless from start to finish. Deccan Wheels truly delivers trust and transparency.',
+      'The experience was seamless from start to finish. Optimum Automobiles truly delivers trust and transparency.',
     purchase: 'Mercedes-Benz E-Class',
-    location: 'Banjara Hills, Hyderabad',
+    location: 'Hinjawadi, Pune',
     avatar:
       'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=85',
   },
@@ -304,7 +304,7 @@ export const testimonials = [
     quote:
       'Got my dream car at the best price. Highly professional team and great service!',
     purchase: 'BMW X5',
-    location: 'Jubilee Hills, Hyderabad',
+    location: 'Baner, Pune',
     avatar:
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=85',
   },
@@ -313,7 +313,7 @@ export const testimonials = [
     quote:
       'Smooth process, genuine cars and excellent after-sales support. Highly recommended!',
     purchase: 'Audi Q7',
-    location: 'Gachibowli, Hyderabad',
+    location: 'Wakad, Pune',
     avatar:
       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=85',
   },
@@ -322,7 +322,7 @@ export const testimonials = [
     quote:
       'The team understood exactly what I wanted. Every detail was explained clearly, and delivery was right on schedule.',
     purchase: 'Land Rover Discovery',
-    location: 'Kondapur, Hyderabad',
+    location: 'Kharadi, Pune',
     avatar:
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&q=85',
   },
@@ -331,7 +331,7 @@ export const testimonials = [
     quote:
       'From the first test drive to the final paperwork, everything felt premium, honest, and remarkably well organised.',
     purchase: 'Lexus ES 300h',
-    location: 'Film Nagar, Hyderabad',
+    location: 'Aundh, Pune',
     avatar:
       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=85',
   },
@@ -340,7 +340,7 @@ export const testimonials = [
     quote:
       'A genuinely dependable dealership. The car was exactly as presented and the after-sales follow-up has been excellent.',
     purchase: 'Volvo XC90',
-    location: 'Madhapur, Hyderabad',
+    location: 'Balewadi, Pune',
     avatar:
       'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=240&q=85',
   },

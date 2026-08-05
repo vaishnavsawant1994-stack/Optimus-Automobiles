@@ -27,14 +27,14 @@ export function Footer() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
   const [openSection, setOpenSection] = useState<string | null>('Quick Links')
-  const [publicConfig, setPublicConfig] = useState({ phone: siteConfig.phone, mapsUrl: siteConfig.mapsUrl, location: 'Banjara Hills, Hyderabad', hours: '10:00 AM - 8:00 PM', facebook: siteConfig.facebook, instagram: siteConfig.instagram, youtube: siteConfig.youtube, linkedin: siteConfig.linkedin })
+  const [publicConfig, setPublicConfig] = useState({ phone: siteConfig.phone, mapsUrl: siteConfig.mapsUrl, location: 'Geras Imperium Rise, Pune', hours: '10:00 AM - 8:00 PM', facebook: siteConfig.facebook, instagram: siteConfig.instagram, youtube: siteConfig.youtube, linkedin: siteConfig.linkedin })
 
   useEffect(() => {
     let active = true
     fetch('/api/site-config').then((response) => response.ok ? response.json() : null).then((payload) => {
       if (!active || !payload?.data) return
       const values = payload.data.settings ?? {}; const showroom = payload.data.showroom
-      setPublicConfig((current) => ({ ...current, phone: values.primary_phone || showroom?.phone || current.phone, mapsUrl: showroom?.mapUrl || current.mapsUrl, location: showroom ? `${showroom.city}, ${showroom.state}` : current.location, hours: values.opening_hours || showroom?.hours || current.hours, facebook: values.facebook_url || current.facebook, instagram: values.instagram_url || current.instagram, youtube: values.youtube_url || current.youtube, linkedin: values.linkedin_url || current.linkedin }))
+      setPublicConfig((current) => ({ ...current, phone: values.primary_phone || showroom?.phone || current.phone, mapsUrl: showroom?.mapUrl || current.mapsUrl, location: showroom ? `${showroom.address}, ${showroom.city}, ${showroom.state} ${showroom.postalCode}` : current.location, hours: values.opening_hours || showroom?.hours || current.hours, facebook: values.facebook_url || current.facebook, instagram: values.instagram_url || current.instagram, youtube: values.youtube_url || current.youtube, linkedin: values.linkedin_url || current.linkedin }))
     }).catch(() => undefined)
     return () => { active = false }
   }, [])
@@ -69,7 +69,7 @@ export function Footer() {
           <BrandLogo />
           <span className="footer-brand__badge"><ShieldCheck aria-hidden="true" /> Trusted since 2014</span>
           <p>
-            Hyderabad's most trusted destination for premium pre-owned luxury
+            Pune's trusted destination for premium pre-owned luxury
             cars. Quality, transparency and trust since 2014.
           </p>
           <div className="footer-contact-list">
@@ -83,7 +83,7 @@ export function Footer() {
             </a>
             <div><Clock3 aria-hidden="true" /><span><small>Open daily</small><strong>{publicConfig.hours}</strong></span></div>
           </div>
-          <small className="footer-social-label">Follow Deccan Wheels</small>
+          <small className="footer-social-label">Follow Optimum Automobiles</small>
           <div className="social-row">
             <a href={publicConfig.facebook} aria-label="Facebook" target="_blank" rel="noreferrer">
               <SocialIcon network="facebook" />
@@ -160,8 +160,8 @@ export function Footer() {
       </div>
       <div className="footer-bottom">
         <div className="container-wide">
-          <p>Copyright 2026 Deccan Wheels. All Rights Reserved.</p>
-          <span>Premium pre-owned automobiles in Hyderabad</span>
+          <p>Copyright 2026 Optimum Automobiles. All Rights Reserved.</p>
+          <span>Premium pre-owned automobiles in Pune</span>
           <button type="button" aria-label="Back to top" title="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <ArrowUp aria-hidden="true" />
           </button>

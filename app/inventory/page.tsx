@@ -7,8 +7,8 @@ import { parseInventoryFilters } from '@/lib/validation/inventory'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Luxury Pre-Owned Car Inventory | Deccan Wheels',
-  description: 'Browse verified premium pre-owned Mercedes-Benz, BMW, Audi, Porsche, Land Rover and other luxury cars in Hyderabad.',
+  title: 'Luxury Pre-Owned Car Inventory | Optimum Automobiles',
+  description: 'Browse verified premium pre-owned Mercedes-Benz, BMW, Audi, Porsche, Land Rover and other luxury cars in Pune.',
   alternates: { canonical: '/inventory' },
 }
 

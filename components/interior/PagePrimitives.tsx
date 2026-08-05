@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
-import { DeccanMark } from '@/components/layout/BrandLogo'
+import { OptimumMark } from '@/components/layout/BrandLogo'
 import { HeroCarRotator } from '@/components/shared/HeroCarRotator'
 import { trustPoints } from '@/lib/constants/site'
 
@@ -43,9 +43,9 @@ export function PageHero({
       <div className="hero-home__content container-wide">
         <div className="hero-copy-block">
           <div className="hero-kicker">
-            <DeccanMark className="hero-kicker__mark" />
+            <OptimumMark className="hero-kicker__mark" />
             <span>
-              <strong>Deccan Wheels</strong>
+              <strong>Optimum Automobiles</strong>
               <small>{eyebrow ?? 'Premium pre-owned luxury cars'}</small>
             </span>
           </div>
@@ -62,9 +62,9 @@ export function PageHero({
             {trustPoints.map((point) => <span key={point}><BadgeCheck size={14} />{point}</span>)}
           </div>
         </div>
-        <div className="hero-assurance" aria-label="Deccan Wheels quality standard">
+        <div className="hero-assurance" aria-label="Optimum Automobiles quality standard">
           <span className="hero-assurance__icon"><BadgeCheck aria-hidden="true" /></span>
-          <span><small>The Deccan Standard</small><strong>Verified. Transparent. Ready.</strong></span>
+          <span><small>The Optimum Standard</small><strong>Verified. Transparent. Ready.</strong></span>
         </div>
       </div>
     </section>

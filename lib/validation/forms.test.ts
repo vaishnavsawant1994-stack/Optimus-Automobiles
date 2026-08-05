@@ -16,6 +16,6 @@ describe('customer form validation', () => {
   })
 
   it('accepts a complete valuation request', () => {
-    expect(sellRequestSchema.safeParse({ name: 'Aarav Sharma', phone: '9876543210', email: 'aarav@example.com', make: 'BMW', model: 'X5', year: '2022', mileage: '22000', city: 'Hyderabad' }).success).toBe(true)
+    expect(sellRequestSchema.safeParse({ name: 'Aarav Sharma', phone: '9876543210', email: 'aarav@example.com', make: 'BMW', model: 'X5', year: '2022', mileage: '22000', city: 'Pune' }).success).toBe(true)
   })
 })

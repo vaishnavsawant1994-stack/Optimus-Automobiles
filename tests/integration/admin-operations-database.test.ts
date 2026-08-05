@@ -13,7 +13,7 @@ import { resolvePublicVehicleSlug } from '@/lib/repositories/vehicle-repository'
 
 const ids = { inquiries: [] as string[], drives: [] as string[], sells: [] as string[], vehicles: [] as string[], contacts: [] as string[] }
 let originalContactCounter: number | null = null
-const ref = (kind: string) => `DW-${kind}-TEST-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+const ref = (kind: string) => `OA-${kind}-TEST-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 
 afterEach(async () => {
   const resources = [...ids.inquiries.map((id) => ['Inquiry', id]), ...ids.drives.map((id) => ['TestDrive', id]), ...ids.sells.map((id) => ['SellRequest', id])] as Array<[string, string]>
@@ -75,7 +75,7 @@ describe('admin operations against PostgreSQL', () => {
 
   it('moves a sell request through inspection, valuation and offer creation', async () => {
     const operations = await prisma.user.findUniqueOrThrow({ where: { email: 'operations@deccanwheels.local' } })
-    const sell = await prisma.sellRequest.create({ data: { referenceNumber: ref('SELL'), name: 'Integration Seller', email: 'integration-seller@example.com', phone: '9876543210', make: 'BMW', model: 'X5', year: 2021, mileage: 25000, city: 'Hyderabad', status: 'SUBMITTED', assignedToId: operations.id } }); ids.sells.push(sell.id)
+    const sell = await prisma.sellRequest.create({ data: { referenceNumber: ref('SELL'), name: 'Integration Seller', email: 'integration-seller@example.com', phone: '9876543210', make: 'BMW', model: 'X5', year: 2021, mileage: 25000, city: 'Pune', status: 'SUBMITTED', assignedToId: operations.id } }); ids.sells.push(sell.id)
     const inspection = await saveSellInspection(sell.id, operations, { documentsVerified: true, serviceHistoryVerified: true, exteriorScore: 8, interiorScore: 8, mechanicalScore: 9, overallConditionScore: 8, customerSummary: 'Well maintained.' })
     expect(inspection?.completedAt).toBeInstanceOf(Date)
     const valuation = await createSellValuation(sell.id, operations, { marketMinimum: 4_000_000, marketMaximum: 4_800_000, recommendedOffer: 4_400_000, finalOffer: 4_350_000, validUntil: new Date(Date.now() + 7 * 86_400_000) })
@@ -94,7 +94,7 @@ describe('admin operations against PostgreSQL', () => {
     await prisma.referenceCounter.update({ where: { key: 'CON' }, data: { value: 900000 } })
     const existing = await prisma.contactMessage.create({
       data: {
-        referenceNumber: `DW-CON-${new Date().getFullYear()}-900001`,
+        referenceNumber: `OA-CON-${new Date().getFullYear()}-900001`,
         name: 'Reference Collision Test',
         phone: '9876543210',
         email: 'reference-collision@example.com',
@@ -102,6 +102,6 @@ describe('admin operations against PostgreSQL', () => {
       },
     })
     ids.contacts.push(existing.id)
-    await expect(createReferenceNumber('CON')).resolves.toBe(`DW-CON-${new Date().getFullYear()}-900002`)
+    await expect(createReferenceNumber('CON')).resolves.toBe(`OA-CON-${new Date().getFullYear()}-900002`)
   })
 })

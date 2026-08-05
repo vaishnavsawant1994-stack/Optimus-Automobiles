@@ -218,9 +218,23 @@ img {
   min-width: max-content;
 }
 
-.deccan-mark {
+.optimum-mark {
   display: block;
   fill: currentColor;
+}
+
+.optimum-mark circle {
+  fill: #080a0a;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.optimum-mark text {
+  fill: currentColor;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .brand-logo__mark {
@@ -237,8 +251,9 @@ img {
 
 .brand-logo__copy strong {
   font-family: var(--serif);
-  font-size: 19px;
+  font-size: 17px;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .brand-logo__copy small {
@@ -5367,8 +5382,9 @@ img {
 
 .hero-kicker strong {
   font-family: var(--serif);
-  font-size: 17px;
+  font-size: 16px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .hero-kicker small {

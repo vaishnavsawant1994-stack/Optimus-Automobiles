@@ -1,8 +1,8 @@
-# Deccan Wheels
+# Optimum Automobiles
 
 Database-backed premium pre-owned luxury-car website built with Next.js App Router, TypeScript, PostgreSQL, Prisma, Auth.js, React Hook Form, Zod and Embla Carousel.
 
-The Windows folder and npm package retain the internal `Optimum Automobiles` name. All public UI, metadata, structured data, seed settings and documentation use **Deccan Wheels**.
+The Windows folder and npm package use the `Optimum Automobiles` name. All public UI, metadata, structured data and seed settings use **Optimum Automobiles**.
 
 ## Local setup
 

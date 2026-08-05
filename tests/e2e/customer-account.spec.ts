@@ -12,7 +12,7 @@ async function signIn(page: import('@playwright/test').Page, callbackUrl = '/acc
 test('verified customer signs in and sees database-backed account data', async ({ page }) => {
   await signIn(page)
   await expect(page.getByRole('heading', { name: /welcome, aarav/i })).toBeVisible()
-  await expect(page.getByText('DW-ENQ-DEMO-000001').filter({ visible: true })).toBeVisible()
+  await expect(page.getByText('OA-ENQ-DEMO-000001').filter({ visible: true })).toBeVisible()
   await page.goto('/account/favourites', { waitUntil: 'domcontentloaded' })
   await expect(page).toHaveURL(/\/account\/favourites$/, { timeout: 15_000 })
   await expect(page.locator('.inventory-card').first()).toBeVisible({ timeout: 15_000 })
@@ -21,10 +21,10 @@ test('verified customer signs in and sees database-backed account data', async (
 
 test('account record ownership is enforced', async ({ page }) => {
   await signIn(page, '/account/enquiries')
-  await page.goto('/account/enquiries/DW-ENQ-LEGACY-000001')
+  await page.goto('/account/enquiries/OA-ENQ-LEGACY-000001')
   await expect(page.getByRole('heading', { name: 'Record not found' })).toBeVisible()
-  await page.goto('/account/enquiries/DW-ENQ-DEMO-000001')
-  await expect(page.getByText('DW-ENQ-DEMO-000001').filter({ visible: true })).toBeVisible()
+  await page.goto('/account/enquiries/OA-ENQ-DEMO-000001')
+  await expect(page.getByText('OA-ENQ-DEMO-000001').filter({ visible: true })).toBeVisible()
   await expect(page.getByText('Original message').filter({ visible: true })).toBeVisible()
 })
 

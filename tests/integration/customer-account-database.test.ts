@@ -24,9 +24,9 @@ describe('seeded customer account data', () => {
     const user = await prisma.user.findUniqueOrThrow({ where: { email: 'customer@deccanwheels.local' } })
     const [favorites, inquiry, drive, sellRequest, settings] = await Promise.all([
       prisma.favorite.count({ where: { userId: user.id } }),
-      prisma.inquiry.findFirst({ where: { userId: user.id, referenceNumber: 'DW-ENQ-DEMO-000001' } }),
-      prisma.testDrive.findFirst({ where: { userId: user.id, referenceNumber: 'DW-TD-DEMO-000001' } }),
-      prisma.sellRequest.findFirst({ where: { userId: user.id, referenceNumber: 'DW-SELL-DEMO-000001' } }),
+      prisma.inquiry.findFirst({ where: { userId: user.id, referenceNumber: 'OA-ENQ-DEMO-000001' } }),
+      prisma.testDrive.findFirst({ where: { userId: user.id, referenceNumber: 'OA-TD-DEMO-000001' } }),
+      prisma.sellRequest.findFirst({ where: { userId: user.id, referenceNumber: 'OA-SELL-DEMO-000001' } }),
       prisma.customerNotificationSettings.findUnique({ where: { userId: user.id } }),
     ])
     expect(favorites).toBeGreaterThanOrEqual(3)
@@ -39,8 +39,8 @@ describe('seeded customer account data', () => {
   it('keeps guest submissions unowned and customer references unique', async () => {
     const guestInquiry = await prisma.inquiry.findFirst({ where: { userId: null } })
     const guestDrive = await prisma.testDrive.findFirst({ where: { userId: null } })
-    expect(guestInquiry?.referenceNumber).toMatch(/^DW-ENQ-LEGACY-/)
-    expect(guestDrive?.referenceNumber).toMatch(/^DW-TD-LEGACY-/)
+    expect(guestInquiry?.referenceNumber).toMatch(/^OA-ENQ-LEGACY-/)
+    expect(guestDrive?.referenceNumber).toMatch(/^OA-TD-LEGACY-/)
     const references = await prisma.inquiry.findMany({ select: { referenceNumber: true } })
     expect(new Set(references.map((item) => item.referenceNumber)).size).toBe(references.length)
   })

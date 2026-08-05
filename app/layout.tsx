@@ -9,12 +9,12 @@ import './customer.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001'),
-  title: 'Deccan Wheels | Premium Pre-Owned Luxury Cars in Hyderabad',
+  title: 'Optimum Automobiles | Premium Pre-Owned Luxury Cars in Pune',
   description:
-    'Hyderabad luxury pre-owned car dealership with verified cars, transparent pricing, finance support and ownership transfer.',
+    'Pune luxury pre-owned car dealership with verified cars, transparent pricing, finance support and ownership transfer.',
   openGraph: {
-    title: 'Deccan Wheels',
-    description: 'Premium pre-owned luxury cars in Hyderabad.',
+    title: 'Optimum Automobiles',
+    description: 'Premium pre-owned luxury cars in Pune.',
     type: 'website',
   },
 }

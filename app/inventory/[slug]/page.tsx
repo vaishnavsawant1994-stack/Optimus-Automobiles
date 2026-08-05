@@ -14,10 +14,10 @@ type PageProps = { params: Promise<{ slug: string }> }
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const result = await getVehicleDetail(slug)
-  if (!result) return { title: 'Vehicle Not Found | Deccan Wheels', robots: { index: false, follow: false } }
+  if (!result) return { title: 'Vehicle Not Found | Optimum Automobiles', robots: { index: false, follow: false } }
   const { vehicle } = result
-  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.variant} | Deccan Wheels`
-  const description = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.variant}, ${vehicle.mileage}, ${vehicle.fuel}, available in Hyderabad for ${vehicle.price}.`
+  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.variant} | Optimum Automobiles`
+  const description = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.variant}, ${vehicle.mileage}, ${vehicle.fuel}, available in Pune for ${vehicle.price}.`
   return { title, description, alternates: { canonical: `/inventory/${vehicle.slug}` }, openGraph: { title, description, images: [vehicle.image], type: 'website' }, robots: vehicle.status === 'SOLD' ? { index: false, follow: true } : undefined }
 }
 
@@ -53,7 +53,7 @@ export default async function VehiclePage({ params }: PageProps) {
           <p>{vehicle.year} luxury pre-owned vehicle</p><h1>{fullTitle}</h1><h2>{vehicle.variant}</h2><strong className="vehicle-detail-price">{vehicle.price}</strong>{vehicle.originalPrice ? <del>{vehicle.originalPrice}</del> : null}
           <dl><div><dt>Stock</dt><dd>{vehicle.stockNumber}</dd></div><div><dt>Location</dt><dd><MapPin />{vehicle.location}</dd></div></dl>
           {vehicle.status === 'SOLD' ? <div className="vehicle-unavailable-note">This vehicle has been sold. Explore similar available cars below.</div> : <VehicleActions vehicleId={vehicle.id} slug={vehicle.slug} title={`${vehicle.year} ${fullTitle}`} />}
-          <a className="vehicle-whatsapp" href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi Deccan Wheels, I am interested in ${vehicle.year} ${fullTitle} (${vehicle.stockNumber}).`)}`} target="_blank" rel="noreferrer"><MessageCircle />Chat about this vehicle</a>
+          <a className="vehicle-whatsapp" href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi Optimum Automobiles, I am interested in ${vehicle.year} ${fullTitle} (${vehicle.stockNumber}).`)}`} target="_blank" rel="noreferrer"><MessageCircle />Chat about this vehicle</a>
         </aside>
       </section>
       <section className="vehicle-detail-content container-wide">
@@ -62,7 +62,7 @@ export default async function VehiclePage({ params }: PageProps) {
           <section className="vehicle-detail-section"><header><small>The complete picture</small><h2>Vehicle Overview</h2></header><p className="vehicle-overview-lead">{vehicle.shortDescription}</p><p>{vehicle.description}</p></section>
           <section className="vehicle-detail-section"><header><small>Equipment</small><h2>Features</h2></header><div className="vehicle-feature-groups">{vehicle.featureGroups.map((group) => <article key={group.category}><h3>{group.category}</h3><ul>{group.items.map((feature) => <li key={feature.name}><Check />{feature.name}{feature.value ? <small>{feature.value}</small> : null}</li>)}</ul></article>)}</div></section>
         </div>
-        <aside className="vehicle-detail-aside"><section><ShieldCheck /><h2>Deccan Certified</h2><p>Multi-point inspection, verified documents and transparent condition reporting.</p><ul><li><Check />Ownership records checked</li><li><Check />Road-tested by specialists</li><li><Check />Service history reviewed</li></ul></section><section><Banknote /><h2>Flexible Finance</h2><p>Explore tailored loan options from leading banking partners.</p><Link className="gold-button" href="/services/finance">Explore Finance</Link></section></aside>
+        <aside className="vehicle-detail-aside"><section><ShieldCheck /><h2>Optimum Certified</h2><p>Multi-point inspection, verified documents and transparent condition reporting.</p><ul><li><Check />Ownership records checked</li><li><Check />Road-tested by specialists</li><li><Check />Service history reviewed</li></ul></section><section><Banknote /><h2>Flexible Finance</h2><p>Explore tailored loan options from leading banking partners.</p><Link className="gold-button" href="/services/finance">Explore Finance</Link></section></aside>
       </section>
       {related.length ? <section className="vehicle-related container-wide"><header><small>More to explore</small><h2>Related Vehicles</h2></header><RelatedVehicles vehicles={related} /></section> : null}
     </main>

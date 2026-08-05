@@ -47,7 +47,7 @@ describe('seeded PostgreSQL inventory', () => {
     const slug = 'mercedes-benz-e-class-e-220d-amg-line-2021'
     const record = await getPublicVehicleBySlug(slug)
     const detail = await getVehicleDetail(slug)
-    expect(record?.stockNumber).toBe('DW-0001')
+    expect(record?.stockNumber).toBe('OA-0001')
     expect(detail?.vehicle.make).toBe('Mercedes-Benz')
     expect(detail?.vehicle.featureGroups.length).toBeGreaterThan(0)
     expect(detail?.vehicle.images).toHaveLength(8)

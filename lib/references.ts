@@ -19,7 +19,7 @@ export async function createReferenceNumber(kind: ReferenceKind) {
     })
 
     while (true) {
-      const referenceNumber = `DW-${kind}-${new Date().getFullYear()}-${String(counter.value).padStart(6, '0')}`
+      const referenceNumber = `OA-${kind}-${new Date().getFullYear()}-${String(counter.value).padStart(6, '0')}`
       if (!(await referenceExists(tx, kind, referenceNumber))) return referenceNumber
       counter = await tx.referenceCounter.update({ where: { key: kind }, data: { value: { increment: 1 } } })
     }

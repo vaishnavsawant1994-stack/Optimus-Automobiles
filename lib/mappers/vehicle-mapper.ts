@@ -87,7 +87,7 @@ export function mapVehicleDetail(record: VehicleDetailRecord): VehicleDetailData
     shortDescription: record.shortDescription,
     description: record.description,
     ...(record.originalPrice ? { originalPrice: formatInr(record.originalPrice) } : {}),
-    location: 'Banjara Hills, Hyderabad',
+    location: 'Geras Imperium Rise, Pune',
     images: record.images.map((image) => ({
       id: image.id,
       url: image.url,

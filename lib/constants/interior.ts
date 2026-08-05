@@ -107,7 +107,7 @@ export const faqs = {
     ['How long does the valuation process take?', 'Most preliminary valuations are completed within one business day.'],
     ['Do I need to visit the showroom?', 'We can begin remotely and arrange an inspection at a convenient location.'],
     ['What documents are required?', 'RC, insurance, identity proof, service history and loan closure documents where applicable.'],
-    ['Is there any fee for valuation?', 'No. Deccan Wheels vehicle valuation is completely free and carries no obligation.'],
+    ['Is there any fee for valuation?', 'No. Optimum Automobiles vehicle valuation is completely free and carries no obligation.'],
   ],
   services: [
     ['What documents are required for RC transfer?', 'RC, insurance, valid ID, address proof and signed transfer forms are normally required.'],
@@ -145,8 +145,8 @@ export const journeySteps = [
 
 export const contactDetails = [
   { title: 'Phone', lines: ['+91 98765 43210', '+91 91234 56789'], icon: Car },
-  { title: 'Email', lines: ['info@deccanwheels.com', 'sales@deccanwheels.com'], icon: Upload },
-  { title: 'Showroom Address', lines: ['Road No. 12, Banjara Hills, Hyderabad, TS 500034'], icon: MapPin },
+  { title: 'Email', lines: ['info@optimumautomobiles.com', 'sales@optimumautomobiles.com'], icon: Upload },
+  { title: 'Showroom Address', lines: ['Geras Imperium Rise, Pune, Maharashtra 411057'], icon: MapPin },
   { title: 'Opening Hours', lines: ['Mon - Sun: 10:00 AM - 8:00 PM'], icon: Clock3 },
   { title: 'WhatsApp', lines: ['+91 98765 43210'], icon: Headphones },
 ]

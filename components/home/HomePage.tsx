@@ -31,7 +31,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BrandMark } from '@/components/home/BrandMark'
-import { DeccanMark } from '@/components/layout/BrandLogo'
+import { OptimumMark } from '@/components/layout/BrandLogo'
 import { SocialIcon } from '@/components/layout/SocialIcon'
 import { HeroCarRotator } from '@/components/shared/HeroCarRotator'
 import { CustomerReviews } from '@/components/shared/CustomerReviews'
@@ -138,7 +138,7 @@ function SectionTitle({ title, actionHref, actionLabel }: { title: string; actio
 }
 
 function HeroSection() {
-  const [copy, setCopy] = useState({ heroEyebrow: 'Deccan Wheels', headline: 'Drive Luxury, Own Excellence.', supportingCopy: "Hyderabad's most trusted destination for premium pre-owned luxury cars." })
+  const [copy, setCopy] = useState({ heroEyebrow: 'Optimum Automobiles', headline: 'Drive Luxury, Own Excellence.', supportingCopy: "Pune's trusted destination for premium pre-owned luxury cars." })
   useEffect(() => {
     let active = true
     fetch('/api/content/homepage').then((response) => response.ok ? response.json() : null).then((payload) => {
@@ -155,7 +155,7 @@ function HeroSection() {
       <div className="hero-home__content container-wide">
         <div className="hero-copy-block">
           <div className="hero-kicker">
-            <DeccanMark className="hero-kicker__mark" />
+            <OptimumMark className="hero-kicker__mark" />
             <span>
               <strong>{copy.heroEyebrow}</strong>
               <small>Pre-owned luxury cars</small>
@@ -182,10 +182,10 @@ function HeroSection() {
             ))}
           </div>
         </div>
-        <div className="hero-assurance" aria-label="Deccan Wheels quality standard">
+        <div className="hero-assurance" aria-label="Optimum Automobiles quality standard">
           <span className="hero-assurance__icon"><BadgeCheck aria-hidden="true" /></span>
           <span>
-            <small>The Deccan Standard</small>
+            <small>The Optimum Standard</small>
             <strong>Verified. Transparent. Ready.</strong>
           </span>
         </div>
@@ -196,7 +196,7 @@ function HeroSection() {
 
 function StatsPanel() {
   return (
-    <section className="stats-panel container-wide" aria-label="Deccan Wheels statistics">
+    <section className="stats-panel container-wide" aria-label="Optimum Automobiles statistics">
       {stats.map((item, index) => {
         const Icon = item.icon
         return (
@@ -467,7 +467,7 @@ function NewArrivals({ vehicles }: { vehicles: VehicleCardData[] }) {
 function Benefits() {
   return (
     <section className="benefits container-wide">
-      <SectionTitle title="Why Choose Deccan Wheels?" />
+      <SectionTitle title="Why Choose Optimum Automobiles?" />
       <div className="benefit-grid">
         {benefits.map((item, index) => {
           const Icon = item.icon
@@ -541,7 +541,7 @@ function InstagramGallery() {
         <div className="instagram-card__icon"><SocialIcon network="instagram" /></div>
         <div className="instagram-card__copy">
           <h2 id="instagram-title">Follow Us On Instagram</h2>
-          <p>@deccan_wheels</p>
+          <p>@optimum_automobiles</p>
         </div>
         <a className="dark-button" href={siteConfig.instagram} target="_blank" rel="noreferrer">
           <SocialIcon network="instagram" />
@@ -615,7 +615,7 @@ function ShowroomContact() {
       <SectionTitle title="Visit & Connect" />
       <div className="showroom-contact">
         <div className="showroom-card">
-        <span className="showroom-card__eyebrow"><MapPin aria-hidden="true" />Hyderabad</span>
+        <span className="showroom-card__eyebrow"><MapPin aria-hidden="true" />Pune</span>
         <h2 id="showroom-section-title">Visit Our Showroom</h2>
         <address>
           <a href={siteConfig.mapsUrl} target="_blank" rel="noreferrer">
@@ -696,11 +696,11 @@ function ShowroomContact() {
           </p>
         ) : null}
         </form>
-        <a className="map-panel" href={siteConfig.mapsUrl} target="_blank" rel="noreferrer" aria-label="Open Deccan Wheels showroom in Google Maps">
+        <a className="map-panel" href={siteConfig.mapsUrl} target="_blank" rel="noreferrer" aria-label="Open Optimum Automobiles showroom in Google Maps">
         <Image src={mapImage} alt="" fill sizes="(min-width: 1180px) 33vw, 100vw" />
         <span>
           <MapPin size={20} />
-          <strong>Deccan Wheels</strong>
+          <strong>Optimum Automobiles</strong>
           <small>Open in Google Maps</small>
         </span>
         </a>

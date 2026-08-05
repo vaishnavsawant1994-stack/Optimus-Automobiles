@@ -170,7 +170,7 @@ test('enquiry assignment keeps internal notes private and publishes customer upd
     prisma.user.findUniqueOrThrow({ where: { email: 'sales@deccanwheels.local' } }),
     prisma.vehicle.findFirstOrThrow({ where: { published: true } }),
   ])
-  const referenceNumber = `DW-ENQ-E2E-${Date.now()}`
+  const referenceNumber = `OA-ENQ-E2E-${Date.now()}`
   const inquiry = await prisma.inquiry.create({ data: { referenceNumber, userId: customer.id, vehicleId: vehicle.id, fullName: customer.name ?? 'Demo Customer', phone: customer.phone ?? '9876543210', email: customer.email, message: 'Temporary workflow enquiry.' } })
   created.inquiries.push(inquiry.id)
   created.resources.push({ resourceType: 'Inquiry', resourceId: inquiry.id })
@@ -194,7 +194,7 @@ test('test drive confirmation and rescheduling reaches the customer account', as
     prisma.user.findUniqueOrThrow({ where: { email: 'sales@deccanwheels.local' } }),
     prisma.vehicle.findFirstOrThrow({ where: { published: true } }),
   ])
-  const referenceNumber = `DW-TD-E2E-${Date.now()}`
+  const referenceNumber = `OA-TD-E2E-${Date.now()}`
   const preferredDate = new Date(Date.now() + 21 * 86_400_000)
   const drive = await prisma.testDrive.create({ data: { referenceNumber, userId: customer.id, vehicleId: vehicle.id, fullName: customer.name ?? 'Demo Customer', phone: customer.phone ?? '9876543210', email: customer.email, preferredDate, preferredTime: '10:30', assignedToId: sales.id } })
   created.testDrives.push(drive.id)
@@ -215,7 +215,7 @@ test('test drive confirmation and rescheduling reaches the customer account', as
 test('sell request records inspection, valuation and customer offer', async ({ page }) => {
   await signIn(page)
   const operations = await prisma.user.findUniqueOrThrow({ where: { email: 'operations@deccanwheels.local' } })
-  const sell = await prisma.sellRequest.create({ data: { referenceNumber: `DW-SELL-E2E-${Date.now()}`, assignedToId: operations.id, status: 'SUBMITTED', name: 'Workflow Seller', email: 'workflow-seller@example.com', phone: '9876543210', make: 'BMW', model: 'X5', year: 2022, mileage: 18000, city: 'Hyderabad' } })
+  const sell = await prisma.sellRequest.create({ data: { referenceNumber: `OA-SELL-E2E-${Date.now()}`, assignedToId: operations.id, status: 'SUBMITTED', name: 'Workflow Seller', email: 'workflow-seller@example.com', phone: '9876543210', make: 'BMW', model: 'X5', year: 2022, mileage: 18000, city: 'Pune' } })
   created.sellRequests.push(sell.id)
   created.resources.push({ resourceType: 'SellRequest', resourceId: sell.id })
   await json(await page.request.post(`/api/admin/sell-requests/${sell.id}/inspection`, { data: { exteriorScore: 8, interiorScore: 9, mechanicalScore: 9, overallConditionScore: 9, documentsVerified: true, serviceHistoryVerified: true, customerSummary: 'Excellent condition.' } }))
@@ -229,7 +229,7 @@ test('sell request records inspection, valuation and customer offer', async ({ p
 test('content publishing and contact settings update public database-backed surfaces', async ({ page }) => {
   await signIn(page)
   const stamp = Date.now()
-  const testimonial = await json<{ data: { id: string } }>(await page.request.post('/api/admin/testimonials', { data: { name: `Workflow Buyer ${stamp}`, rating: 5, quote: 'A verified database-backed testimonial published by the admin workflow test.', avatarUrl: '', purchase: 'Mercedes-Benz E-Class', location: 'Hyderabad', vehicleId: null, verifiedBuyer: true, featured: false, published: true, archived: false, sortOrder: 90 } }), 201)
+  const testimonial = await json<{ data: { id: string } }>(await page.request.post('/api/admin/testimonials', { data: { name: `Workflow Buyer ${stamp}`, rating: 5, quote: 'A verified database-backed testimonial published by the admin workflow test.', avatarUrl: '', purchase: 'Mercedes-Benz E-Class', location: 'Pune', vehicleId: null, verifiedBuyer: true, featured: false, published: true, archived: false, sortOrder: 90 } }), 201)
   created.testimonials.push(testimonial.data.id)
   const gallery = await json<{ data: { id: string } }>(await page.request.post('/api/admin/gallery', { data: { title: `Workflow Gallery ${stamp}`, imageUrl: '/images/showroom/deccan-wheels-showroom-final.png', alt: 'Workflow gallery showroom image', caption: 'Temporary published gallery record.', category: 'SHOWROOM', href: '', featured: false, published: true, sortOrder: 90 } }), 201)
   created.gallery.push(gallery.data.id)
