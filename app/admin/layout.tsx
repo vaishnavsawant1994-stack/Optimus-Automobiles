@@ -35,7 +35,8 @@ const groups: Array<{ label: string; items: Array<AdminNavItem & { permission: A
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const actor = await requireAdmin('/admin')
-  const unread = await prisma.adminNotification.count({ where: { userId: actor.id, readAt: null } })
+  let unread = 0
+  try { unread = await prisma.adminNotification.count({ where: { userId: actor.id, readAt: null } }) } catch {}
   const navGroups = groups.map((group) => ({ label: group.label, items: group.items.filter((item) => hasPermission(actor.role, item.permission)).map(({ permission: _, ...item }) => item) })).filter((group) => group.items.length)
   return <AdminShell navGroups={navGroups} name={actor.name ?? actor.email} role={actor.role} unread={unread}>{children}</AdminShell>
 }

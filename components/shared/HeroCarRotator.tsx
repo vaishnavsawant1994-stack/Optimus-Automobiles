@@ -20,9 +20,15 @@ export function HeroCarRotator() {
     return () => window.clearInterval(timer)
   }, [])
 
+  const visibleIndexes = new Set([
+    (activeSlide - 1 + heroCarSlides.length) % heroCarSlides.length,
+    activeSlide,
+    (activeSlide + 1) % heroCarSlides.length,
+  ])
+
   return (
     <div className="hero-car-rotator" aria-live="off">
-      {heroCarSlides.map((slide, index) => (
+      {heroCarSlides.map((slide, index) => visibleIndexes.has(index) ? (
         <Image
           className={`hero-home__image hero-car-rotator__image${activeSlide === index ? ' is-active' : ''}`}
           src={slide.image}
@@ -30,9 +36,9 @@ export function HeroCarRotator() {
           fill
           priority={index === 0}
           sizes="100vw"
-          key={slide.name}
+          key={slide.image}
         />
-      ))}
+      ) : null)}
     </div>
   )
 }

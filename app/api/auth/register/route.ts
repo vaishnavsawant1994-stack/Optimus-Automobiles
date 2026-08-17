@@ -8,7 +8,7 @@ import { sendVerificationEmail } from '@/lib/email/service'
 import { checkRateLimit, requestFingerprint } from '@/lib/security/rate-limit'
 
 export async function POST(request: Request) {
-  const limit = checkRateLimit(requestFingerprint(request, 'register'), 5, 15 * 60_000)
+  const limit = await checkRateLimit(requestFingerprint(request, 'register'), 5, 15 * 60_000)
   if (!limit.allowed) return NextResponse.json({ error: { code: 'RATE_LIMITED', message: 'Too many attempts. Please try again later.' } }, { status: 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } })
 
   const parsed = signUpSchema.safeParse(await request.json().catch(() => null))

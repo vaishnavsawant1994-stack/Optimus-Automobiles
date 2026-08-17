@@ -16,7 +16,7 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', loop: true, skipSnaps: false })
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [isCarouselPaused, setIsCarouselPaused] = useState(false)
-  const [reviewItems, setReviewItems] = useState<Review[]>(testimonials)
+  const [reviewItems, setReviewItems] = useState<Review[]>([])
 
   useEffect(() => {
     let active = true
@@ -50,13 +50,7 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
   return (
     <section className="testimonials container-wide">
       <div className="section-title"><span /><h2>{title}</h2><span /></div>
-      <div className="testimonial-summary" aria-label="Customer satisfaction rating">
-        <strong>4.9</strong>
-        <span className="testimonial-summary__stars" aria-label="Rated 4.9 out of 5 stars">
-          {Array.from({ length: 5 }).map((_, index) => <Star key={index} aria-hidden="true" fill="currentColor" />)}
-        </span>
-        <span>from 2,500+ verified buyers</span>
-      </div>
+      {reviewItems.length ? <div className="testimonial-summary" aria-label="Published customer feedback"><strong>{(reviewItems.reduce((sum, item) => sum + (item.rating ?? 5), 0) / reviewItems.length).toFixed(1)}</strong><span className="testimonial-summary__stars" aria-hidden="true">{Array.from({ length: 5 }).map((_, index) => <Star key={index} fill="currentColor" />)}</span><span>{reviewItems.length} published review{reviewItems.length === 1 ? '' : 's'}</span></div> : <p className="testimonial-summary">Customer reviews will appear here after they are reviewed and published.</p>}
       <div
         className="testimonial-wrap"
         onMouseEnter={() => setIsCarouselPaused(true)}
@@ -74,7 +68,7 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
               return (
                 <article
                   className={`testimonial-card${activeTestimonial === index ? ' testimonial-card--active' : ''}`}
-                  key={testimonial.name}
+                  key={testimonial.id || `review-${index}-${testimonial.name}`}
                   aria-labelledby={titleId}
                   onMouseEnter={() => setActiveTestimonial(index)}
                   onFocus={() => setActiveTestimonial(index)}
@@ -86,11 +80,11 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
                       <div className="testimonial-card__reviewer">
                         <div className="testimonial-card__avatar">
                           <Image src={testimonial.avatar} alt="" aria-hidden="true" width={76} height={76} unoptimized={testimonial.avatar.startsWith('http')} />
-                          <BadgeCheck aria-hidden="true" />
+                          {testimonial.verifiedBuyer ? <BadgeCheck aria-hidden="true" /> : null}
                         </div>
                         <div>
                           <h3 id={titleId}>{testimonial.name}</h3>
-                          <span className="testimonial-card__verified"><BadgeCheck aria-hidden="true" />Verified buyer</span>
+                          {testimonial.verifiedBuyer ? <span className="testimonial-card__verified"><BadgeCheck aria-hidden="true" />Verified buyer</span> : <span>Published feedback</span>}
                         </div>
                       </div>
                       <div className="testimonial-card__score">
@@ -117,7 +111,7 @@ export function CustomerReviews({ title = 'Happy Customers' }: { title?: string 
         {reviewItems.map((testimonial, index) => (
           <button
             type="button"
-            key={testimonial.name}
+            key={testimonial.id || `review-${index}-${testimonial.name}`}
             className={activeTestimonial === index ? 'is-active' : ''}
             aria-label={`Show testimonial from ${testimonial.name}`}
             aria-pressed={activeTestimonial === index}

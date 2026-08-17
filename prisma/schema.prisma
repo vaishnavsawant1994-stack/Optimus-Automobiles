@@ -575,12 +575,12 @@ model TestDrive {
 }
 
 model SellRequest {
-  id              String          @id @default(cuid())
-  referenceNumber String          @unique
+  id              String                  @id @default(cuid())
+  referenceNumber String                  @unique
   userId          String?
   assignedToId    String?
-  status          RequestStatus   @default(DRAFT)
-  priority        LeadPriority    @default(NORMAL)
+  status          RequestStatus           @default(DRAFT)
+  priority        LeadPriority            @default(NORMAL)
   name            String?
   email           String?
   phone           String?
@@ -593,14 +593,15 @@ model SellRequest {
   city            String?
   expectedPrice   Int?
   followUpAt      DateTime?
-  version         Int             @default(1)
+  version         Int                     @default(1)
   message         String?
-  user            User?           @relation("CustomerSellRequests", fields: [userId], references: [id], onDelete: SetNull)
-  assignedTo      User?           @relation("AssignedSellRequests", fields: [assignedToId], references: [id], onDelete: SetNull)
+  user            User?                   @relation("CustomerSellRequests", fields: [userId], references: [id], onDelete: SetNull)
+  assignedTo      User?                   @relation("AssignedSellRequests", fields: [assignedToId], references: [id], onDelete: SetNull)
   inspection      SellInspection?
   valuations      SellValuation[]
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  attachments     SellRequestAttachment[]
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
 
   @@index([status])
   @@index([userId])
@@ -608,6 +609,30 @@ model SellRequest {
   @@index([priority])
   @@index([followUpAt])
   @@index([createdAt])
+}
+
+model SellRequestAttachment {
+  id            String      @id @default(cuid())
+  sellRequestId String
+  storageKey    String      @unique
+  originalName  String
+  mimeType      String
+  sizeBytes     Int
+  checksum      String
+  createdAt     DateTime    @default(now())
+  sellRequest   SellRequest @relation(fields: [sellRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([sellRequestId, checksum])
+  @@index([sellRequestId, createdAt])
+}
+
+model RateLimitBucket {
+  key       String   @id
+  count     Int
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+
+  @@index([resetAt])
 }
 
 model SellInspection {

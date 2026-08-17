@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db/prisma'
 import { checkRateLimit, requestFingerprint } from '@/lib/security/rate-limit'
 
 export async function POST(request: Request) {
-  const limit = checkRateLimit(requestFingerprint(request, 'verify-email'), 10, 15 * 60_000)
+  const limit = await checkRateLimit(requestFingerprint(request, 'verify-email'), 10, 15 * 60_000)
   if (!limit.allowed) return NextResponse.json({ error: { code: 'RATE_LIMITED', message: 'Too many attempts. Please try again later.' } }, { status: 429 })
   const body = await request.json().catch(() => null) as { token?: string } | null
   if (!body?.token || body.token.length > 256) return NextResponse.json({ error: { code: 'INVALID_TOKEN', message: 'This verification link is invalid.' } }, { status: 400 })

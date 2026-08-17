@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { useFavourites } from '@/components/providers/FavouriteProvider'
+import { useSiteConfig } from '@/components/providers/SiteConfigProvider'
 import { useHydrated } from '@/lib/hooks/use-hydrated'
 import { InteriorCta, PageHero } from '@/components/interior/PagePrimitives'
 import { CustomerReviews } from '@/components/shared/CustomerReviews'
@@ -78,6 +79,7 @@ export function VehicleResultCard({ vehicle, favorite, toggle, listView = false 
 }
 
 export function InventoryPage({ result, basePath = '/inventory', eyebrow = 'Home / Inventory', title = 'Explore', accent = 'Inventory', description, lockedFilter }: InventoryPageProps) {
+  const siteConfig = useSiteConfig()
   const hydrated = useHydrated()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -112,8 +114,8 @@ export function InventoryPage({ result, basePath = '/inventory', eyebrow = 'Home
       </section>
       {filterOpen ? <div className="mobile-filter-drawer" role="dialog" aria-modal="true"><button className="mobile-filter-backdrop" type="button" aria-label="Close filters" onClick={() => setFilterOpen(false)} /><InventoryFilter result={result} basePath={basePath} lockedFilter={lockedFilter} onClose={() => setFilterOpen(false)} interactive={hydrated} /></div> : null}
       <CustomerReviews />
-      <InteriorCta title="Can't Find the Right Car?" text="Let our experts help you find the perfect match from our extended network." image={interiorImages.sedan} primary={{ label: 'Get Assistance', href: '/contact' }} secondary={{ label: 'Call +91 98765 43210', href: 'tel:+919876543210' }} />
-      <section className="support-strip container-wide"><article><Banknote /><span><strong>Flexible Finance Options</strong><small>Quick approvals and minimal paperwork.</small></span></article><article><Settings2 /><span><strong>Certified & Inspected</strong><small>Every car receives a detailed inspection.</small></span></article><article><CarFront /><span><strong>Sell Your Car</strong><small>Get a fair, fast valuation.</small></span></article></section>
+      <InteriorCta title="Can't Find the Right Car?" text="Let our experts help you find the perfect match from our extended network." image={interiorImages.sedan} primary={{ label: 'Get Assistance', href: '/contact' }} secondary={{ label: siteConfig.phone === 'Contact showroom' ? 'Contact Showroom' : `Call ${siteConfig.phone}`, href: siteConfig.phoneHref }} />
+      <section className="support-strip container-wide"><article><Banknote /><span><strong>Finance Assistance</strong><small>Compare lender terms and prepare the application.</small></span></article><article><Settings2 /><span><strong>Condition Information</strong><small>Review the checks available for each car.</small></span></article><article><CarFront /><span><strong>Sell Your Car</strong><small>Request a market-led valuation.</small></span></article></section>
     </main>
   )
 }

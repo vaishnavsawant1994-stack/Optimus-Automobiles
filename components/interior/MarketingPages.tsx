@@ -33,7 +33,6 @@ import {
 import { CustomerReviews } from '@/components/shared/CustomerReviews'
 import {
   aboutValues,
-  contactDetails,
   faqs,
   helpCards,
   interiorImages,
@@ -43,15 +42,16 @@ import {
   trustStats,
   whySell,
 } from '@/lib/constants/interior'
-import { gallery, siteConfig } from '@/lib/constants/site'
+import { gallery } from '@/lib/constants/site'
+import { useSiteConfig } from '@/components/providers/SiteConfigProvider'
 
 function CredibilityStrip() {
   return (
     <div className="credibility-strip container-wide">
       <span><ShieldCheck /><strong>No Obligation</strong><small>100% free evaluation</small></span>
       <span><BadgeCheck /><strong>Secure & Confidential</strong><small>Your data is safe</small></span>
-      <span><Car /><strong>5000+ Cars Sold</strong><small>Trusted by customers</small></span>
-      <span><Star /><strong>Google Rated 4.9/5</strong><small>Verified reviews</small></span>
+      <span><Car /><strong>Curated Inventory</strong><small>Premium pre-owned cars</small></span>
+      <span><Star /><strong>Published Feedback</strong><small>Verified status is labelled</small></span>
     </div>
   )
 }
@@ -87,18 +87,20 @@ function SellValuationForm() {
     setStatus('loading')
     setMessage('')
     const form = new FormData(formElement)
-    const response = await fetch('/api/sell-request', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.fromEntries(form.entries())),
-    })
-    const body = await response.json().catch(() => ({ message: 'The message could not be sent. Please try again.' })) as { message?: string }
-    setStatus(response.ok ? 'success' : 'error')
-    setMessage(body.message ?? 'Please try again.')
-    if (response.ok) {
-      formElement.reset()
-      setFiles([])
-      setFileNotice('')
+    files.forEach((file) => form.append('attachments', file))
+    try {
+      const response = await fetch('/api/sell-request', { method: 'POST', body: form })
+      const body = await response.json().catch(() => ({ message: 'The request could not be sent. Please try again.' })) as { message?: string }
+      setStatus(response.ok ? 'success' : 'error')
+      setMessage(body.message ?? 'Please try again.')
+      if (response.ok) {
+        formElement.reset()
+        setFiles([])
+        setFileNotice('')
+      }
+    } catch {
+      setStatus('error')
+      setMessage('We could not connect to the showroom. Check your connection and try again.')
     }
   }
 
@@ -157,6 +159,7 @@ function SellValuationForm() {
           <span className="upload-browse-button">Choose Files</span>
           <small>JPG, PNG or PDF · up to 8 files · 10 MB each</small>
           <input
+            name="attachment-picker"
             type="file"
             multiple
             accept="image/jpeg,image/png,application/pdf"
@@ -193,7 +196,7 @@ export function SellYourCarPage() {
       <CredibilityStrip />
       <section className="interior-section container-wide"><InteriorHeading title="Frequently Asked Questions" /><FaqList items={faqs.sell} /></section>
       <CustomerReviews title="What Our Sellers Say" />
-      <InteriorCta title="Ready to Sell Your Car?" text="Get the best value today with a process that is quick, easy and completely transparent." image={interiorImages.sedan} primary={{ label: 'Get Free Valuation Now', href: '#valuation' }} />
+      <InteriorCta title="Ready to Sell Your Car?" text="Request a market-led valuation through a clear, documented process." image={interiorImages.sedan} primary={{ label: 'Get Free Valuation Now', href: '#valuation' }} />
     </main>
   )
 }
@@ -207,33 +210,34 @@ function ServiceBand({ reverse, eyebrow, title, text, image, points }: { reverse
   )
 }
 
-export function ServicesPage() {
+export function ServicesPage({ content = {} }: { content?: Record<string, string> }) {
+  const publicConfig = useSiteConfig()
   return (
     <main className="interior-page" id="main-content">
-      <PageHero eyebrow="Home / Services" title="Luxury Car Care" accent="Done Right." text="Finance, insurance, transfers and complete ownership support." image={interiorImages.hero} actions={[{ label: 'Book a Service', href: '/contact' }, { label: 'Talk to an Expert', href: 'tel:+919876543210', secondary: true }]} />
+      <PageHero eyebrow={content.heroEyebrow || 'Home / Services'} title={content.headline || content.heading || 'Luxury Car Care'} accent={content.headline || content.heading ? undefined : 'Done Right.'} text={content.supportingCopy || content.description || 'Finance, insurance, transfers and complete ownership support.'} image={interiorImages.hero} actions={[{ label: content.primaryCtaLabel || 'Book a Service', href: content.primaryCtaHref || '/contact' }, { label: 'Talk to an Expert', href: publicConfig.phoneHref, secondary: true }]} />
       <section className="interior-section container-wide"><InteriorHeading title="Our Services" /><IconFeatureGrid items={serviceCards.map((item) => ({ ...item, href: '/contact' }))} /></section>
       <section className="service-bands container-wide">
-        <ServiceBand eyebrow="Easy & Hassle-Free" title="Car Finance Solutions" text="Drive your dream car with flexible financing and quick approvals." image={interiorImages.finance} points={['Competitive interest rates', 'Up to 100% funding', 'Minimal documentation', 'Quick approval process']} />
+        <ServiceBand eyebrow="Clear Application Support" title="Car Finance Solutions" text="Explore lender options and receive help preparing the application." image={interiorImages.finance} points={['Terms set by the lender', 'Eligibility-based funding', 'Document checklist', 'Application coordination']} />
         <ServiceBand reverse eyebrow="Complete Peace of Mind" title="Insurance Assistance" text="We help select the right coverage and assist through renewals and claims." image={interiorImages.service} points={['Comprehensive coverage options', 'Top insurance partners', 'Cashless claim support', 'Hassle-free renewals']} />
-        <ServiceBand eyebrow="Best Value for Your Car" title="Buyback Solutions" text="Get a transparent market-led valuation and a secure payment experience." image={interiorImages.key} points={['Free car evaluation', 'Instant payment', 'Transparent process', 'No hidden charges']} />
+        <ServiceBand eyebrow="Market-led Evaluation" title="Buyback Solutions" text="Receive a documented offer and coordinated payment process." image={interiorImages.key} points={['Free car evaluation', 'Payment after verification', 'Documented process', 'Clear transaction terms']} />
       </section>
       <section className="interior-section container-wide"><InteriorHeading title="Why Choose Optimum Automobiles Services?" /><IconFeatureGrid items={whySell} className="feature-grid--five" /></section>
       <section className="interior-section container-wide"><InteriorHeading eyebrow="Simple from Start to Finish" title="Our Process" /><ProcessSteps items={journeySteps.slice(0, 5)} /></section>
       <CustomerReviews title="What Our Customers Say" />
       <section className="interior-section container-wide"><InteriorHeading title="Frequently Asked Questions" /><FaqList items={faqs.services} /></section>
-      <InteriorCta title="Need Assistance? We’re Here to Help." text="Book a service or speak to our experts for personalised assistance." image={interiorImages.sedan} primary={{ label: 'Book a Service', href: '/contact' }} secondary={{ label: 'Call Us Now', href: 'tel:+919876543210' }} />
+      <InteriorCta title="Need Assistance? We’re Here to Help." text="Book a service or speak to our experts for personalised assistance." image={interiorImages.sedan} primary={{ label: 'Book a Service', href: '/contact' }} secondary={{ label: 'Call Us Now', href: publicConfig.phoneHref }} />
     </main>
   )
 }
 
-export function AboutPage() {
+export function AboutPage({ content = {} }: { content?: Record<string, string> }) {
   return (
     <main className="interior-page" id="main-content">
-      <PageHero eyebrow="Home / About Us" title="About" accent="Optimum Automobiles" text="Built on trust. Driven by premium automotive expertise." image={interiorImages.hero} />
-      <section className="story-section container-wide"><div className="story-image"><Image src={interiorImages.showroom} alt="Inside the Optimum Automobiles showroom" fill sizes="50vw" /></div><div><InteriorHeading eyebrow="Our Story" title="Building Trust. Delivering Excellence." /><p>Optimum Automobiles was founded with a simple belief: luxury should be accessible and trust should be non-negotiable. What began as a focused showroom has grown into one of Pune’s trusted premium pre-owned car destinations.</p><p>Every car is handpicked, rigorously inspected and delivered with complete transparency. For us, it is not only about cars; it is about creating relationships that last.</p></div></section>
+      <PageHero eyebrow={content.heroEyebrow || 'Home / About Us'} title={content.headline || content.heading || 'About'} accent={content.headline || content.heading ? undefined : 'Optimum Automobiles'} text={content.supportingCopy || content.description || 'Built on clear information and premium automotive service.'} image={interiorImages.hero} />
+      <section className="story-section container-wide"><div className="story-image"><Image src={interiorImages.showroom} alt="Inside the Optimum Automobiles showroom" fill sizes="50vw" /></div><div><InteriorHeading eyebrow="Our Story" title="Building Trust Through Clear Service." /><p>Optimum Automobiles was founded in 2024 with a simple belief: premium-car transactions should be clear, informed and personal. We operate a focused showroom for pre-owned luxury cars in Pune.</p><p>Cars are selected for the showroom, available condition information is explained, and transaction steps are documented. We encourage every customer to inspect, test-drive and review the written terms before committing.</p></div></section>
       <section className="trust-stat-grid container-wide">{trustStats.map((item) => { const Icon = item.icon; return <article key={item.label}><Icon /><strong>{item.value}</strong><span>{item.label}</span></article> })}</section>
       <section className="interior-section container-wide"><InteriorHeading title="Why Choose Optimum Automobiles?" /><IconFeatureGrid items={aboutValues} /></section>
-      <section className="founder-section container-wide"><div className="founder-image"><Image src={interiorImages.founder} alt="Founder of Optimum Automobiles" fill sizes="40vw" /></div><div><InteriorHeading eyebrow="Founder’s Message" title="Passion. People. Performance." /><p>Our mission is to redefine the pre-owned luxury car experience through honesty, quality and exceptional service. Thank you for trusting us as your automotive partner.</p><strong>— Sandeep Reddy</strong><small>Founder & CEO, Optimum Automobiles</small></div></section>
+      <section className="founder-section container-wide"><div className="founder-image"><Image src={interiorImages.founder} alt="Founder of Optimum Automobiles" fill sizes="40vw" /></div><div><InteriorHeading eyebrow="Founder’s Message" title="Passion. People. Performance." /><p>Our mission is to redefine the pre-owned luxury car experience through honesty, quality and exceptional service. Thank you for trusting us as your automotive partner.</p><strong>— Omkar Patil</strong><small>Owner & Founder, OPTIMUM AUTOMOBILES (Est. 11/04/2024)</small></div></section>
       <section className="interior-section container-wide"><InteriorHeading title="A Seamless Journey from Start to Finish" /><ProcessSteps items={journeySteps} /></section>
       <CustomerReviews title="What Our Customers Say" />
       <section className="interior-section container-wide"><InteriorHeading title="Our Showroom" /><div className="about-gallery">{gallery.slice(0, 5).map((item) => <div key={item.alt}><Image src={item.image} alt={item.alt} fill sizes="20vw" /></div>)}</div></section>
@@ -250,11 +254,16 @@ function ContactForm() {
     const formElement = event.currentTarget
     setStatus('loading')
     const form = new FormData(formElement)
-    const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(form.entries())) })
-    const body = (await response.json()) as { message?: string }
-    setStatus(response.ok ? 'success' : 'error')
-    setMessage(body.message ?? 'Please try again.')
-    if (response.ok) formElement.reset()
+    try {
+      const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(form.entries())) })
+      const body = await response.json().catch(() => ({ message: 'The message could not be sent.' })) as { message?: string }
+      setStatus(response.ok ? 'success' : 'error')
+      setMessage(body.message ?? 'Please try again.')
+      if (response.ok) formElement.reset()
+    } catch {
+      setStatus('error')
+      setMessage('We could not connect to the showroom. Check your connection and try again.')
+    }
   }
   return (
     <form className="contact-page-form" onSubmit={submit}>
@@ -270,20 +279,21 @@ function ContactForm() {
   )
 }
 
-export function ContactPage() {
+export function ContactPage({ content = {} }: { content?: Record<string, string> }) {
+  const publicConfig = useSiteConfig()
   return (
     <main className="interior-page" id="main-content">
-      <PageHero eyebrow="Home / Contact" title="Contact" accent="Our Team" text="Expert help for buying, selling, finance and ownership." image={interiorImages.hero} compact />
+      <PageHero eyebrow={content.heroEyebrow || 'Home / Contact'} title={content.headline || content.heading || 'Contact'} accent={content.headline || content.heading ? undefined : 'Our Team'} text={content.supportingCopy || content.description || 'Expert help for buying, selling, finance and ownership.'} image={interiorImages.hero} compact />
       <section className="contact-workspace container-wide">
-        <aside className="contact-details-panel"><InteriorHeading title="Get in Touch" />{contactDetails.map((item) => { const Icon = item.icon; return <article key={item.title}><span><Icon /></span><div><h3>{item.title}</h3>{item.lines.map((line) => <p key={line}>{line}</p>)}</div></article> })}<a className="outline-button" href={siteConfig.mapsUrl} target="_blank" rel="noreferrer">Get Directions<ArrowRight /></a></aside>
+        <aside className="contact-details-panel"><InteriorHeading title="Get in Touch" /><article><span><Phone /></span><div><h3>Call Us</h3><p>{publicConfig.phone}</p><p>{publicConfig.secondaryPhone}</p></div></article><article><span><MapPin /></span><div><h3>Visit Us</h3><p>{publicConfig.address}</p><p>{publicConfig.hours}</p></div></article><a className="outline-button" href={publicConfig.mapsUrl} target="_blank" rel="noreferrer">Get Directions<ArrowRight /></a></aside>
         <ContactForm />
         <aside className="location-panel"><InteriorHeading title="Our Location" /><div className="location-map"><Image src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=900&q=82" alt="Map showing Optimum Automobiles showroom area" fill sizes="30vw" /><span><MapPin /><strong>Optimum Automobiles</strong><small>Geras Imperium Rise, Pune</small></span></div><div><h3>Easy to Find, Worth the Drive.</h3><p>Located at Geras Imperium Rise in Pune, with a premium collection ready to explore.</p></div></aside>
       </section>
-      <section className="visit-help container-wide"><div className="visit-showroom"><div><Image src={interiorImages.showroom} alt="Optimum Automobiles luxury showroom" fill sizes="50vw" /></div><article><InteriorHeading title="Visit Our Showroom" /><p>Step into our world of luxury and explore a curated collection in a world-class showroom.</p><Link className="outline-button" href="/inventory">View Inventory<ArrowRight /></Link></article></div><div><InteriorHeading title="How We Help You" /><IconFeatureGrid items={helpCards} /></div></section>
+      <section className="visit-help container-wide"><div className="visit-showroom"><div><Image src={interiorImages.showroom} alt="Optimum Automobiles luxury showroom" fill sizes="50vw" /></div><article><InteriorHeading title="Visit Our Showroom" /><p>Explore the current collection in person and speak directly with our showroom team.</p><Link className="outline-button" href="/inventory">View Inventory<ArrowRight /></Link></article></div><div><InteriorHeading title="How We Help You" /><IconFeatureGrid items={helpCards} /></div></section>
       <CustomerReviews />
       <section className="interior-section container-wide"><InteriorHeading title="Frequently Asked Questions" /><FaqList items={faqs.contact} /></section>
-      <InteriorCta title="Ready to Find Your Dream Car?" text="Explore our handpicked collection of luxury pre-owned cars." image={interiorImages.sedan} primary={{ label: 'Browse Inventory', href: '/inventory' }} secondary={{ label: 'Chat on WhatsApp', href: siteConfig.whatsAppUrl }} />
-      <div className="mobile-contact-actions"><a href={siteConfig.phoneHref}><Phone />Call</a><a href={siteConfig.whatsAppUrl}><MessageCircle />WhatsApp</a><a href={siteConfig.mapsUrl}><MapPin />Directions</a></div>
+      <InteriorCta title="Ready to Find Your Dream Car?" text="Explore our handpicked collection of luxury pre-owned cars." image={interiorImages.sedan} primary={{ label: 'Browse Inventory', href: '/inventory' }} secondary={{ label: publicConfig.whatsAppUrl.startsWith('https://wa.me/') ? 'Chat on WhatsApp' : 'Contact Us', href: publicConfig.whatsAppUrl }} />
+      <div className="mobile-contact-actions"><a href={publicConfig.phoneHref}><Phone />Call</a><a href={publicConfig.whatsAppUrl}><MessageCircle />{publicConfig.whatsAppUrl.startsWith('https://wa.me/') ? 'WhatsApp' : 'Contact'}</a><a href={publicConfig.mapsUrl}><MapPin />Directions</a></div>
     </main>
   )
 }

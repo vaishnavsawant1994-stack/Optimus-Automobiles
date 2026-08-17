@@ -53,7 +53,7 @@ export default async function VehiclePage({ params }: PageProps) {
           <p>{vehicle.year} luxury pre-owned vehicle</p><h1>{fullTitle}</h1><h2>{vehicle.variant}</h2><strong className="vehicle-detail-price">{vehicle.price}</strong>{vehicle.originalPrice ? <del>{vehicle.originalPrice}</del> : null}
           <dl><div><dt>Stock</dt><dd>{vehicle.stockNumber}</dd></div><div><dt>Location</dt><dd><MapPin />{vehicle.location}</dd></div></dl>
           {vehicle.status === 'SOLD' ? <div className="vehicle-unavailable-note">This vehicle has been sold. Explore similar available cars below.</div> : <VehicleActions vehicleId={vehicle.id} slug={vehicle.slug} title={`${vehicle.year} ${fullTitle}`} />}
-          <a className="vehicle-whatsapp" href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi Optimum Automobiles, I am interested in ${vehicle.year} ${fullTitle} (${vehicle.stockNumber}).`)}`} target="_blank" rel="noreferrer"><MessageCircle />Chat about this vehicle</a>
+          <a className="vehicle-whatsapp" href={process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ? `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi Optimum Automobiles, I am interested in ${vehicle.year} ${fullTitle} (${vehicle.stockNumber}).`)}` : '/contact'} target={process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ? '_blank' : undefined} rel={process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ? 'noreferrer' : undefined}><MessageCircle />{process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ? 'Chat about this vehicle' : 'Contact us about this vehicle'}</a>
         </aside>
       </section>
       <section className="vehicle-detail-content container-wide">

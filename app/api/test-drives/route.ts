@@ -7,7 +7,7 @@ import { sendEngagementConfirmation } from '@/lib/email/service'
 import { checkRateLimit, requestFingerprint } from '@/lib/security/rate-limit'
 
 export async function POST(request: Request) {
-  const limit = checkRateLimit(requestFingerprint(request, 'test-drive'), 5, 10 * 60_000)
+  const limit = await checkRateLimit(requestFingerprint(request, 'test-drive'), 5, 10 * 60_000)
   if (!limit.allowed) return NextResponse.json({ error: { code: 'RATE_LIMITED', message: 'Too many test-drive requests were submitted. Please try again shortly.' } }, { status: 429 })
   const parsed = testDriveSchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) return NextResponse.json({ error: { code: 'INVALID_REQUEST', message: 'Please check the test-drive details.', fields: parsed.error.flatten().fieldErrors } }, { status: 400 })
