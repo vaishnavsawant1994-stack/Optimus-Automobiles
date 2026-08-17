@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server'
 import { NewsletterStatus } from '@prisma/client'
 import { prisma } from '@/lib/db/prisma'
 import { newsletterSchema } from '@/lib/validation/forms'
+import { checkRateLimit, requestFingerprint } from '@/lib/security/rate-limit'
 
 export async function POST(request: Request) {
+  const limit = await checkRateLimit(requestFingerprint(request, 'newsletter'), 5, 15 * 60_000)
+  if (!limit.allowed) return NextResponse.json({ message: limit.unavailable ? 'Newsletter signup is temporarily unavailable.' : 'Too many attempts. Please try again later.' }, { status: limit.unavailable ? 503 : 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } })
   const result = newsletterSchema.safeParse(await request.json().catch(() => null))
 
   if (!result.success) {

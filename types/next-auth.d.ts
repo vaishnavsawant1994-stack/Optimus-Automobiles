@@ -9,7 +9,7 @@ declare module 'next-auth' {
       status: UserStatus
       sessionVersion: number
     } & DefaultSession['user']
-    authError?: 'SESSION_REVOKED' | 'ACCOUNT_INACTIVE'
+    authError?: 'SESSION_REVOKED' | 'ACCOUNT_INACTIVE' | 'AUTH_SERVICE_UNAVAILABLE'
   }
 
   interface User {
@@ -24,6 +24,6 @@ declare module 'next-auth/jwt' {
     role?: UserRole
     status?: UserStatus
     sessionVersion?: number
-    authError?: 'SESSION_REVOKED' | 'ACCOUNT_INACTIVE'
+    authError?: 'SESSION_REVOKED' | 'ACCOUNT_INACTIVE' | 'AUTH_SERVICE_UNAVAILABLE'
   }
 }

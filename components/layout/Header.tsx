@@ -21,14 +21,17 @@ import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 import { BrandLogo } from '@/components/layout/BrandLogo'
 import { SocialIcon } from '@/components/layout/SocialIcon'
-import { navItems, siteConfig } from '@/lib/constants/site'
+import { navItems } from '@/lib/constants/site'
 import type { SearchSuggestion } from '@/lib/types/inventory'
 import { useFavourites } from '@/components/providers/FavouriteProvider'
+import { useSiteConfig } from '@/components/providers/SiteConfigProvider'
+import { useFocusTrap } from '@/lib/hooks/use-focus-trap'
 
 export function Header() {
   const pathname = usePathname()
   const { data: session, status: sessionStatus } = useSession()
   const favourites = useFavourites()
+  const publicConfig = useSiteConfig()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -37,6 +40,8 @@ export function Header() {
   const [searchLoading, setSearchLoading] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const mobileDialogRef = useFocusTrap<HTMLDivElement>(mobileOpen)
+  const searchDialogRef = useFocusTrap<HTMLDivElement>(searchOpen)
 
   useEffect(() => {
     if (!searchOpen) return
@@ -96,39 +101,28 @@ export function Header() {
       <div className="utility-bar">
         <div className="utility-bar__inner">
           <div className="utility-group utility-group--wide">
-            <a href={siteConfig.phoneHref}>
+            <a href={publicConfig.phoneHref}>
               <Phone size={14} />
-              {siteConfig.phone}
+              {publicConfig.phone}
             </a>
             <span className="utility-divider" />
-            <a href={siteConfig.mapsUrl} target="_blank" rel="noreferrer">
+            <a href={publicConfig.mapsUrl} target="_blank" rel="noreferrer">
               <MapPin size={14} />
-              {siteConfig.address}
+              {publicConfig.address}
             </a>
             <span className="utility-divider" />
             <span>
               <Clock3 size={14} />
-              {siteConfig.hours}
+              {publicConfig.hours}
             </span>
           </div>
           <div className="utility-group">
-            <a className="whatsapp-link" href={siteConfig.whatsAppUrl} target="_blank" rel="noreferrer">
+            <a className="whatsapp-link" href={publicConfig.whatsAppUrl} target="_blank" rel="noreferrer">
               <MessageCircle size={14} />
-              Chat on WhatsApp
+              {publicConfig.whatsAppUrl.startsWith('https://wa.me/') ? 'Chat on WhatsApp' : 'Contact Us'}
             </a>
             <span className="utility-divider utility-divider--social" />
-            <a href={siteConfig.facebook} aria-label="Facebook" target="_blank" rel="noreferrer">
-              <SocialIcon network="facebook" />
-            </a>
-            <a href={siteConfig.instagram} aria-label="Instagram" target="_blank" rel="noreferrer">
-              <SocialIcon network="instagram" />
-            </a>
-            <a href={siteConfig.youtube} aria-label="YouTube" target="_blank" rel="noreferrer">
-              <SocialIcon network="youtube" />
-            </a>
-            <a href={siteConfig.linkedin} aria-label="LinkedIn" target="_blank" rel="noreferrer">
-              <SocialIcon network="linkedin" />
-            </a>
+            {([['facebook', publicConfig.facebook], ['instagram', publicConfig.instagram], ['youtube', publicConfig.youtube], ['linkedin', publicConfig.linkedin]] as const).filter(([, href]) => href && !/^https?:\/\/(www\.)?(facebook|linkedin)\.com\/?$/i.test(href)).map(([network, href]) => <a href={href} aria-label={network} target="_blank" rel="noreferrer" key={network}><SocialIcon network={network} /></a>)}
           </div>
         </div>
       </div>
@@ -201,7 +195,7 @@ export function Header() {
       </header>
 
       {mobileOpen ? (
-        <div className="drawer" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+        <div className="drawer" role="dialog" aria-modal="true" aria-label="Mobile navigation" ref={mobileDialogRef}>
           <div className="drawer__panel">
             <div className="drawer__header">
               <BrandLogo compact />
@@ -210,23 +204,19 @@ export function Header() {
               </button>
             </div>
             <nav className="drawer__nav">
-              {navItems.map((item) => (
-                <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}>
-                  {item.label}
-                </Link>
-              ))}
+              {navItems.map((item) => <div className="drawer__nav-group" key={item.href}><Link href={item.href} onClick={() => setMobileOpen(false)}>{item.label}</Link>{item.children ? <div className="drawer__subnav">{item.children.map(([label, href]) => <Link key={href} href={href} onClick={() => setMobileOpen(false)}>{label}</Link>)}</div> : null}</div>)}
               <Link href={session ? '/account' : `/login?callbackUrl=${encodeURIComponent(pathname)}`} onClick={() => setMobileOpen(false)}>{session ? 'My Account' : 'Sign In'}</Link>
               <Link href="/favorites" onClick={() => setMobileOpen(false)}>Saved Vehicles {favourites.count ? `(${favourites.count})` : ''}</Link>
             </nav>
-            <a className="gold-button" href={siteConfig.whatsAppUrl} target="_blank" rel="noreferrer">
-              Chat on WhatsApp
+            <a className="gold-button" href={publicConfig.whatsAppUrl} target="_blank" rel="noreferrer">
+              {publicConfig.whatsAppUrl.startsWith('https://wa.me/') ? 'Chat on WhatsApp' : 'Contact Us'}
             </a>
           </div>
         </div>
       ) : null}
 
       {searchOpen ? (
-        <div className="search-modal" role="dialog" aria-modal="true" aria-label="Global vehicle search">
+        <div className="search-modal" role="dialog" aria-modal="true" aria-label="Global vehicle search" ref={searchDialogRef}>
           <button className="modal-backdrop" type="button" aria-label="Close search" onClick={() => setSearchOpen(false)} />
           <div className="search-modal__panel">
             <div className="search-modal__header">

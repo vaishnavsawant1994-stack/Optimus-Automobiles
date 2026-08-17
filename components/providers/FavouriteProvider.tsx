@@ -3,8 +3,8 @@
 import { useSession } from 'next-auth/react'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
-const STORAGE_KEY = 'deccan-favorites'
-const LEGACY_KEYS = ['inventory-favorites']
+const STORAGE_KEY = 'optimum-favorites'
+const LEGACY_KEYS = ['inventory-favorites', 'deccan-favorites']
 
 type FavouriteContextValue = {
   ids: Set<string>

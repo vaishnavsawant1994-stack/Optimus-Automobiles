@@ -8,7 +8,7 @@ import { checkRateLimit, requestFingerprint } from '@/lib/security/rate-limit'
 const responseMessage = 'If that account still needs verification, a new link has been sent.'
 
 export async function POST(request: Request) {
-  const limit = checkRateLimit(requestFingerprint(request, 'resend-verification'), 3, 15 * 60_000)
+  const limit = await checkRateLimit(requestFingerprint(request, 'resend-verification'), 3, 15 * 60_000)
   if (!limit.allowed) return NextResponse.json({ error: { code: 'RATE_LIMITED', message: 'Please wait before requesting another email.' } }, { status: 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } })
   const body = await request.json().catch(() => null) as { email?: string } | null
   const email = normalizedEmailSchema.safeParse(body?.email)

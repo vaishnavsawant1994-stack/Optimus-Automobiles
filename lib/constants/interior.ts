@@ -60,12 +60,12 @@ export const inventoryVehicles = [
 }))
 
 export const serviceCards = [
-  { title: 'Car Finance', text: 'Fast approvals with trusted banking partners and competitive rates.', icon: Banknote },
+  { title: 'Car Finance', text: 'Compare available lender terms with application support.', icon: Banknote },
   { title: 'Insurance Assistance', text: 'Comprehensive protection with the right coverage and quick claims support.', icon: ShieldCheck },
-  { title: 'RC Transfer', text: 'Hassle-free ownership transfer with end-to-end documentation.', icon: FileCheck2 },
+  { title: 'RC Transfer', text: 'Ownership-transfer coordination with a clear document checklist.', icon: FileCheck2 },
   { title: 'Extended Warranty', text: 'Long-term peace of mind and protection beyond purchase.', icon: BadgeCheck },
   { title: 'Detailing Services', text: 'Professional detailing that restores a showroom-new finish.', icon: Sparkles },
-  { title: 'Buyback Solutions', text: 'Instant valuation and a transparent buyback experience.', icon: HandCoins },
+  { title: 'Buyback Solutions', text: 'A market-led valuation and documented offer process.', icon: HandCoins },
   { title: 'Car Evaluation', text: 'Accurate inspection by experts who understand premium cars.', icon: SearchCheck },
   { title: 'Roadside Assistance', text: 'Round-the-clock help for a worry-free ownership experience.', icon: Wrench },
 ]
@@ -77,29 +77,29 @@ export const sellingSteps = [
 ]
 
 export const whySell = [
-  { title: 'Best Valuation', text: 'Get the strongest market-aligned price for your car.', icon: WalletCards },
-  { title: 'Instant Paperwork', text: 'We handle every RC transfer and document.', icon: FileCheck2 },
+  { title: 'Market-led Valuation', text: 'Receive an estimate based on the car and current market information.', icon: WalletCards },
+  { title: 'Document Coordination', text: 'Receive support with the applicable forms and transfer steps.', icon: FileCheck2 },
   { title: 'Quick Payment', text: 'Secure payment immediately after verification.', icon: HandCoins },
   { title: 'Hassle-Free Process', text: 'One expert guides the complete transaction.', icon: Handshake },
-  { title: 'Trusted by Thousands', text: 'A decade of transparent luxury-car transactions.', icon: ShieldCheck },
+  { title: 'Documented Process', text: 'Clear steps from evaluation through payment and transfer.', icon: ShieldCheck },
 ]
 
 export const aboutValues = [
   { title: 'Trust & Integrity', text: 'Honest deals and complete transparency in every transaction.', icon: ShieldCheck },
-  { title: 'Premium Quality', text: 'Handpicked luxury cars inspected to the highest standards.', icon: BadgeCheck },
-  { title: 'Multi-Point Inspection', text: '150+ checks ensure performance, safety and reliability.', icon: SearchCheck },
+  { title: 'Curated Selection', text: 'Handpicked luxury cars with available condition information.', icon: BadgeCheck },
+  { title: 'Multi-Point Inspection', text: 'Vehicle checks support an informed purchase decision.', icon: SearchCheck },
   { title: 'Finance Made Easy', text: 'Flexible financing options with leading bank partners.', icon: Banknote },
   { title: 'After Sales Support', text: 'Dedicated support continues after your dream car comes home.', icon: Headphones },
   { title: 'Complete Transparency', text: 'Clear documentation with no hidden surprises.', icon: ClipboardCheck },
 ]
 
 export const helpCards = [
-  { title: 'Buy Luxury Cars', text: 'Browse verified premium pre-owned cars.', icon: Car, href: '/inventory' },
-  { title: 'Sell Your Car', text: 'Best valuation and hassle-free process.', icon: HandCoins, href: '/sell-your-car' },
-  { title: 'Finance Assistance', text: 'Flexible loan options at competitive rates.', icon: Banknote, href: '/services/finance' },
+  { title: 'Buy Luxury Cars', text: 'Browse available premium pre-owned cars.', icon: Car, href: '/inventory' },
+  { title: 'Sell Your Car', text: 'Request a market-led valuation and documented offer.', icon: HandCoins, href: '/sell-your-car' },
+  { title: 'Finance Assistance', text: 'Compare available lender options and terms.', icon: Banknote, href: '/services/finance' },
   { title: 'After Sales Support', text: 'Dedicated support even after purchase.', icon: Headphones, href: '/services' },
   { title: 'RC Transfer', text: 'Complete ownership-transfer support.', icon: FileCheck2, href: '/services/rc-transfer' },
-  { title: 'Inspection Help', text: '120+ point quality inspection.', icon: SearchCheck, href: '/services' },
+  { title: 'Inspection Help', text: 'Condition information explained clearly.', icon: SearchCheck, href: '/services' },
 ]
 
 export const faqs = {
@@ -126,12 +126,12 @@ export const faqs = {
 }
 
 export const trustStats = [
-  { value: '10+', label: 'Years of Trust', icon: Clock3 },
-  { value: '5,000+', label: 'Happy Customers', icon: Handshake },
-  { value: '2,800+', label: 'Cars Sold', icon: Car },
-  { value: '100%', label: 'Transparency', icon: ShieldCheck },
-  { value: '150+', label: 'Quality Checks', icon: SearchCheck },
-  { value: '24/7', label: 'Support', icon: Headphones },
+  { value: '2024', label: 'Established', icon: Clock3 },
+  { value: 'Pune', label: 'Local Showroom', icon: Handshake },
+  { value: 'Curated', label: 'Premium Cars', icon: Car },
+  { value: 'Clear', label: 'Documented Pricing', icon: ShieldCheck },
+  { value: 'Multi-step', label: 'Vehicle Checks', icon: SearchCheck },
+  { value: 'Direct', label: 'Showroom Support', icon: Headphones },
 ]
 
 export const journeySteps = [
@@ -145,8 +145,8 @@ export const journeySteps = [
 
 export const contactDetails = [
   { title: 'Phone', lines: ['+91 98765 43210', '+91 91234 56789'], icon: Car },
-  { title: 'Email', lines: ['info@optimumautomobiles.com', 'sales@optimumautomobiles.com'], icon: Upload },
-  { title: 'Showroom Address', lines: ['Geras Imperium Rise, Pune, Maharashtra 411057'], icon: MapPin },
+  { title: 'Email', lines: ['admin@optimumautomobiles.com', 'sales@optimumautomobiles.com'], icon: Upload },
+  { title: 'Showroom Address', lines: ['Geras imperium rise, opp wipro circle, hinjewadi phase 2, Pune 411057'], icon: MapPin },
   { title: 'Opening Hours', lines: ['Mon - Sun: 10:00 AM - 8:00 PM'], icon: Clock3 },
   { title: 'WhatsApp', lines: ['+91 98765 43210'], icon: Headphones },
 ]

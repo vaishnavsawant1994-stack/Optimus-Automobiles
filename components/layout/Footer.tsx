@@ -3,10 +3,11 @@
 import { ArrowUp, ChevronDown, ChevronRight, Clock3, Compass, Info, MapPin, Phone, Scale, Send, ShieldCheck, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import type { FormEvent } from 'react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { BrandLogo } from '@/components/layout/BrandLogo'
 import { SocialIcon } from '@/components/layout/SocialIcon'
-import { footerColumns, siteConfig } from '@/lib/constants/site'
+import { footerColumns } from '@/lib/constants/site'
+import { useSiteConfig } from '@/components/providers/SiteConfigProvider'
 
 function slugify(label: string) {
   const routes: Record<string, string> = {
@@ -16,6 +17,21 @@ function slugify(label: string) {
     Services: '/services',
     'About Us': '/about-us',
     'Contact Us': '/contact',
+    'Buy Used Cars': '/inventory',
+    'Ownership Transfer': '/services/rc-transfer',
+    'Car Finance': '/services/finance',
+    'Insurance Assistance': '/services/insurance',
+    'Extended Warranty': '/services/extended-warranty',
+    'Our Process': '/our-process',
+    'Why Choose Us': '/why-choose-us',
+    Testimonials: '/testimonials',
+    FAQs: '/faqs',
+    Blog: '/blog',
+    'Terms & Conditions': '/terms',
+    'Privacy Policy': '/privacy',
+    'Refund Policy': '/refund-policy',
+    'Cookie Policy': '/cookie-policy',
+    Sitemap: '/sitemap',
   }
 
   if (routes[label]) return routes[label]
@@ -27,17 +43,8 @@ export function Footer() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
   const [openSection, setOpenSection] = useState<string | null>('Quick Links')
-  const [publicConfig, setPublicConfig] = useState({ phone: siteConfig.phone, mapsUrl: siteConfig.mapsUrl, location: 'Geras Imperium Rise, Pune', hours: '10:00 AM - 8:00 PM', facebook: siteConfig.facebook, instagram: siteConfig.instagram, youtube: siteConfig.youtube, linkedin: siteConfig.linkedin })
-
-  useEffect(() => {
-    let active = true
-    fetch('/api/site-config').then((response) => response.ok ? response.json() : null).then((payload) => {
-      if (!active || !payload?.data) return
-      const values = payload.data.settings ?? {}; const showroom = payload.data.showroom
-      setPublicConfig((current) => ({ ...current, phone: values.primary_phone || showroom?.phone || current.phone, mapsUrl: showroom?.mapUrl || current.mapsUrl, location: showroom ? `${showroom.address}, ${showroom.city}, ${showroom.state} ${showroom.postalCode}` : current.location, hours: values.opening_hours || showroom?.hours || current.hours, facebook: values.facebook_url || current.facebook, instagram: values.instagram_url || current.instagram, youtube: values.youtube_url || current.youtube, linkedin: values.linkedin_url || current.linkedin }))
-    }).catch(() => undefined)
-    return () => { active = false }
-  }, [])
+  const config = useSiteConfig()
+  const publicConfig = { ...config, location: config.address }
 
   const columnIcons = {
     'Quick Links': Compass,
@@ -51,26 +58,38 @@ export function Footer() {
     setStatus('loading')
     setMessage('')
 
-    const response = await fetch('/api/newsletter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    })
-    const body = (await response.json()) as { message?: string }
-    setStatus(response.ok ? 'success' : 'error')
-    setMessage(body.message ?? 'Something went wrong.')
-    if (response.ok) setEmail('')
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const body = await response.json().catch(() => ({ message: 'Subscription could not be completed.' })) as { message?: string }
+      setStatus(response.ok ? 'success' : 'error')
+      setMessage(body.message ?? 'Something went wrong.')
+      if (response.ok) setEmail('')
+    } catch {
+      setStatus('error')
+      setMessage('We could not connect. Check your connection and try again.')
+    }
   }
+
+  const socialLinks = [
+    ['facebook', publicConfig.facebook],
+    ['instagram', publicConfig.instagram],
+    ['youtube', publicConfig.youtube],
+    ['linkedin', publicConfig.linkedin],
+  ].filter(([, href]) => href && !/^https?:\/\/(www\.)?(facebook|linkedin)\.com\/?$/i.test(href)) as Array<[string, string]>
 
   return (
     <footer className="site-footer">
       <div className="footer-grid container-wide">
         <div className="footer-brand">
           <BrandLogo />
-          <span className="footer-brand__badge"><ShieldCheck aria-hidden="true" /> Trusted since 2014</span>
+          <span className="footer-brand__badge"><ShieldCheck aria-hidden="true" /> Established in 2024</span>
           <p>
-            Pune's trusted destination for premium pre-owned luxury
-            cars. Quality, transparency and trust since 2014.
+            A focused Pune destination for premium pre-owned luxury
+            cars, with clear information and coordinated ownership support.
           </p>
           <div className="footer-contact-list">
             <a href={publicConfig.mapsUrl} target="_blank" rel="noreferrer">
@@ -83,21 +102,7 @@ export function Footer() {
             </a>
             <div><Clock3 aria-hidden="true" /><span><small>Open daily</small><strong>{publicConfig.hours}</strong></span></div>
           </div>
-          <small className="footer-social-label">Follow Optimum Automobiles</small>
-          <div className="social-row">
-            <a href={publicConfig.facebook} aria-label="Facebook" target="_blank" rel="noreferrer">
-              <SocialIcon network="facebook" />
-            </a>
-            <a href={publicConfig.instagram} aria-label="Instagram" target="_blank" rel="noreferrer">
-              <SocialIcon network="instagram" />
-            </a>
-            <a href={publicConfig.youtube} aria-label="YouTube" target="_blank" rel="noreferrer">
-              <SocialIcon network="youtube" />
-            </a>
-            <a href={publicConfig.linkedin} aria-label="LinkedIn" target="_blank" rel="noreferrer">
-              <SocialIcon network="linkedin" />
-            </a>
-          </div>
+          {socialLinks.length ? <><small className="footer-social-label">Follow Optimum Automobiles</small><div className="social-row">{socialLinks.map(([network, href]) => <a href={href} aria-label={network} target="_blank" rel="noreferrer" key={network}><SocialIcon network={network as 'facebook' | 'instagram' | 'youtube' | 'linkedin'} /></a>)}</div></> : null}
         </div>
 
         <nav className="footer-nav" aria-label="Footer navigation">
@@ -160,7 +165,7 @@ export function Footer() {
       </div>
       <div className="footer-bottom">
         <div className="container-wide">
-          <p>Copyright 2026 Optimum Automobiles. All Rights Reserved.</p>
+          <p>Copyright {new Date().getFullYear()} Optimum Automobiles. All Rights Reserved.</p>
           <span>Premium pre-owned automobiles in Pune</span>
           <button type="button" aria-label="Back to top" title="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <ArrowUp aria-hidden="true" />

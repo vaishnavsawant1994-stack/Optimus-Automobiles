@@ -19,7 +19,7 @@ Set:
 
 ```text
 IMAGE_STORAGE_DRIVER=s3
-S3_BUCKET=deccan-wheels-images
+S3_BUCKET=optimum-automobiles-images
 S3_ENDPOINT=https://your-s3-compatible-endpoint
 S3_REGION=your-region
 S3_ACCESS_KEY_ID=...
@@ -31,6 +31,8 @@ S3_FORCE_PATH_STYLE=false
 Use `S3_FORCE_PATH_STYLE=true` only for providers such as MinIO that require it. The bucket/CDN must expose only intended public image objects. Keep credentials in deployment secrets, never site settings or source control.
 
 Production fails closed when the driver or required S3 values are missing. It never silently falls back to local disk.
+
+Sell-request JPG, PNG and PDF attachments use `PRIVATE_STORAGE_DRIVER`. Set it to `s3` in production. These objects are written without a public URL and can be downloaded only through the role-checked admin endpoint; do not expose the `sell-requests/` key prefix through a CDN or bucket policy. Local development stores them under the Git-ignored `artifacts/private-uploads/sell-requests` directory.
 
 For an optimized local preview or E2E run only, local storage can be selected explicitly with `IMAGE_STORAGE_DRIVER=local` and `ALLOW_LOCAL_IMAGE_STORAGE=true`. Never set `ALLOW_LOCAL_IMAGE_STORAGE` in a deployed environment; without that explicit preview switch, production continues to fail closed.
 

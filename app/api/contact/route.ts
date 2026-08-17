@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/prisma'
 import { createReferenceNumber } from '@/lib/references'
 import { contactSchema } from '@/lib/validation/forms'
+import { checkRateLimit, requestFingerprint } from '@/lib/security/rate-limit'
 
 export async function POST(request: Request) {
+  const limit = await checkRateLimit(requestFingerprint(request, 'contact'), 5, 10 * 60_000)
+  if (!limit.allowed) return NextResponse.json({ message: limit.unavailable ? 'The contact service is temporarily unavailable.' : 'Too many messages. Please try again later.' }, { status: limit.unavailable ? 503 : 429, headers: { 'Retry-After': String(limit.retryAfterSeconds) } })
   const result = contactSchema.safeParse(await request.json().catch(() => null))
 
   if (!result.success) {

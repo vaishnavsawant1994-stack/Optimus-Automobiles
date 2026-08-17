@@ -36,13 +36,13 @@ import { SocialIcon } from '@/components/layout/SocialIcon'
 import { HeroCarRotator } from '@/components/shared/HeroCarRotator'
 import { CustomerReviews } from '@/components/shared/CustomerReviews'
 import { useFavourites } from '@/components/providers/FavouriteProvider'
+import { useSiteConfig } from '@/components/providers/SiteConfigProvider'
 import {
   benefits,
   gallery as defaultGallery,
   mapImage,
   servicePromos,
   showroomImage,
-  siteConfig,
   stats,
   trustPoints,
 } from '@/lib/constants/site'
@@ -99,7 +99,7 @@ function AnimatedStatValue({ value }: { value: string }) {
     }
   }, [target])
 
-  return <strong ref={valueRef}>{`${display}${suffix}`}</strong>
+  return <strong ref={valueRef}>{Number.isNaN(target) ? value : `${display}${suffix}`}</strong>
 }
 
 export function HomePage({ vehicles, brands }: { vehicles: VehicleCardData[]; brands: BrandSummary[] }) {
@@ -138,7 +138,7 @@ function SectionTitle({ title, actionHref, actionLabel }: { title: string; actio
 }
 
 function HeroSection() {
-  const [copy, setCopy] = useState({ heroEyebrow: 'Optimum Automobiles', headline: 'Drive Luxury, Own Excellence.', supportingCopy: "Pune's trusted destination for premium pre-owned luxury cars." })
+  const [copy, setCopy] = useState({ heroEyebrow: 'Optimum Automobiles', headline: 'Drive Luxury, Own Excellence.', supportingCopy: 'A focused Pune showroom for premium pre-owned luxury cars.' })
   useEffect(() => {
     let active = true
     fetch('/api/content/homepage').then((response) => response.ok ? response.json() : null).then((payload) => {
@@ -514,6 +514,7 @@ function ServicePromos() {
 }
 
 function InstagramGallery() {
+  const siteConfig = useSiteConfig()
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', loop: true, skipSnaps: false })
   const [activePost, setActivePost] = useState(0)
   const [galleryItems, setGalleryItems] = useState(defaultGallery)
@@ -554,8 +555,8 @@ function InstagramGallery() {
         </button>
         <div className="embla" ref={emblaRef}>
           <div className="instagram-track">
-            {galleryItems.map((item) => (
-              <a href={siteConfig.instagram} target="_blank" rel="noreferrer" key={item.alt} aria-label={`View ${item.alt} on Instagram`}>
+            {galleryItems.map((item, index) => (
+              <a href={siteConfig.instagram} target="_blank" rel="noreferrer" key={`gallery-item-${index}-${item.alt}`} aria-label={`View ${item.alt} on Instagram`}>
                 <Image src={item.image} alt="" fill sizes="(min-width: 1180px) 25vw, (min-width: 760px) 50vw, 84vw" />
                 <span><SocialIcon network="instagram" />{item.alt}</span>
               </a>
@@ -570,7 +571,7 @@ function InstagramGallery() {
         {galleryItems.map((item, index) => (
           <button
             type="button"
-            key={item.alt}
+            key={`gallery-item-${index}-${item.alt}`}
             className={activePost === index ? 'is-active' : ''}
             aria-label={`Show ${item.alt}`}
             aria-pressed={activePost === index}
@@ -583,6 +584,7 @@ function InstagramGallery() {
 }
 
 function ShowroomContact() {
+  const siteConfig = useSiteConfig()
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
   const [addressCopied, setAddressCopied] = useState(false)
@@ -597,15 +599,16 @@ function ShowroomContact() {
     async (values: ContactInput) => {
       setStatus('loading')
       setMessage('')
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      })
-      const body = (await response.json()) as ApiMessage
-      setStatus(response.ok ? 'success' : 'error')
-      setMessage(body.message ?? 'Something went wrong.')
-      if (response.ok) reset()
+      try {
+        const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) })
+        const body = await response.json().catch(() => ({ message: 'The message could not be sent.' })) as ApiMessage
+        setStatus(response.ok ? 'success' : 'error')
+        setMessage(body.message ?? 'Something went wrong.')
+        if (response.ok) reset()
+      } catch {
+        setStatus('error')
+        setMessage('We could not connect to the showroom. Check your connection and try again.')
+      }
     },
     [reset],
   )
@@ -626,10 +629,10 @@ function ShowroomContact() {
             <Phone size={18} />
             {siteConfig.phone}
           </a>
-          <a href={siteConfig.secondaryPhoneHref}>
+          {siteConfig.secondaryPhone ? <a href={siteConfig.secondaryPhoneHref}>
             <Phone size={18} />
             {siteConfig.secondaryPhone}
-          </a>
+          </a> : null}
           <a href={siteConfig.emailHref}>
             <Mail size={18} />
             {siteConfig.email}
@@ -710,6 +713,7 @@ function ShowroomContact() {
 }
 
 function MobileActionBar() {
+  const siteConfig = useSiteConfig()
   return (
     <div className="mobile-action-bar">
       <a href={siteConfig.phoneHref}>
@@ -718,7 +722,7 @@ function MobileActionBar() {
       </a>
       <a href={siteConfig.whatsAppUrl} target="_blank" rel="noreferrer">
         <MessageCircle size={17} />
-        WhatsApp
+        {siteConfig.whatsAppUrl.startsWith('https://wa.me/') ? 'WhatsApp' : 'Contact'}
       </a>
     </div>
   )

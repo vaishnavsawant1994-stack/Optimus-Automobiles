@@ -9,7 +9,7 @@ import { checkRateLimit, requestFingerprint } from '@/lib/security/rate-limit'
 const responseMessage = 'If an active account matches that email, password-reset instructions have been sent.'
 
 export async function POST(request: Request) {
-  const limit = checkRateLimit(requestFingerprint(request, 'forgot-password'), 5, 15 * 60_000)
+  const limit = await checkRateLimit(requestFingerprint(request, 'forgot-password'), 5, 15 * 60_000)
   if (!limit.allowed) return NextResponse.json({ message: responseMessage })
   const body = await request.json().catch(() => null) as { email?: string } | null
   const email = normalizedEmailSchema.safeParse(body?.email)

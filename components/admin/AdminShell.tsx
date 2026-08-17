@@ -3,11 +3,13 @@
 import {
   Bell, Boxes, Building2, CarFront, ChevronDown, ChevronLeft, ChevronRight, CircleGauge, ClipboardCheck,
   ContactRound, FileImage, Files, GalleryHorizontal, LayoutDashboard, Menu, MessageSquareText, Search,
-  Settings, ShieldCheck, Star, Tags, UserRound, UsersRound, Wrench, X,
+  Settings, ShieldCheck, Star, Tags, UserRound, UsersRound, Wrench, X, LogOut,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { signOut } from 'next-auth/react'
+import { useFocusTrap } from '@/lib/hooks/use-focus-trap'
 
 export type AdminNavItem = { label: string; href: string; icon: string }
 
@@ -24,13 +26,15 @@ export function AdminShell({ children, navGroups, name, role, unread }: { childr
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
+  const mobileDrawerRef = useFocusTrap<HTMLElement>(mobileOpen)
 
-  useEffect(() => { setCollapsed(localStorage.getItem('deccan-admin-sidebar') === 'collapsed') }, [])
+  useEffect(() => { const saved = localStorage.getItem('optimum-admin-sidebar') ?? localStorage.getItem('deccan-admin-sidebar'); setCollapsed(saved === 'collapsed'); if (saved) localStorage.setItem('optimum-admin-sidebar', saved); localStorage.removeItem('deccan-admin-sidebar') }, [])
   useEffect(() => { setMobileOpen(false) }, [pathname])
+  useEffect(() => { const close = (event: KeyboardEvent) => { if (event.key === 'Escape') { setMobileOpen(false); setProfileOpen(false) } }; window.addEventListener('keydown', close); return () => window.removeEventListener('keydown', close) }, [])
 
   function toggleSidebar() {
     setCollapsed((value) => {
-      localStorage.setItem('deccan-admin-sidebar', value ? 'expanded' : 'collapsed')
+      localStorage.setItem('optimum-admin-sidebar', value ? 'expanded' : 'collapsed')
       return !value
     })
   }
@@ -49,12 +53,12 @@ export function AdminShell({ children, navGroups, name, role, unread }: { childr
 
   return <div className={`admin-shell${collapsed ? ' is-collapsed' : ''}`}>
     <aside className="admin-sidebar">{sidebar}<button className="admin-sidebar-toggle" type="button" onClick={toggleSidebar} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>{collapsed ? <ChevronRight /> : <ChevronLeft />}<span>Collapse</span></button></aside>
-    {mobileOpen ? <div className="admin-mobile-layer"><button className="admin-mobile-backdrop" type="button" aria-label="Close menu" onClick={() => setMobileOpen(false)} /><aside className="admin-mobile-drawer">{sidebar}</aside></div> : null}
+    {mobileOpen ? <div className="admin-mobile-layer"><button className="admin-mobile-backdrop" type="button" aria-label="Close menu" onClick={() => setMobileOpen(false)} /><aside className="admin-mobile-drawer" role="dialog" aria-modal="true" aria-label="Admin navigation" ref={mobileDrawerRef}>{sidebar}</aside></div> : null}
     <div className="admin-workspace">
       <header className="admin-topbar">
         <button className="admin-menu-button" type="button" aria-label="Open admin menu" onClick={() => setMobileOpen(true)}><Menu /></button>
         <form className="admin-global-search" role="search" onSubmit={search}><Search /><label className="sr-only" htmlFor="admin-search">Search inventory</label><input id="admin-search" name="q" placeholder="Search stock, model or registration" /></form>
-        <div className="admin-top-actions"><Link href="/admin/notifications" className="admin-icon-action" aria-label={`${unread} unread notifications`}><Bell />{unread ? <span>{unread > 9 ? '9+' : unread}</span> : null}</Link><div className="admin-profile-menu"><button type="button" onClick={() => setProfileOpen((value) => !value)} aria-expanded={profileOpen}><span>{name.charAt(0)}</span><span><strong>{name}</strong><small>{role.replaceAll('_', ' ')}</small></span><ChevronDown /></button>{profileOpen ? <div><Link href="/admin/profile"><UserRound />My profile</Link><Link href="/account"><CarFront />Customer site</Link></div> : null}</div></div>
+        <div className="admin-top-actions"><Link href="/admin/notifications" className="admin-icon-action" aria-label={`${unread} unread notifications`}><Bell />{unread ? <span>{unread > 9 ? '9+' : unread}</span> : null}</Link><div className="admin-profile-menu"><button type="button" onClick={() => setProfileOpen((value) => !value)} aria-expanded={profileOpen}><span>{name.charAt(0)}</span><span><strong>{name}</strong><small>{role.replaceAll('_', ' ')}</small></span><ChevronDown /></button>{profileOpen ? <div><Link href="/admin/profile"><UserRound />My profile</Link><Link href="/"><CarFront />Public website</Link><button type="button" onClick={() => signOut({ callbackUrl: '/login' })}><LogOut />Sign out</button></div> : null}</div></div>
       </header>
       <main className="admin-main" id="admin-main">{children}</main>
     </div>

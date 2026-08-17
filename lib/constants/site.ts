@@ -10,25 +10,30 @@ import {
   UsersRound,
 } from 'lucide-react'
 
+const configuredPrimaryPhone = process.env.NEXT_PUBLIC_PRIMARY_PHONE?.trim() ?? ''
+const configuredSecondaryPhone = process.env.NEXT_PUBLIC_SECONDARY_PHONE?.trim() ?? ''
+const configuredWhatsApp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, '') ?? ''
+
 export const siteConfig = {
-  name: 'Optimum Automobiles',
+  name: 'OPTIMUM AUTOMOBILES',
   tagline: 'Pre-owned luxury cars',
-  phone: '+91 98765 43210',
-  phoneHref: 'tel:+919876543210',
-  secondaryPhone: '+91 91234 56789',
-  secondaryPhoneHref: 'tel:+919123456789',
-  email: 'info@optimumautomobiles.com',
-  emailHref: 'mailto:info@optimumautomobiles.com',
-  address: 'Geras Imperium Rise, Pune, Maharashtra 411057',
+  phone: configuredPrimaryPhone || 'Contact showroom',
+  phoneHref: configuredPrimaryPhone ? `tel:${configuredPrimaryPhone.replace(/[^+\d]/g, '')}` : '/contact',
+  secondaryPhone: configuredSecondaryPhone,
+  secondaryPhoneHref: configuredSecondaryPhone ? `tel:${configuredSecondaryPhone.replace(/[^+\d]/g, '')}` : '/contact',
+  email: 'admin@optimumautomobiles.com',
+  emailHref: 'mailto:admin@optimumautomobiles.com',
+  address: 'Geras imperium rise, opp wipro circle, hinjewadi phase 2, Pune 411057',
   hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
-  mapsUrl:
-    'https://www.google.com/maps/search/?api=1&query=Geras%20Imperium%20Rise%2C%20Pune%2C%20Maharashtra%20411057',
-  whatsAppUrl:
-    'https://wa.me/919876543210?text=Hi%20Optimum%20Automobiles%2C%20I%20would%20like%20to%20know%20more%20about%20your%20premium%20cars.',
-  instagram: 'https://www.instagram.com/',
-  facebook: 'https://www.facebook.com/',
-  youtube: 'https://www.youtube.com/',
-  linkedin: 'https://www.linkedin.com/',
+  mapsUrl: 'https://maps.app.goo.gl/Zu38Rh6PiVuF2nKm7',
+  whatsAppUrl: configuredWhatsApp ? `https://wa.me/${configuredWhatsApp}?text=Hi%20Optimum%20Automobiles%2C%20I%20would%20like%20to%20know%20more%20about%20your%20premium%20cars.` : '/contact',
+  instagram: 'https://www.instagram.com/optimum_automobiles?igsh=a3JucTNlbmdzYnht&utm_source=qr',
+  facebook: '',
+  youtube: 'https://www.youtube.com/@OptimumAutomobiles',
+  linkedin: '',
+  ownerName: 'Omkar Patil',
+  establishedDate: '11/04/2024',
+  establishedYear: '2024',
 }
 
 export const navItems = [
@@ -63,17 +68,17 @@ export const navItems = [
 ]
 
 export const stats = [
-  { value: '500+', label: 'Premium Cars Sold', icon: Car },
-  { value: '2500+', label: 'Happy Customers', icon: UsersRound },
-  { value: '10+', label: 'Years of Trust', icon: ShieldCheck },
-  { value: '100%', label: 'Transparency', icon: Handshake },
+  { value: '2024', label: 'Year Founded', icon: Car },
+  { value: 'Pune', label: 'Local Showroom', icon: UsersRound },
+  { value: 'Curated', label: 'Premium Inventory', icon: ShieldCheck },
+  { value: 'Clear', label: 'Documented Process', icon: Handshake },
 ]
 
 export const trustPoints = [
-  '100% Verified Cars',
-  'No Hidden Charges',
-  'Easy Finance',
-  'Hassle-free Transfer',
+  'Inspection-led Cars',
+  'Clear Price Breakdown',
+  'Finance Assistance',
+  'Transfer Support',
 ]
 
 export const brands = [
@@ -233,8 +238,8 @@ export const vehicles = [
 
 export const benefits = [
   {
-    title: '100% Verified Cars',
-    text: 'Every car is thoroughly inspected and certified.',
+    title: 'Inspection-led Cars',
+    text: 'Available condition information is shared clearly.',
     icon: ShieldCheck,
   },
   {
@@ -244,7 +249,7 @@ export const benefits = [
   },
   {
     title: 'Easy Paperwork',
-    text: 'Hassle-free documentation and ownership transfer.',
+    text: 'Coordinated documentation and ownership-transfer support.',
     icon: FileCheck,
   },
   {
@@ -253,8 +258,8 @@ export const benefits = [
     icon: Headset,
   },
   {
-    title: 'Trusted Dealership',
-    text: '10+ years of trust in luxury car segments.',
+    title: 'Focused Dealership',
+    text: 'A Pune showroom founded in 2024 with a premium-car focus.',
     icon: Handshake,
   },
 ]
@@ -262,7 +267,7 @@ export const benefits = [
 export const servicePromos = [
   {
     title: 'Sell Your Car',
-    text: 'Get the best value for your car. Quick evaluation, instant payment.',
+    text: 'Request a market-led evaluation and a documented offer.',
     cta: 'Get Free Evaluation',
     href: '/sell-your-car',
     image:
@@ -271,7 +276,7 @@ export const servicePromos = [
   },
   {
     title: 'Ownership Transfer',
-    text: 'Hassle-free and fast ownership transfer process.',
+    text: 'Document checklist and ownership-transfer coordination.',
     cta: 'Know More',
     href: '/services/rc-transfer',
     image:
@@ -280,7 +285,7 @@ export const servicePromos = [
   },
   {
     title: 'Finance Made Easy',
-    text: 'Easy loans with low interest rates and quick approvals.',
+    text: 'Compare lender options with application support.',
     cta: 'Explore Finance',
     href: '/services/finance',
     image:
@@ -291,7 +296,7 @@ export const servicePromos = [
 
 export const testimonials = [
   {
-    name: 'Rohan Mehta',
+    name: 'OPTIMUM AUTOMOBILES',
     quote:
       'The experience was seamless from start to finish. Optimum Automobiles truly delivers trust and transparency.',
     purchase: 'Mercedes-Benz E-Class',
@@ -300,7 +305,7 @@ export const testimonials = [
       'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=85',
   },
   {
-    name: 'Sneha Reddy',
+    name: 'OPTIMUM AUTOMOBILES',
     quote:
       'Got my dream car at the best price. Highly professional team and great service!',
     purchase: 'BMW X5',
@@ -309,7 +314,7 @@ export const testimonials = [
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=240&q=85',
   },
   {
-    name: 'Arjun Kapoor',
+    name: 'OPTIMUM AUTOMOBILES',
     quote:
       'Smooth process, genuine cars and excellent after-sales support. Highly recommended!',
     purchase: 'Audi Q7',
@@ -318,7 +323,7 @@ export const testimonials = [
       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=85',
   },
   {
-    name: 'Vikram Malhotra',
+    name: 'OPTIMUM AUTOMOBILES',
     quote:
       'The team understood exactly what I wanted. Every detail was explained clearly, and delivery was right on schedule.',
     purchase: 'Land Rover Discovery',
@@ -327,7 +332,7 @@ export const testimonials = [
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&q=85',
   },
   {
-    name: 'Aisha Khan',
+    name: 'OPTIMUM AUTOMOBILES',
     quote:
       'From the first test drive to the final paperwork, everything felt premium, honest, and remarkably well organised.',
     purchase: 'Lexus ES 300h',
@@ -336,7 +341,7 @@ export const testimonials = [
       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=85',
   },
   {
-    name: 'Karthik Rao',
+    name: 'OPTIMUM AUTOMOBILES',
     quote:
       'A genuinely dependable dealership. The car was exactly as presented and the after-sales follow-up has been excellent.',
     purchase: 'Volvo XC90',
@@ -359,42 +364,42 @@ export const heroImage = '/images/hero/deccan-wheels-hero-v3.png'
 
 export const heroCarSlides = [
   {
-    name: 'BMW 5 Series',
+    name: 'OPTIMUM AUTOMOBILES',
     image: '/images/hero/hero-bmw-5-series.webp',
     alt: 'Black BMW 5 Series outside a premium showroom at night',
   },
   {
-    name: 'BMW 5 Series Pearl White',
+    name: 'OPTIMUM AUTOMOBILES',
     image: '/images/hero/hero-bmw-5-series-white.webp',
     alt: 'Pearl white BMW 5 Series outside a premium showroom at night',
   },
   {
-    name: 'Audi RS7',
+    name: 'OPTIMUM AUTOMOBILES',
     image: '/images/hero/hero-audi-rs7.webp',
     alt: 'Black Audi RS7 outside a premium showroom at night',
   },
   {
-    name: 'Audi RS7 Nardo Grey',
+    name: 'OPTIMUM AUTOMOBILES',
     image: '/images/hero/hero-audi-rs7-nardo-grey.webp',
     alt: 'Nardo grey Audi RS7 outside a premium showroom at night',
   },
   {
-    name: 'Mercedes-Benz S-Class',
+    name: 'OPTIMUM AUTOMOBILES',
     image: '/images/hero/hero-mercedes-s-class.webp',
     alt: 'Black Mercedes-Benz S-Class outside a premium showroom at night',
   },
   {
-    name: 'Mercedes-Benz S-Class Pearl White',
+    name: 'OPTIMUM AUTOMOBILES',
     image: '/images/hero/hero-mercedes-s-class-white.webp',
     alt: 'Pearl white Mercedes-Benz S-Class outside a premium showroom at night',
   },
   {
-    name: 'Land Rover Defender 110',
+    name: 'OPTIMUM AUTOMOBILES',
     image: '/images/hero/hero-defender-110.webp',
     alt: 'Black Land Rover Defender 110 outside a premium showroom at night',
   },
   {
-    name: 'Land Rover Defender 110 British Racing Green',
+    name: 'OPTIMUM AUTOMOBILES',
     image: '/images/hero/hero-defender-110-green.webp',
     alt: 'British racing green Land Rover Defender 110 outside a premium showroom at night',
   },

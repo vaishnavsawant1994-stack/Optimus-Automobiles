@@ -240,3 +240,11 @@
   .admin-sidebar, .admin-workspace { transition: none; }
   .admin-skeleton { animation: none; }
 }
+.admin-profile-menu > div > button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
