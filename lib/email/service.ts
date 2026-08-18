@@ -1,4 +1,5 @@
 import 'server-only'
+import { businessIdentity } from '@/lib/constants/business'
 
 type EmailMessage = {
   to: string
@@ -20,7 +21,7 @@ function shell(title: string, body: string, action?: { label: string; url: strin
 
 export async function sendTransactionalEmail(message: EmailMessage): Promise<EmailResult> {
   const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.AUTH_FROM_EMAIL ?? 'Optimum Automobiles <accounts@optimumautomobiles.com>'
+  const from = `Optimum Automobiles <${businessIdentity.primaryEmail}>`
   if (!apiKey) {
     const previewAllowed = process.env.NODE_ENV !== 'production' || process.env.ALLOW_EMAIL_PREVIEW === 'true'
     if (!previewAllowed) throw new Error('RESEND_API_KEY is required for transactional email in production.')

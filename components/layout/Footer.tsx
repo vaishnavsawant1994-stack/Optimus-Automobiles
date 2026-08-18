@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUp, ChevronDown, ChevronRight, Clock3, Compass, Info, MapPin, Phone, Scale, Send, ShieldCheck, Wrench } from 'lucide-react'
+import { ArrowUp, ChevronDown, ChevronRight, Clock3, Compass, Info, Mail, MapPin, Phone, Scale, Send, ShieldCheck, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import type { FormEvent } from 'react'
 import { useState } from 'react'
@@ -96,9 +96,17 @@ export function Footer() {
               <MapPin aria-hidden="true" />
               <span><small>Showroom</small><strong>{publicConfig.location}</strong></span>
             </a>
-            <a href={`tel:${publicConfig.phone.replace(/\s/g, '')}`}>
+            <a href={publicConfig.phoneHref}>
               <Phone aria-hidden="true" />
               <span><small>Call us</small><strong>{publicConfig.phone}</strong></span>
+            </a>
+            <a href={publicConfig.emailHref}>
+              <Mail aria-hidden="true" />
+              <span><small>Business email</small><strong>{publicConfig.email}</strong></span>
+            </a>
+            <a href={publicConfig.secondaryEmailHref}>
+              <Mail aria-hidden="true" />
+              <span><small>Alternate email</small><strong>{publicConfig.secondaryEmail}</strong></span>
             </a>
             <div><Clock3 aria-hidden="true" /><span><small>Open daily</small><strong>{publicConfig.hours}</strong></span></div>
           </div>

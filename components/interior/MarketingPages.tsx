@@ -9,6 +9,7 @@ import {
   Check,
   FileText,
   ImageIcon,
+  Mail,
   MapPin,
   MessageCircle,
   Phone,
@@ -285,7 +286,7 @@ export function ContactPage({ content = {} }: { content?: Record<string, string>
     <main className="interior-page" id="main-content">
       <PageHero eyebrow={content.heroEyebrow || 'Home / Contact'} title={content.headline || content.heading || 'Contact'} accent={content.headline || content.heading ? undefined : 'Our Team'} text={content.supportingCopy || content.description || 'Expert help for buying, selling, finance and ownership.'} image={interiorImages.hero} compact />
       <section className="contact-workspace container-wide">
-        <aside className="contact-details-panel"><InteriorHeading title="Get in Touch" /><article><span><Phone /></span><div><h3>Call Us</h3><p>{publicConfig.phone}</p><p>{publicConfig.secondaryPhone}</p></div></article><article><span><MapPin /></span><div><h3>Visit Us</h3><p>{publicConfig.address}</p><p>{publicConfig.hours}</p></div></article><a className="outline-button" href={publicConfig.mapsUrl} target="_blank" rel="noreferrer">Get Directions<ArrowRight /></a></aside>
+        <aside className="contact-details-panel"><InteriorHeading title="Get in Touch" /><article><span><Phone /></span><div><h3>Call Us</h3><p><a href={publicConfig.phoneHref}>{publicConfig.phone}</a></p>{publicConfig.secondaryPhone ? <p><a href={publicConfig.secondaryPhoneHref}>{publicConfig.secondaryPhone}</a></p> : null}</div></article><article><span><Mail /></span><div><h3>Email Us</h3><p><a href={publicConfig.emailHref}>{publicConfig.email}</a></p><p><a href={publicConfig.secondaryEmailHref}>{publicConfig.secondaryEmail}</a></p></div></article><article><span><MapPin /></span><div><h3>Visit Us</h3><p>{publicConfig.address}</p><p>{publicConfig.hours}</p></div></article><a className="outline-button" href={publicConfig.mapsUrl} target="_blank" rel="noreferrer">Get Directions<ArrowRight /></a></aside>
         <ContactForm />
         <aside className="location-panel"><InteriorHeading title="Our Location" /><div className="location-map"><Image src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=900&q=82" alt="Map showing Optimum Automobiles showroom area" fill sizes="30vw" /><span><MapPin /><strong>Optimum Automobiles</strong><small>Geras Imperium Rise, Pune</small></span></div><div><h3>Easy to Find, Worth the Drive.</h3><p>Located at Geras Imperium Rise in Pune, with a premium collection ready to explore.</p></div></aside>
       </section>

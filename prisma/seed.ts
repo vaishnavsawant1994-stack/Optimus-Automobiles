@@ -18,6 +18,7 @@ import {
 } from '@prisma/client'
 import { Algorithm, hash } from '@node-rs/argon2'
 
+import { businessIdentity } from '../lib/constants/business'
 import { createScriptPrismaClient } from '../scripts/script-prisma'
 
 const prisma = createScriptPrismaClient()
@@ -730,11 +731,11 @@ async function main() {
       country: 'India',
       latitude: 18.59618,
       longitude: 73.7182,
-      phone: process.env.NEXT_PUBLIC_PRIMARY_PHONE ?? '',
-      email: 'info@optimumautomobiles.com',
-      phones: [process.env.NEXT_PUBLIC_PRIMARY_PHONE, process.env.NEXT_PUBLIC_SECONDARY_PHONE].filter((value): value is string => Boolean(value)),
-      emails: ['info@optimumautomobiles.com', 'sales@optimumautomobiles.com'],
-      whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '',
+      phone: businessIdentity.phone,
+      email: businessIdentity.primaryEmail,
+      phones: [businessIdentity.phone],
+      emails: [businessIdentity.primaryEmail, businessIdentity.secondaryEmail],
+      whatsapp: businessIdentity.whatsappNumber,
       hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
       openingHours: { mondayToSunday: '10:00 AM - 8:00 PM' },
       mapUrl: 'https://www.google.com/maps/search/?api=1&query=Geras%20Imperium%20Rise%2C%20Pune%2C%20Maharashtra%20411057',
@@ -751,11 +752,11 @@ async function main() {
       country: 'India',
       latitude: 18.59618,
       longitude: 73.7182,
-      phone: process.env.NEXT_PUBLIC_PRIMARY_PHONE ?? '',
-      email: 'info@optimumautomobiles.com',
-      phones: [process.env.NEXT_PUBLIC_PRIMARY_PHONE, process.env.NEXT_PUBLIC_SECONDARY_PHONE].filter((value): value is string => Boolean(value)),
-      emails: ['info@optimumautomobiles.com', 'sales@optimumautomobiles.com'],
-      whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '',
+      phone: businessIdentity.phone,
+      email: businessIdentity.primaryEmail,
+      phones: [businessIdentity.phone],
+      emails: [businessIdentity.primaryEmail, businessIdentity.secondaryEmail],
+      whatsapp: businessIdentity.whatsappNumber,
       hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
       openingHours: { mondayToSunday: '10:00 AM - 8:00 PM' },
       mapUrl: 'https://www.google.com/maps/search/?api=1&query=Geras%20Imperium%20Rise%2C%20Pune%2C%20Maharashtra%20411057',
@@ -770,11 +771,11 @@ async function main() {
     site_tagline: 'Premium pre-owned luxury cars',
     site_url: 'http://localhost:3001',
     inventory_location: 'Geras Imperium Rise, Pune, Maharashtra 411057',
-    primary_phone: process.env.NEXT_PUBLIC_PRIMARY_PHONE ?? '',
-    support_phone: process.env.NEXT_PUBLIC_SECONDARY_PHONE ?? '',
-    sales_email: 'sales@optimumautomobiles.com',
-    support_email: 'info@optimumautomobiles.com',
-    whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '',
+    primary_phone: businessIdentity.phone,
+    support_phone: '',
+    sales_email: businessIdentity.primaryEmail,
+    support_email: businessIdentity.secondaryEmail,
+    whatsapp: businessIdentity.whatsappNumber,
     opening_hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
     currency: 'INR',
     timezone: 'Asia/Kolkata',

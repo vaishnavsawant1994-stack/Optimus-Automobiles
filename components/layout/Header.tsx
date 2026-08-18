@@ -129,7 +129,7 @@ export function Header() {
 
       <header className={`site-header${scrolled ? ' site-header--scrolled' : ''}`}>
         <div className="site-header__inner">
-          <BrandLogo />
+          <BrandLogo priority />
           <nav className="desktop-nav" aria-label="Primary navigation">
             {navItems.map((item) => {
               const expanded = openMenu === item.label

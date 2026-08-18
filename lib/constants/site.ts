@@ -9,24 +9,28 @@ import {
   ShieldCheck,
   UsersRound,
 } from 'lucide-react'
+import { buildWhatsAppUrl, businessIdentity } from '@/lib/constants/business'
 
-const configuredPrimaryPhone = process.env.NEXT_PUBLIC_PRIMARY_PHONE?.trim() ?? ''
-const configuredSecondaryPhone = process.env.NEXT_PUBLIC_SECONDARY_PHONE?.trim() ?? ''
-const configuredWhatsApp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, '') ?? ''
+const configuredPrimaryPhone = businessIdentity.phone
+const configuredSecondaryPhone: string = ''
+const configuredWhatsApp = businessIdentity.whatsappNumber
 
 export const siteConfig = {
-  name: 'OPTIMUM AUTOMOBILES',
-  tagline: 'Pre-owned luxury cars',
-  phone: configuredPrimaryPhone || 'Contact showroom',
-  phoneHref: configuredPrimaryPhone ? `tel:${configuredPrimaryPhone.replace(/[^+\d]/g, '')}` : '/contact',
+  name: businessIdentity.name,
+  tagline: businessIdentity.tagline,
+  logoUrl: businessIdentity.logoUrl,
+  phone: configuredPrimaryPhone,
+  phoneHref: `tel:${configuredPrimaryPhone.replace(/[^+\d]/g, '')}`,
   secondaryPhone: configuredSecondaryPhone,
   secondaryPhoneHref: configuredSecondaryPhone ? `tel:${configuredSecondaryPhone.replace(/[^+\d]/g, '')}` : '/contact',
-  email: 'admin@optimumautomobiles.com',
-  emailHref: 'mailto:admin@optimumautomobiles.com',
+  email: businessIdentity.primaryEmail,
+  emailHref: `mailto:${businessIdentity.primaryEmail}`,
+  secondaryEmail: businessIdentity.secondaryEmail,
+  secondaryEmailHref: `mailto:${businessIdentity.secondaryEmail}`,
   address: 'Geras imperium rise, opp wipro circle, hinjewadi phase 2, Pune 411057',
   hours: 'Mon - Sun: 10:00 AM - 8:00 PM',
   mapsUrl: 'https://maps.app.goo.gl/Zu38Rh6PiVuF2nKm7',
-  whatsAppUrl: configuredWhatsApp ? `https://wa.me/${configuredWhatsApp}?text=Hi%20Optimum%20Automobiles%2C%20I%20would%20like%20to%20know%20more%20about%20your%20premium%20cars.` : '/contact',
+  whatsAppUrl: buildWhatsAppUrl(businessIdentity.whatsappMessage, configuredWhatsApp),
   instagram: 'https://www.instagram.com/optimum_automobiles?igsh=a3JucTNlbmdzYnht&utm_source=qr',
   facebook: '',
   youtube: 'https://www.youtube.com/@OptimumAutomobiles',
