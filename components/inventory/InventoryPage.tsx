@@ -114,7 +114,7 @@ export function InventoryPage({ result, basePath = '/inventory', eyebrow = 'Home
       </section>
       {filterOpen ? <div className="mobile-filter-drawer" role="dialog" aria-modal="true"><button className="mobile-filter-backdrop" type="button" aria-label="Close filters" onClick={() => setFilterOpen(false)} /><InventoryFilter result={result} basePath={basePath} lockedFilter={lockedFilter} onClose={() => setFilterOpen(false)} interactive={hydrated} /></div> : null}
       <CustomerReviews />
-      <InteriorCta title="Can't Find the Right Car?" text="Let our experts help you find the perfect match from our extended network." image={interiorImages.sedan} primary={{ label: 'Get Assistance', href: '/contact' }} secondary={{ label: siteConfig.phone === 'Contact showroom' ? 'Contact Showroom' : `Call ${siteConfig.phone}`, href: siteConfig.phoneHref }} />
+      <InteriorCta title="Can't Find the Right Car?" text="Let our experts help you find the perfect match from our extended network." image={interiorImages.sedan} primary={{ label: 'Get Assistance', href: '/contact' }} secondary={{ label: `Call ${siteConfig.phone}`, href: siteConfig.phoneHref }} />
       <section className="support-strip container-wide"><article><Banknote /><span><strong>Finance Assistance</strong><small>Compare lender terms and prepare the application.</small></span></article><article><Settings2 /><span><strong>Condition Information</strong><small>Review the checks available for each car.</small></span></article><article><CarFront /><span><strong>Sell Your Car</strong><small>Request a market-led valuation.</small></span></article></section>
     </main>
   )

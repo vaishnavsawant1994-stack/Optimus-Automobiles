@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer'
 import { Header } from '@/components/layout/Header'
 import { SiteFrame } from '@/components/layout/SiteFrame'
 import { AppProviders } from '@/components/providers/AppProviders'
+import { businessIdentity } from '@/lib/constants/business'
 import { prisma } from '@/lib/db/prisma'
 import { unstable_cache } from 'next/cache'
 import './globals.css'
@@ -32,9 +33,25 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://optimus-automobiles.vercel.app'
+  const organization = {
+    '@context': 'https://schema.org',
+    '@type': 'AutomotiveBusiness',
+    name: businessIdentity.name,
+    url: siteUrl,
+    logo: `${siteUrl}${businessIdentity.logoUrl}`,
+    telephone: businessIdentity.phoneNumber,
+    email: businessIdentity.primaryEmail,
+    contactPoint: [
+      { '@type': 'ContactPoint', telephone: businessIdentity.phoneNumber, email: businessIdentity.primaryEmail, contactType: 'sales and customer service', areaServed: 'IN' },
+      { '@type': 'ContactPoint', email: businessIdentity.secondaryEmail, contactType: 'alternate customer service', areaServed: 'IN' },
+    ],
+  }
+
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }} />
         <AppProviders>
           <SiteFrame header={<Header />} footer={<Footer />}>{children}</SiteFrame>
         </AppProviders>

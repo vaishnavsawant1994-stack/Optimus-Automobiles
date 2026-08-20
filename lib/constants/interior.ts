@@ -17,6 +17,7 @@ import {
   WalletCards,
   Wrench,
 } from 'lucide-react'
+import { businessIdentity } from '@/lib/constants/business'
 
 export const interiorImages = {
   hero: '/images/hero/deccan-wheels-hero-v3.png',
@@ -144,9 +145,9 @@ export const journeySteps = [
 ]
 
 export const contactDetails = [
-  { title: 'Phone', lines: ['+91 98765 43210', '+91 91234 56789'], icon: Car },
-  { title: 'Email', lines: ['admin@optimumautomobiles.com', 'sales@optimumautomobiles.com'], icon: Upload },
+  { title: 'Phone', lines: [businessIdentity.phone], icon: Car },
+  { title: 'Email', lines: [businessIdentity.primaryEmail, businessIdentity.secondaryEmail], icon: Upload },
   { title: 'Showroom Address', lines: ['Geras imperium rise, opp wipro circle, hinjewadi phase 2, Pune 411057'], icon: MapPin },
   { title: 'Opening Hours', lines: ['Mon - Sun: 10:00 AM - 8:00 PM'], icon: Clock3 },
-  { title: 'WhatsApp', lines: ['+91 98765 43210'], icon: Headphones },
+  { title: 'WhatsApp', lines: [businessIdentity.phone], icon: Headphones },
 ]

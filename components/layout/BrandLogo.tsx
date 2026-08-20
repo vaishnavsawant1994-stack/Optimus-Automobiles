@@ -1,7 +1,10 @@
+import Image from 'next/image'
 import Link from 'next/link'
+import { businessIdentity } from '@/lib/constants/business'
 
 type BrandLogoProps = {
   compact?: boolean
+  priority?: boolean
 }
 
 export function OptimumMark({ className = '' }: { className?: string }) {
@@ -20,16 +23,18 @@ export function OptimumMark({ className = '' }: { className?: string }) {
   )
 }
 
-export function BrandLogo({ compact = false }: BrandLogoProps) {
+export function BrandLogo({ compact = false, priority = false }: BrandLogoProps) {
   return (
-    <Link className="brand-logo" href="/" aria-label="Optimum Automobiles home">
-      <OptimumMark className="brand-logo__mark" />
-      {!compact ? (
-        <span className="brand-logo__copy">
-          <strong>Optimum Automobiles</strong>
-          <small>Pre-owned luxury cars</small>
-        </span>
-      ) : null}
+    <Link className={`brand-logo${compact ? ' brand-logo--compact' : ''}`} href="/" aria-label="Optimum Automobiles home">
+      <Image
+        className="brand-logo__image"
+        src={businessIdentity.logoUrl}
+        alt="Optimum Automobiles — Premium Pre-Loved Cars"
+        width={1774}
+        height={887}
+        priority={priority}
+        sizes={compact ? '126px' : '(max-width: 1180px) 138px, 172px'}
+      />
     </Link>
   )
 }
