@@ -3,7 +3,7 @@
 ## Client demo
 
 - Vercel project: `vishnu26/optimus-automobiles`
-- Production URL: `https://optimus-automobiles.vercel.app`
+- Production URL: `https://optimumautomobiles.com`
 - GitHub source: `vaishnavsawant1994-stack/Optimus-Automobiles`
 - Database: Neon PostgreSQL in Singapore, connected through Vercel Marketplace
 - Function region: Singapore (`sin1`) to keep database-backed requests close to Neon
@@ -17,8 +17,8 @@ Vercel currently supplies the Neon connection variables. The project additionall
 - `DIRECT_URL` mapped to Neon's unpooled connection for migrations
 - `AUTH_SECRET`
 - `AUTH_TRUST_HOST=true`
-- `NEXTAUTH_URL=https://optimus-automobiles.vercel.app` in production
-- `NEXT_PUBLIC_SITE_URL=https://optimus-automobiles.vercel.app`
+- `NEXTAUTH_URL=https://optimumautomobiles.com` in production
+- `NEXT_PUBLIC_SITE_URL=https://optimumautomobiles.com`
 - `NEXT_PUBLIC_WHATSAPP_NUMBER`
 
 `postinstall` runs `prisma generate`. Schema changes must be applied with `prisma migrate deploy` before the release that depends on them.

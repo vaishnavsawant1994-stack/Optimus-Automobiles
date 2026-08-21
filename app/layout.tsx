@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   let settings: Record<string, string> = {}
   const rows = await getSeoSettings()
   settings = Object.fromEntries(rows.map((item) => [item.key, item.value]))
-  const baseValue = settings.site_url || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
+  const baseValue = process.env.NEXT_PUBLIC_SITE_URL || settings.site_url || 'https://optimumautomobiles.com'
   const metadataBase = new URL(/^https?:\/\//.test(baseValue) ? baseValue : `https://${baseValue}`)
   const title = settings.seo_default_title || defaults.title
   const description = settings.seo_default_description || defaults.description
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://optimus-automobiles.vercel.app'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://optimumautomobiles.com'
   const organization = {
     '@context': 'https://schema.org',
     '@type': 'AutomotiveBusiness',
