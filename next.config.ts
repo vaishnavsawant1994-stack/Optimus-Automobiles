@@ -16,6 +16,27 @@ const contentSecurityPolicy = [
   "upgrade-insecure-requests",
 ].join('; ')
 
+function getStorageRemotePattern() {
+  const publicBase = process.env.S3_PUBLIC_BASE_URL?.trim()
+  if (!publicBase) return null
+
+  try {
+    const url = new URL(publicBase)
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
+
+    return {
+      protocol: url.protocol.slice(0, -1) as 'http' | 'https',
+      hostname: url.hostname,
+      port: url.port,
+      pathname: `${url.pathname.replace(/\/$/, '') || ''}/**`,
+    }
+  } catch {
+    return null
+  }
+}
+
+const storageRemotePattern = getStorageRemotePattern()
+
 const nextConfig: NextConfig = {
   devIndicators: false,
   poweredByHeader: false,
@@ -38,6 +59,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      ...(storageRemotePattern ? [storageRemotePattern] : []),
     ],
   },
 }

@@ -20,6 +20,16 @@ export type VehicleCardRecord = Prisma.VehicleGetPayload<{ include: typeof vehic
 export type VehicleDetailRecord = Prisma.VehicleGetPayload<{ include: typeof vehicleDetailInclude }>
 
 const fallbackImage = '/images/hero/deccan-wheels-hero-final.png'
+const opaqueFilenamePattern = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|[0-9a-f]{24,64})$/i
+
+function resolveImageAltText(input: { altText: string; year: number; make: string; model: string; variant: string; category: string; index?: number }) {
+  const normalized = input.altText.trim()
+  if (normalized && !opaqueFilenamePattern.test(normalized.replace(/\s+/g, ''))) return normalized
+
+  const category = input.category.toLowerCase().replaceAll('_', ' ')
+  const suffix = input.index === undefined ? '' : ` ${input.index + 1}`
+  return `${input.year} ${input.make} ${input.model} ${input.variant} ${category} view${suffix}`.replace(/\s+/g, ' ').trim()
+}
 
 export function mapVehicleCard(record: VehicleCardRecord): VehicleCardData {
   const primaryImage = record.images[0]
@@ -40,7 +50,7 @@ export function mapVehicleCard(record: VehicleCardRecord): VehicleCardData {
     price: formatInr(record.price),
     priceValue: record.price,
     image: primaryImage?.url ?? fallbackImage,
-    imageAlt: primaryImage?.altText ?? `${record.year} ${record.brand.name} ${record.model}`,
+    imageAlt: primaryImage ? resolveImageAltText({ altText: primaryImage.altText, year: record.year, make: record.brand.name, model: record.model, variant: record.variant, category: primaryImage.category }) : `${record.year} ${record.brand.name} ${record.model}`,
     badge,
     status: record.status as VehicleCardData['status'],
     certified: record.certified,
@@ -88,11 +98,11 @@ export function mapVehicleDetail(record: VehicleDetailRecord): VehicleDetailData
     description: record.description,
     ...(record.originalPrice ? { originalPrice: formatInr(record.originalPrice) } : {}),
     location: 'Geras Imperium Rise, Pune',
-    images: record.images.map((image) => ({
+    images: record.images.map((image, index) => ({
       id: image.id,
       url: image.url,
       thumbnailUrl: image.thumbnailUrl ?? image.url,
-      altText: image.altText,
+      altText: resolveImageAltText({ altText: image.altText, year: record.year, make: record.brand.name, model: record.model, variant: record.variant, category: image.category, index }),
       category: image.category,
     })),
     featureGroups: [...featureMap].map(([category, items]) => ({ category, items })),
