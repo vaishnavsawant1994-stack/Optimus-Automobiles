@@ -10,7 +10,29 @@ type EmailMessage = {
 
 export type EmailResult = { delivered: boolean; preview: boolean; providerId?: string }
 
+export type LeadNotificationDetails = {
+  reference: string
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  vehicleTitle: string
+  vehicleStockNumber?: string | null
+  message?: string | null
+  preferredDate?: Date | string | null
+  preferredTime?: string | null
+}
+
 const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001'
+const leadNotificationEmail = () => process.env.LEAD_NOTIFICATION_EMAIL ?? 'omkarpatil525@gmail.com'
+
+function escapeHtml(value: string | null | undefined) {
+  return (value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
+}
 
 function shell(title: string, body: string, action?: { label: string; url: string }) {
   const button = action
@@ -66,6 +88,38 @@ export function sendEngagementConfirmation(to: string, name: string, reference: 
     subject: `Your Optimum Automobiles ${kind} request ${reference}`,
     previewUrl: url,
     html: shell('Request received', `<p>Hello ${name},</p><p>We received your ${kind} request. Keep this reference for your records: <strong>${reference}</strong>.</p>`, { label: 'Track request', url }),
+  })
+}
+
+export function sendLeadNotification(kind: 'enquiry' | 'test drive', details: LeadNotificationDetails) {
+  const adminPath = kind === 'enquiry' ? '/admin/inquiries' : '/admin/test-drives'
+  const adminUrl = `${siteUrl()}${adminPath}`
+  const preferredDate = details.preferredDate ? new Date(details.preferredDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' }) : null
+  const rows = [
+    ['Reference', details.reference],
+    ['Customer', details.customerName],
+    ['Phone', details.customerPhone],
+    ['Email', details.customerEmail],
+    ['Vehicle', details.vehicleTitle],
+    ['Stock number', details.vehicleStockNumber ?? '—'],
+    ...(preferredDate ? [['Preferred date', preferredDate]] : []),
+    ...(details.preferredTime ? [['Preferred time', details.preferredTime]] : []),
+  ]
+    .map(([label, value]) => `<tr><td style="padding:8px 12px;color:#8d8981;vertical-align:top">${escapeHtml(label)}</td><td style="padding:8px 12px;color:#f5f1e8"><strong>${escapeHtml(value)}</strong></td></tr>`)
+    .join('')
+  const message = details.message?.trim()
+    ? `<p style="margin-top:24px;color:#8d8981">Customer message</p><div style="background:#111414;padding:16px;border-radius:4px;white-space:pre-wrap">${escapeHtml(details.message)}</div>`
+    : ''
+
+  return sendTransactionalEmail({
+    to: leadNotificationEmail(),
+    subject: `New ${kind === 'enquiry' ? 'enquiry' : 'test-drive booking'} — ${details.vehicleTitle} — ${details.reference}`,
+    previewUrl: adminUrl,
+    html: shell(
+      kind === 'enquiry' ? 'New vehicle enquiry' : 'New test-drive booking',
+      `<p>A new customer lead has been saved in the Optimum Automobiles admin panel.</p><table style="width:100%;border-collapse:collapse;background:#0d1010;border-radius:4px">${rows}</table>${message}`,
+      { label: 'Open in admin panel', url: adminUrl },
+    ),
   })
 }
 
