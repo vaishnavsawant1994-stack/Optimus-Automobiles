@@ -7,15 +7,24 @@ import { useRef, useState } from 'react'
 
 type ManagedImage = { id: string; url: string; thumbnailUrl: string | null; altText: string; category: string; sortOrder: number; isPrimary: boolean; width: number | null; height: number | null; sizeBytes: number | null }
 
-export function VehicleImageManager({ vehicleId, initialImages, canEdit }: { vehicleId: string; initialImages: ManagedImage[]; canEdit: boolean }) {
+function buildAltText(file: File, vehicleLabel: string, imageNumber: number) {
+  const basename = file.name.replace(/\.[^.]+$/, '').trim()
+  const normalized = basename.replace(/[\s_-]+/g, '')
+  const looksOpaque = /^[0-9a-f]{24,64}$/i.test(normalized)
+  if (!looksOpaque && basename.length >= 3) return basename.replace(/[\s_-]+/g, ' ').trim()
+  return `${vehicleLabel} exterior view ${imageNumber}`
+}
+
+export function VehicleImageManager({ vehicleId, vehicleLabel, initialImages, canEdit }: { vehicleId: string; vehicleLabel: string; initialImages: ManagedImage[]; canEdit: boolean }) {
   const router = useRouter(); const input = useRef<HTMLInputElement>(null)
   const [images, setImages] = useState(initialImages)
   const [busy, setBusy] = useState(false); const [message, setMessage] = useState(''); const [failed, setFailed] = useState<File[]>([])
   async function upload(files: File[]) {
     if (!files.length || !canEdit) return
     setBusy(true); setFailed([]); const failures: File[] = []
-    for (const file of files.slice(0, Math.max(0, 40 - images.length))) {
-      const form = new FormData(); form.set('file', file); form.set('category', 'EXTERIOR'); form.set('altText', file.name.replace(/\.[^.]+$/, '').replaceAll('-', ' ')); form.set('isPrimary', String(images.length === 0))
+    const selectedFiles = files.slice(0, Math.max(0, 40 - images.length))
+    for (const [fileIndex, file] of selectedFiles.entries()) {
+      const form = new FormData(); form.set('file', file); form.set('category', 'EXTERIOR'); form.set('altText', buildAltText(file, vehicleLabel, images.length + fileIndex + 1)); form.set('isPrimary', String(images.length === 0 && fileIndex === 0))
       const response = await fetch(`/api/admin/vehicles/${vehicleId}/images`, { method: 'POST', body: form })
       if (!response.ok) failures.push(file)
     }
