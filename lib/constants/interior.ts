@@ -127,7 +127,7 @@ export const faqs = {
 }
 
 export const trustStats = [
-  { value: '2024', label: 'Established', icon: Clock3 },
+  { value: '2019', label: 'Established', icon: Clock3 },
   { value: 'Pune', label: 'Local Showroom', icon: Handshake },
   { value: 'Curated', label: 'Premium Cars', icon: Car },
   { value: 'Clear', label: 'Documented Pricing', icon: ShieldCheck },
