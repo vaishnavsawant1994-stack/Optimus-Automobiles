@@ -299,9 +299,9 @@ function VehicleSearchPanel({ vehicles, brands }: { vehicles: VehicleCardData[];
           <ChevronDown className="select-chevron" size={15} />
         </label>
         <label>
-          <span><Gauge aria-hidden="true" />Total Run</span>
+          <span><Gauge aria-hidden="true" />KM Driven</span>
           <select {...register('mileage')}>
-            <option value="">Any Total Run</option>
+            <option value="">Any KM Driven</option>
             <option value="0-20000">Under 20,000 km</option>
             <option value="20000-40000">20,000 - 40,000 km</option>
             <option value="40000-70000">40,000 - 70,000 km</option>
