@@ -36,8 +36,8 @@ export const siteConfig = {
   youtube: 'https://www.youtube.com/@OptimumAutomobiles',
   linkedin: '',
   ownerName: 'Omkar Patil',
-  establishedDate: '11/04/2024',
-  establishedYear: '2024',
+  establishedDate: '2019',
+  establishedYear: '2019',
 }
 
 export const navItems = [
@@ -72,7 +72,7 @@ export const navItems = [
 ]
 
 export const stats = [
-  { value: '2024', label: 'Year Founded', icon: Car },
+  { value: '2019', label: 'Year Founded', icon: Car },
   { value: 'Pune', label: 'Local Showroom', icon: UsersRound },
   { value: 'Curated', label: 'Premium Inventory', icon: ShieldCheck },
   { value: 'Clear', label: 'Documented Process', icon: Handshake },
@@ -263,7 +263,7 @@ export const benefits = [
   },
   {
     title: 'Focused Dealership',
-    text: 'A Pune showroom founded in 2024 with a premium-car focus.',
+    text: 'A Pune showroom founded in 2019 with a premium-car focus.',
     icon: Handshake,
   },
 ]
