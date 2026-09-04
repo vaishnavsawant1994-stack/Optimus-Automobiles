@@ -86,7 +86,7 @@ export function Footer() {
       <div className="footer-grid container-wide">
         <div className="footer-brand">
           <BrandLogo />
-          <span className="footer-brand__badge"><ShieldCheck aria-hidden="true" /> Established in 2024</span>
+          <span className="footer-brand__badge"><ShieldCheck aria-hidden="true" /> Established in 2019</span>
           <p>
             A focused Pune destination for premium pre-owned luxury
             cars, with clear information and coordinated ownership support.
