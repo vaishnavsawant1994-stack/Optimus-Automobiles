@@ -173,7 +173,7 @@ export function Footer() {
       </div>
       <div className="footer-bottom">
         <div className="container-wide">
-          <p>Copyright {new Date().getFullYear()} Optimum Automobiles. All Rights Reserved.</p>
+          <p>Copyright 2019 Optimum Automobiles. All Rights Reserved.</p>
           <span>Premium pre-owned automobiles in Pune</span>
           <button type="button" aria-label="Back to top" title="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <ArrowUp aria-hidden="true" />
