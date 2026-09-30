@@ -18,7 +18,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/optimus_ci
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/deccan_wheels
+      NODE_ENV: test
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: deccan_wheels
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d deccan_wheels"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
@@ -30,6 +45,10 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
+      - name: Prepare test database
+        run: |
+          npx prisma migrate deploy
+          npm run db:seed
       - name: Lint
         run: npm run lint
       - name: Type-check
