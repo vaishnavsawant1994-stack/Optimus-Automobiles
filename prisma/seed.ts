@@ -528,6 +528,68 @@ async function main() {
     },
   })
 
+  await prisma.inquiry.upsert({
+    where: { referenceNumber: 'OA-ENQ-LEGACY-000001' },
+    update: {
+      userId: null,
+      vehicleId: demoVehicleIds[2],
+      fullName: 'Guest Enquiry',
+      phone: '+919876549001',
+      email: 'guest-enquiry@example.test',
+      message: 'Please share availability and inspection details.',
+      consentAccepted: true,
+      preferredContactMethod: PreferredContactMethod.EMAIL,
+      status: InquiryStatus.NEW,
+      priority: LeadPriority.NORMAL,
+      assignedToId: null,
+    },
+    create: {
+      referenceNumber: 'OA-ENQ-LEGACY-000001',
+      userId: null,
+      vehicleId: demoVehicleIds[2],
+      fullName: 'Guest Enquiry',
+      phone: '+919876549001',
+      email: 'guest-enquiry@example.test',
+      message: 'Please share availability and inspection details.',
+      consentAccepted: true,
+      preferredContactMethod: PreferredContactMethod.EMAIL,
+      status: InquiryStatus.NEW,
+      priority: LeadPriority.NORMAL,
+    },
+  })
+
+  await prisma.testDrive.upsert({
+    where: { referenceNumber: 'OA-TD-LEGACY-000001' },
+    update: {
+      userId: null,
+      vehicleId: demoVehicleIds[2]!,
+      fullName: 'Guest Test Drive',
+      phone: '+919876549002',
+      email: 'guest-drive@example.test',
+      preferredDate: new Date('2026-08-09T00:00:00.000Z'),
+      preferredTime: '3:00 PM',
+      consentAccepted: true,
+      preferredContactMethod: PreferredContactMethod.EMAIL,
+      status: TestDriveStatus.REQUESTED,
+      priority: LeadPriority.NORMAL,
+      assignedToId: null,
+    },
+    create: {
+      referenceNumber: 'OA-TD-LEGACY-000001',
+      userId: null,
+      vehicleId: demoVehicleIds[2]!,
+      fullName: 'Guest Test Drive',
+      phone: '+919876549002',
+      email: 'guest-drive@example.test',
+      preferredDate: new Date('2026-08-09T00:00:00.000Z'),
+      preferredTime: '3:00 PM',
+      consentAccepted: true,
+      preferredContactMethod: PreferredContactMethod.EMAIL,
+      status: TestDriveStatus.REQUESTED,
+      priority: LeadPriority.NORMAL,
+    },
+  })
+
   const seededSellRequest = await prisma.sellRequest.upsert({
     where: { referenceNumber: 'OA-SELL-DEMO-000001' },
     update: {
