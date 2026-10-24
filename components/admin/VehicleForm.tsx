@@ -29,13 +29,13 @@ export function VehicleForm({ vehicle, brands, bodyTypes, features }: { vehicle?
   const brandId = watch('brandId'); const year = watch('year'); const model = watch('model'); const variant = watch('variant')
   function createSlug() { const brand = brandOptions.find((item) => item.id === brandId)?.name ?? ''; setValue('slug', generateVehicleSlug({ year: Number(year), brand, model, variant }), { shouldValidate: true }) }
   async function addBrand() {
-    const name = newBrandName.trim().replace(/\\s+/g, ' ')
+    const name = newBrandName.trim().replace(/\s+/g, ' ')
     if (name.length < 2 || name.length > 100) { setBrandMessage('Enter a brand name between 2 and 100 characters.'); return }
     const existing = brandOptions.find((item) => item.name.toLocaleLowerCase() === name.toLocaleLowerCase())
     if (existing) { setValue('brandId', existing.id, { shouldValidate: true }); setAddingBrand(false); setBrandMessage('Existing brand selected.'); return }
     setBrandBusy(true); setBrandMessage('')
     try {
-      const slug = name.toLowerCase().normalize('NFKD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      const slug = name.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
       if (slug.length < 2) { setBrandMessage('Please enter a valid brand name.'); return }
       const response = await fetch('/api/admin/catalog/brands', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, slug, description: '', logoUrl: '/images/brand-logos/default.svg', logoAlt: name + ' logo', country: 'Unknown', active: true, featured: false, displayOrder: 0 }) })
       const payload = await response.json()
