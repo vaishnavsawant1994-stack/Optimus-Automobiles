@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowRight, LoaderCircle, Save, WandSparkles } from 'lucide-react'
+import { ArrowRight, LoaderCircle, Plus, Save, WandSparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -20,9 +20,34 @@ export function VehicleForm({ vehicle, brands, bodyTypes, features }: { vehicle?
   const router = useRouter()
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
+  const [brandOptions, setBrandOptions] = useState(brands)
+  const [addingBrand, setAddingBrand] = useState(false)
+  const [newBrandName, setNewBrandName] = useState('')
+  const [brandBusy, setBrandBusy] = useState(false)
+  const [brandMessage, setBrandMessage] = useState('')
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormInput, unknown, FormValues>({ resolver: zodResolver(vehicleAdminSchema), defaultValues: { ...emptyVehicle, ...vehicle } })
   const brandId = watch('brandId'); const year = watch('year'); const model = watch('model'); const variant = watch('variant')
-  function createSlug() { const brand = brands.find((item) => item.id === brandId)?.name ?? ''; setValue('slug', generateVehicleSlug({ year: Number(year), brand, model, variant }), { shouldValidate: true }) }
+  function createSlug() { const brand = brandOptions.find((item) => item.id === brandId)?.name ?? ''; setValue('slug', generateVehicleSlug({ year: Number(year), brand, model, variant }), { shouldValidate: true }) }
+  async function addBrand() {
+    const name = newBrandName.trim().replace(/\\s+/g, ' ')
+    if (name.length < 2 || name.length > 100) { setBrandMessage('Enter a brand name between 2 and 100 characters.'); return }
+    const existing = brandOptions.find((item) => item.name.toLocaleLowerCase() === name.toLocaleLowerCase())
+    if (existing) { setValue('brandId', existing.id, { shouldValidate: true }); setAddingBrand(false); setBrandMessage('Existing brand selected.'); return }
+    setBrandBusy(true); setBrandMessage('')
+    try {
+      const slug = name.toLowerCase().normalize('NFKD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      if (slug.length < 2) { setBrandMessage('Please enter a valid brand name.'); return }
+      const response = await fetch('/api/admin/catalog/brands', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, slug, description: '', logoUrl: '/images/brand-logos/default.svg', logoAlt: name + ' logo', country: 'Unknown', active: true, featured: false, displayOrder: 0 }) })
+      const payload = await response.json()
+      if (!response.ok) { setBrandMessage(response.status === 403 ? 'Your role needs brand management permission. Ask an administrator to add this brand.' : (payload.error?.message ?? 'Could not add brand. It may already exist.')); return }
+      const added = { id: payload.data.id as string, name: payload.data.name as string }
+      setBrandOptions((current) => [...current, added].sort((a, b) => a.name.localeCompare(b.name)))
+      setValue('brandId', added.id, { shouldValidate: true, shouldDirty: true })
+      setNewBrandName(''); setAddingBrand(false); setBrandMessage('Brand created and selected.')
+      router.refresh()
+    } catch { setBrandMessage('Could not connect to the brand service. Please try again.') }
+    finally { setBrandBusy(false) }
+  }
   async function submit(values: FormValues) {
     setMessage(''); setIsError(false)
     const response = await fetch(vehicle ? `/api/admin/vehicles/${vehicle.id}` : '/api/admin/vehicles', { method: vehicle ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(values) })
@@ -34,7 +59,7 @@ export function VehicleForm({ vehicle, brands, bodyTypes, features }: { vehicle?
   const error = (key: keyof FormInput) => errors[key]?.message ? <small style={{ color: '#f29a93' }}>{String(errors[key]?.message)}</small> : null
   return <form className="admin-form" onSubmit={handleSubmit(submit)}>
     <section className="admin-form-section"><header><h2>1. Basic Information</h2><p>Identity, classification and operational state.</p></header><div className="admin-form-grid">
-      <label>Brand<select {...register('brandId')}><option value="">Choose brand</option>{brands.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>{error('brandId')}</label>
+      <div><label>Brand<select {...register('brandId')}><option value="">Choose brand</option>{brandOptions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>{error('brandId')}</label><button className="admin-button admin-button--secondary" type="button" onClick={() => { setAddingBrand((value) => !value); setBrandMessage('') }}><Plus />Add custom brand</button>{addingBrand ? <div><label>New brand name<input value={newBrandName} onChange={(event) => setNewBrandName(event.target.value)} maxLength={100} placeholder="e.g. Ford" /></label><button className="admin-button" type="button" onClick={addBrand} disabled={brandBusy}>{brandBusy ? <LoaderCircle /> : <Plus />}{brandBusy ? 'Saving...' : 'Save & select brand'}</button></div> : null}{brandMessage ? <p className="admin-form-message" role="status">{brandMessage}</p> : null}</div>
       <label>Model<input {...register('model')} />{error('model')}</label><label>Variant<input {...register('variant')} />{error('variant')}</label>
       <label>Stock number<input {...register('stockNumber')} />{error('stockNumber')}</label><label>Year<input type="number" {...register('year', { valueAsNumber: true })} />{error('year')}</label>
       <label>Body type<select {...register('bodyTypeId')}><option value="">Choose body type</option>{bodyTypes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>{error('bodyTypeId')}</label>
