@@ -56,6 +56,8 @@ const brands = [
   ['Audi', 'audi', 'Germany', true],
   ['Porsche', 'porsche', 'Germany', true],
   ['Land Rover', 'land-rover', 'United Kingdom', true],
+  ['Range Rover', 'range-rover', 'United Kingdom', false],
+  ['Ford', 'ford', 'United States', false],
   ['Lexus', 'lexus', 'Japan', true],
   ['Volvo', 'volvo', 'Sweden', true],
   ['Jaguar', 'jaguar', 'United Kingdom', true],
@@ -174,7 +176,7 @@ async function main() {
       where: { slug },
       update: {
         name,
-        logoUrl: `/images/brands/${slug}.svg`,
+        logoUrl: ['ford', 'range-rover'].includes(slug) ? '/images/brands/default.svg' : `/images/brands/${slug}.svg`,
         logoAlt: `${name} logo`,
         description: `${name} pre-owned luxury cars selected and inspected by Optimum Automobiles.`,
         country,
@@ -185,7 +187,7 @@ async function main() {
       create: {
         name,
         slug,
-        logoUrl: `/images/brands/${slug}.svg`,
+        logoUrl: ['ford', 'range-rover'].includes(slug) ? '/images/brands/default.svg' : `/images/brands/${slug}.svg`,
         logoAlt: `${name} logo`,
         description: `${name} pre-owned luxury cars selected and inspected by Optimum Automobiles.`,
         country,

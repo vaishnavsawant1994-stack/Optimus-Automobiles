@@ -37,7 +37,7 @@ export function VehicleForm({ vehicle, brands, bodyTypes, features }: { vehicle?
     try {
       const slug = name.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
       if (slug.length < 2) { setBrandMessage('Please enter a valid brand name.'); return }
-      const response = await fetch('/api/admin/catalog/brands', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, slug, description: '', logoUrl: '/images/brand-logos/default.svg', logoAlt: name + ' logo', country: 'Unknown', active: true, featured: false, displayOrder: 0 }) })
+      const response = await fetch('/api/admin/catalog/brands', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, slug, description: '', logoUrl: '/images/brands/default.svg', logoAlt: name + ' logo', country: 'Unknown', active: true, featured: false, displayOrder: 0 }) })
       const payload = await response.json()
       if (!response.ok) { setBrandMessage(response.status === 403 ? 'Your role needs brand management permission. Ask an administrator to add this brand.' : (payload.error?.message ?? 'Could not add brand. It may already exist.')); return }
       const added = { id: payload.data.id as string, name: payload.data.name as string }
