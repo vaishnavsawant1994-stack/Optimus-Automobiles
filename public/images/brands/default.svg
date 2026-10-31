@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="144" viewBox="0 0 240 144" role="img" aria-label="Vehicle brand placeholder">
+  <rect width="240" height="144" rx="14" fill="#101315"/>
+  <g fill="none" stroke="#cba65b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M46 84h148l-10-21c-3-6-9-10-16-10H79c-7 0-13 4-16 10L46 84Z"/>
+    <path d="M55 84v15M185 84v15M63 99h117"/>
+    <circle cx="77" cy="99" r="8" fill="#101315"/>
+    <circle cx="163" cy="99" r="8" fill="#101315"/>
+  </g>
+  <text x="120" y="128" fill="#d8c59c" font-family="Arial,sans-serif" font-size="12" text-anchor="middle" letter-spacing="2">CAR BRAND</text>
+</svg>
