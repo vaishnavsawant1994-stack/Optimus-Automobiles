@@ -26,6 +26,7 @@ export function VehicleForm({ vehicle, brands, bodyTypes, features }: { vehicle?
   const [brandBusy, setBrandBusy] = useState(false)
   const [brandMessage, setBrandMessage] = useState('')
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormInput, unknown, FormValues>({ resolver: zodResolver(vehicleAdminSchema), defaultValues: { ...emptyVehicle, ...vehicle } })
+  const brandField = register('brandId')
   const brandId = watch('brandId'); const year = watch('year'); const model = watch('model'); const variant = watch('variant')
   function createSlug() { const brand = brandOptions.find((item) => item.id === brandId)?.name ?? ''; setValue('slug', generateVehicleSlug({ year: Number(year), brand, model, variant }), { shouldValidate: true }) }
   async function addBrand() {
@@ -59,7 +60,16 @@ export function VehicleForm({ vehicle, brands, bodyTypes, features }: { vehicle?
   const error = (key: keyof FormInput) => errors[key]?.message ? <small style={{ color: '#f29a93' }}>{String(errors[key]?.message)}</small> : null
   return <form className="admin-form" onSubmit={handleSubmit(submit)}>
     <section className="admin-form-section"><header><h2>1. Basic Information</h2><p>Identity, classification and operational state.</p></header><div className="admin-form-grid">
-      <div><label>Brand<select {...register('brandId')}><option value="">Choose brand</option>{brandOptions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>{error('brandId')}</label><button className="admin-button admin-button--secondary" type="button" onClick={() => { setAddingBrand((value) => !value); setBrandMessage('') }}><Plus />Add custom brand</button>{addingBrand ? <div><label>New brand name<input value={newBrandName} onChange={(event) => setNewBrandName(event.target.value)} maxLength={100} placeholder="e.g. Ford" /></label><button className="admin-button" type="button" onClick={addBrand} disabled={brandBusy}>{brandBusy ? <LoaderCircle /> : <Plus />}{brandBusy ? 'Saving...' : 'Save & select brand'}</button></div> : null}{brandMessage ? <p className="admin-form-message" role="status">{brandMessage}</p> : null}</div>
+      <div><label>Brand<select {...brandField} onChange={(event) => {
+        if (event.target.value === '__add_custom_brand__') {
+          event.target.value = ''
+          setValue('brandId', '', { shouldValidate: true, shouldDirty: true })
+          setBrandMessage('Enter the new brand name, then save it to add it permanently.')
+          setAddingBrand(true)
+          return
+        }
+        void brandField.onChange(event)
+      }}><option value="">Choose brand</option>{brandOptions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}<option value="__add_custom_brand__">+ Add custom brand...</option></select>{error('brandId')}</label><button className="admin-button admin-button--secondary" type="button" onClick={() => { setAddingBrand((value) => !value); setBrandMessage('') }}><Plus />Add custom brand</button>{addingBrand ? <div><label>New brand name<input value={newBrandName} onChange={(event) => setNewBrandName(event.target.value)} maxLength={100} placeholder="e.g. Ford" /></label><button className="admin-button" type="button" onClick={addBrand} disabled={brandBusy}>{brandBusy ? <LoaderCircle /> : <Plus />}{brandBusy ? 'Saving...' : 'Save & select brand'}</button></div> : null}{brandMessage ? <p className="admin-form-message" role="status">{brandMessage}</p> : null}</div>
       <label>Model<input {...register('model')} />{error('model')}</label><label>Variant<input {...register('variant')} />{error('variant')}</label>
       <label>Stock number<input {...register('stockNumber')} />{error('stockNumber')}</label><label>Year<input type="number" {...register('year', { valueAsNumber: true })} />{error('year')}</label>
       <label>Body type<select {...register('bodyTypeId')}><option value="">Choose body type</option>{bodyTypes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select>{error('bodyTypeId')}</label>
