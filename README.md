@@ -76,3 +76,7 @@ npm run build
 Set a strong `AUTH_SECRET`, database URLs, the canonical `NEXT_PUBLIC_SITE_URL`, real showroom phone variables, email delivery credentials and S3-compatible storage values before deployment. `PRIVATE_STORAGE_DRIVER=s3` keeps customer valuation documents private; they must not be served through the public CDN configured by `S3_PUBLIC_BASE_URL`.
 
 Run `npx prisma migrate deploy` before starting a new release. The latest migration adds shared rate-limit buckets and private sell-request attachment metadata.
+
+## Detailed project documentation
+
+The [**Project Handbook**](docs/PROJECT_HANDBOOK.md) explains this repository individually: product objectives, user journeys, code and technology, current implementation scope, risks, local development, quality gates, and the next engineering milestones. Statements about planned features do not imply release acceptance.
