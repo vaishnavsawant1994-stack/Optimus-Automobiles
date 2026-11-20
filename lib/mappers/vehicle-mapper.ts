@@ -100,7 +100,7 @@ export function mapVehicleDetail(record: VehicleDetailRecord): VehicleDetailData
     location: 'Geras Imperium Rise, Pune',
     images: record.images.map((image, index) => ({
       id: image.id,
-      url: image.url,
+      url: image.galleryUrl ?? image.url,
       thumbnailUrl: image.thumbnailUrl ?? image.url,
       altText: resolveImageAltText({ altText: image.altText, year: record.year, make: record.brand.name, model: record.model, variant: record.variant, category: image.category, index }),
       category: image.category,
