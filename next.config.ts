@@ -54,6 +54,9 @@ const nextConfig: NextConfig = {
     }]
   },
   images: {
+    // Public car photos already have S3 WebP variants. Avoid Vercel's paid
+    // image transformation endpoint, which currently returns HTTP 402.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
