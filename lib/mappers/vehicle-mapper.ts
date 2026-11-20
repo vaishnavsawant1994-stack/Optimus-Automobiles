@@ -49,7 +49,7 @@ export function mapVehicleCard(record: VehicleCardRecord): VehicleCardData {
     transmission: record.transmission,
     price: formatInr(record.price),
     priceValue: record.price,
-    image: primaryImage?.url ?? fallbackImage,
+    image: primaryImage?.cardUrl ?? primaryImage?.url ?? fallbackImage,
     imageAlt: primaryImage ? resolveImageAltText({ altText: primaryImage.altText, year: record.year, make: record.brand.name, model: record.model, variant: record.variant, category: primaryImage.category }) : `${record.year} ${record.brand.name} ${record.model}`,
     badge,
     status: record.status as VehicleCardData['status'],
