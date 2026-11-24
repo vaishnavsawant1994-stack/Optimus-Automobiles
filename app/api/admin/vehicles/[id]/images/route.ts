@@ -37,7 +37,16 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     await writeAuditLog({ actorId: actor.id, action: 'VEHICLE_IMAGE_UPLOADED', resourceType: 'Vehicle', resourceId: id, summary: `Uploaded image for ${vehicle.stockNumber}.`, metadata: { imageId: image.id, category: image.category, sizeBytes: image.sizeBytes }, request })
     return NextResponse.json({ data: image, message: 'Image uploaded and variants generated.' }, { status: 201 })
   } catch (error) {
-    if (error instanceof Error && error.message.startsWith('IMAGE_')) return NextResponse.json({ error: { code: error.message, message: 'The image failed secure server validation.' } }, { status: 422 })
+    if (error instanceof Error) {
+      const messages: Record<string, string> = {
+        UNSUPPORTED_IMAGE_TYPE: 'Use a JPEG, PNG, WebP or AVIF image.',
+        IMAGE_SIZE_INVALID: 'The image must not be empty or larger than 12 MB.',
+        IMAGE_EXTENSION_MISMATCH: 'The filename extension does not match the image format.',
+        IMAGE_SIGNATURE_MISMATCH: 'The file contents do not match the selected image format.',
+        IMAGE_DIMENSIONS_INVALID: 'The image must be at least 480 × 320 pixels and no more than 12,000 × 12,000 pixels.',
+      }
+      if (Object.hasOwn(messages, error.message)) return NextResponse.json({ error: { code: error.message, message: messages[error.message] } }, { status: 422 })
+    }
     return adminError(error)
   }
 }

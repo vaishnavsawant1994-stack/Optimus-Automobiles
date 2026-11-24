@@ -3,6 +3,7 @@ import 'server-only'
 import { mkdir, unlink, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import sharp from 'sharp'
+import { createVehicleVariant } from './image-transform'
 import type { ImageStorageAdapter, StoredImage } from './types'
 
 const sizes = { thumbnail: [320, 220], card: [720, 480], gallery: [1600, 1067], openGraph: [1200, 630] } as const
@@ -33,7 +34,7 @@ export class LocalImageStorage implements ImageStorageAdapter {
     const result: Record<string, string> = {}
     for (const [variant, [width, height]] of Object.entries(sizes)) {
       const filename = `${name}-${variant}.webp`
-      await writeFile(path.join(directory, filename), await sharp(input.buffer).resize(width, height, { fit: 'cover', position: 'attention' }).webp({ quality: variant === 'thumbnail' ? 78 : 86 }).toBuffer())
+      await writeFile(path.join(directory, filename), await createVehicleVariant(input.buffer, width, height, variant === 'thumbnail' ? 78 : 86))
       result[variant] = `/uploads/vehicles/${vehicleId}/${filename}`
     }
     return result

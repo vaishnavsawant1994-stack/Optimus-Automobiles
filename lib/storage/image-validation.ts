@@ -1,6 +1,9 @@
 import { createHash } from 'node:crypto'
 import sharp from 'sharp'
 
+export const MIN_PUBLIC_IMAGE_WIDTH = 480
+export const MIN_PUBLIC_IMAGE_HEIGHT = 320
+
 const allowed = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif'])
 const extensions: Record<string, string[]> = { 'image/jpeg': ['jpg', 'jpeg'], 'image/png': ['png'], 'image/webp': ['webp'], 'image/avif': ['avif'] }
 
@@ -20,6 +23,6 @@ export async function validatePublicImage(file: File) {
   const buffer = Buffer.from(await file.arrayBuffer())
   if (!matchesSignature(buffer, file.type)) throw new Error('IMAGE_SIGNATURE_MISMATCH')
   const metadata = await sharp(buffer).metadata()
-  if (!metadata.width || !metadata.height || metadata.width < 640 || metadata.height < 400 || metadata.width > 12000 || metadata.height > 12000) throw new Error('IMAGE_DIMENSIONS_INVALID')
+  if (!metadata.width || !metadata.height || metadata.width < MIN_PUBLIC_IMAGE_WIDTH || metadata.height < MIN_PUBLIC_IMAGE_HEIGHT || metadata.width > 12000 || metadata.height > 12000) throw new Error('IMAGE_DIMENSIONS_INVALID')
   return { buffer, width: metadata.width, height: metadata.height, checksum: createHash('sha256').update(buffer).digest('hex') }
 }

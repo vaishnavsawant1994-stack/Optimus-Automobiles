@@ -3,6 +3,7 @@ import 'server-only'
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import sharp from 'sharp'
+import { createVehicleVariant } from './image-transform'
 import type { ImageStorageAdapter, StoredImage } from './types'
 
 export class S3ImageStorage implements ImageStorageAdapter {
@@ -40,7 +41,7 @@ export class S3ImageStorage implements ImageStorageAdapter {
     const result: Record<string, string> = {}
     for (const [variant, [width, height]] of Object.entries(specs)) {
       const key = input.storageKey.replace(/(\.[^.]+)?$/, `-${variant}.webp`)
-      const body = await sharp(input.buffer).resize(width, height, { fit: 'cover', position: 'attention' }).webp({ quality: 84 }).toBuffer()
+      const body = await createVehicleVariant(input.buffer, width, height, 84)
       await this.client.send(new PutObjectCommand({ Bucket: this.bucket, Key: key, Body: body, ContentType: 'image/webp' }))
       result[variant] = this.getPublicUrl(key)
     }

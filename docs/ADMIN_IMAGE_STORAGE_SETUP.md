@@ -11,7 +11,9 @@ The server validates MIME type, extension, magic bytes, dimensions, file size, d
 - 1600x1067 gallery image
 - 1200x630 Open Graph image
 
-Accepted public formats are JPEG, PNG, WebP and AVIF. The limit is 12 MB, minimum dimensions are 640x400 and each vehicle is limited to 40 images. `DOCUMENT` is not accepted by the public image endpoint and is excluded from public galleries.
+Newly generated variants scale down within each maximum size without cropping or enlarging the source image. Public vehicle cards and galleries use the uncropped normalized WebP source so existing images are not accidentally zoomed by older cropped variants. Images are displayed using `object-fit: contain` against a dark background; some letterboxing is expected for different aspect ratios.
+
+Accepted public formats are JPEG, PNG, WebP and AVIF. The limit is 12 MB, minimum dimensions are 480x320 and each vehicle is limited to 40 images. Uploads around 533x400 are accepted but may look soft on large screens; 1280px+ images are recommended for listings. `DOCUMENT` is not accepted by the public image endpoint and is excluded from public galleries.
 
 ## Production S3-compatible storage
 
