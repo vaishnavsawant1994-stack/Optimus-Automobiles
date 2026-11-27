@@ -5064,6 +5064,9 @@ img {
   .brand-carousel .round-nav--left, .vehicle-carousel .round-nav--left { left: -15px; }
   .brand-carousel .round-nav--right, .vehicle-carousel .round-nav--right { right: -15px; }
   .vehicle-card { flex-basis: 88%; }
+  /* Make mobile New Arrivals photos taller so 4:3 shots have fewer side gaps.
+     The existing object-fit: contain keeps the full car visible. */
+  .vehicle-card__image { aspect-ratio: 1.4; }
   .vehicle-card__body { padding: 15px; }
   .vehicle-card h3 { font-size: 15px; }
   .vehicle-card p { font-size: 13px; }
